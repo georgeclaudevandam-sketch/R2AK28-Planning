@@ -18,16 +18,23 @@ jobs:
           CHS = "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer"
           NOAA = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer"
           def merc(lat, lon): return lon * 20037508.34 / 180, math.log(math.tan((90 + lat) * math.pi / 360)) * 20037508.34 / math.pi
-          dp = json.dumps({"ECDISParameters": {"version": "10.9.1", "DynamicParameters": {"Parameter": [{"name": "DisplayCategory", "value": "1,2,4"}, {"name": "DisplayDepthUnits", "value": 1}]}}})
-          for name, svc, lat, lon in [("chs-seymour", CHS, 50.13, -125.35), ("chs-nanaimo", CHS, 49.17, -123.93), ("noaa-ketchikan", NOAA, 55.33, -131.64)]:
-            for z in (11, 13):
+          def dp(groups=None, extra=()):
+            P = [{"name": n, "value": v} for n, v in extra]
+            G = [{"name": g, "Parameter": [{"name": "scaleFactor", "value": sf}, {"name": "minZoom", "value": mn}, {"name": "maxZoom", "value": 1.2}]} for g, sf, mn in (groups or [])]
+            d = {"ECDISParameters": {"version": "10.9.1", "DynamicParameters": {"Parameter": P, "ParameterGroup": G}}}
+            return json.dumps(d)
+          big = [("TextSize", 1.3, 1.0), ("PointSymbolSize", 1.2, 1.0)]
+          variants = [("a-default", None), ("b-big", dp(big)), ("c-big-noscamin", dp(big, [("HonorScamin", 1)])), ("d-big-scamin2", dp(big, [("HonorScamin", 2)]))]
+          for name, svc, lat, lon in [("chs-seymour", CHS, 50.13, -125.35), ("chs-nanaimo", CHS, 49.17, -123.93)]:
+            for z in (10, 11, 12):
               x, y = merc(lat, lon); w = 40075016.68 / 2 ** z
-              bbox = f"{x - w/2},{y - w/2},{x + w/2},{y + w/2}"
-              for tag, extra in [("default", {}), ("params", {"display_params": dp})]:
-                q = {"bbox": bbox, "bboxSR": "3857", "imageSR": "3857", "size": "512,512", "dpi": "96", "format": "png32", "transparent": "true", "layers": "show:0,1,2,3,4,5,6,7,9,10,12", "f": "image", **extra}
+              bbox = f"{x},{y},{x + w},{y + w}"
+              for tag, d in variants:
+                q = {"bbox": bbox, "bboxSR": "3857", "imageSR": "3857", "size": "256,256", "dpi": "96", "format": "png32", "transparent": "true", "layers": "show:0,1,2,3,4,5,6,7,9,10,12", "f": "image"}
+                if d: q["display_params"] = d
                 try:
-                  d = urllib.request.urlopen(svc + "/export?" + urllib.parse.urlencode(q), timeout=90).read()
-                  open(f"probe/{name}-z{z}-{tag}.png", "wb").write(d); print(name, z, tag, len(d))
+                  r = urllib.request.urlopen(svc + "/export?" + urllib.parse.urlencode(q), timeout=90).read()
+                  open(f"probe/{name}-z{z}-{tag}.png", "wb").write(r); print(name, z, tag, len(r), r[:60] if not r.startswith(b"\x89PNG") else "")
                 except Exception as e: print(name, z, tag, "ERR", e)
           PY
           git config user.name "github-actions"; git config user.email "actions@github.com"
