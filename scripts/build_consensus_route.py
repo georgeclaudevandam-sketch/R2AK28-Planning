@@ -96,6 +96,10 @@ def water(p):   # snap a via to the nearest water cell (narrows can be closed at
 
 VIC, SEYMOUR, FITZHUGH, BELLA, KTN = map(water, (VIC, SEYMOUR, FITZHUGH, BELLA, KTN))
 south = route([VIC, SEYMOUR, BELLA])
+# Victoria Inner Harbour, in front of the Empress, out through the harbour entrance (too narrow for the 220 m grid; hand-drawn
+# against the coastline). Stage 1 in build_route.py ends with the same path in reverse.
+HARBOUR = [[48.4222, -123.3712], [48.4240, -123.3745], [48.4253, -123.3780], [48.4256, -123.3830], [48.4250, -123.3890], [48.4225, -123.3935], [48.4185, -123.3955]]
+south = HARBOUR + south[next(k for k, q in enumerate(south) if q[0] <= 48.4165):]
 inside = route([BELLA, KTN])
 data = json.loads((ROOT / "data" / "route.json").read_text())
 for leg in data["legs"]:
