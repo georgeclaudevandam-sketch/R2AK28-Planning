@@ -177,6 +177,8 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
         </div>
+        <label for="hullFt">Hull length (waterline, monohull): <b class="clock" id="hullFt-out">24 ft</b>, hull speed <b class="clock" id="hull-v"></b>
+          <input id="hullFt" type="range" min="20" max="60" step="1" value="24"></label>
         <label for="campGapH">Most hours from one camp to the next (coffee stops count)<input id="campGapH" type="number" min="8" max="48" step="1" value="20"></label>
         <label class="check" for="nightOn"><input id="nightOn" type="checkbox" checked> No rowing at night: ashore at a past campsite</label>
         <label for="nightH" id="nightH-l">From <b class="clock" id="nightH-out">0.5 h</b> after sunset to the same before sunrise
@@ -264,8 +266,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH", "hullFt"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -485,9 +487,10 @@ function gatesOn(ch, stage) {
     .sort((a, b) => a.along - b.along);
 }
 // ---------- tidal stream along the track (rowing modes)
-// Each zone takes a current station's predicted stream, signed so + is with you heading north, and fades it
-// from full strength within `core` nm of the station (along the track) to nothing at `r` nm, scaled by k.
-// Directions for stations that are not tidal gates are assumptions from the charts; open water with no station gets no stream.
+// Each zone takes a current station's predicted stream (CHS or NOAA tables) and fades it from full strength within `core` nm
+// of the station (along the track) to nothing at `r` nm, scaled by k. Where the tables give the flood and ebb set, the stream
+// is resolved onto the track's heading at that point (+ = with you); `fav` is only the fallback when no set is published.
+// Between stations the nearby zones are blended by weight. Open water with no station gets no stream.
 const STREAM = [
   { key: "point-wilson", fav: "ebb", core: 2, r: 8, k: 0.6 },
   { key: "juan-de-fuca-east", fav: "ebb", core: 5, r: 15, k: 0.8 },
@@ -495,12 +498,13 @@ const STREAM = [
   { key: "trial-island", fav: "ebb", core: 2, r: 6, k: 0.6 },
   { key: "south-haro", fav: "flood", core: 4, r: 12, k: 0.7 },
   { key: "turn-point", fav: "flood", core: 3, r: 10, k: 0.6 },
+  { key: "porlier-pass", core: 0.5, r: 3, k: 0.8, near: 1 },
   { key: "seymour-narrows", fav: "ebb", core: 2, r: 14, k: 1 },
   { key: "johnstone-central", fav: "ebb", core: 20, r: 35, k: 0.8 },
   { key: "blackney-passage", fav: "ebb", core: 2, r: 8, k: 0.8, near: 2 },
   { key: "weynton-passage", fav: "ebb", core: 3, r: 15, k: 0.6 },
   { key: "hiekish-narrows", fav: "flood", core: 2, r: 10, k: 0.8 },
-  // the Grenville Channel floods meet near Lowe Inlet: flood is with you south of it, ebb north of it
+  // the Grenville Channel floods meet near Lowe Inlet: flood is with you south of it, ebb north of it (one station can't show both)
   { key: "grenville-channel", fav: "ebb", favBefore: "flood", split: [53.56, -129.58], core: 20, r: 30, k: 0.7 },
 ];
 const STEP = 10 * 60e3;
@@ -522,20 +526,42 @@ function zonesFor(ch) {
   return (ch._zones = STREAM.map((z) => {
     const st = STATIONS.find((s) => s.key === z.key), grid = st && streamGrid(z.key); if (!grid) return null;
     const p = project(ch, st.lat, st.lon); if (p.d > (z.near || 6)) return null;
-    return { ...z, along: p.along, grid, splitAlong: z.split ? project(ch, z.split[0], z.split[1]).along : null };
+    const sd = PRED.stations[z.key], set = sd && sd.flood_dir != null && sd.ebb_dir != null ? { flood: sd.flood_dir, ebb: sd.ebb_dir } : null;
+    if (!set && !z.fav) return null;
+    return { ...z, along: p.along, grid, set: z.split ? null : set, splitAlong: z.split ? project(ch, z.split[0], z.split[1]).along : null };
   }).filter(Boolean));
 }
-// stream along the track at a position and time, + = with you
+// the track's heading (degrees true) at each quarter mile, taken over a mile either side
+const HD_STEP = 0.25;
+function trackHeading(ch, pos) {
+  if (!ch._hd) {
+    ch._hd = [];
+    for (let a = 0; a <= ch.total + HD_STEP; a += HD_STEP) {
+      const p = pointAt(ch, Math.max(0, a - 1)), q = pointAt(ch, Math.min(ch.total, a + 1));
+      ch._hd.push(Math.atan2((q[1] - p[1]) * Math.cos(p[0] * Math.PI / 180), q[0] - p[0]));
+    }
+  }
+  return ch._hd[Math.max(0, Math.min(ch._hd.length - 1, Math.round(pos / HD_STEP)))];
+}
+// one zone's stream along the track, + = with you
+function zoneStream(ch, z, pos, t) {
+  const j = Math.round((t - z.grid.t0) / STEP), v = z.grid.g[Math.min(z.grid.g.length - 1, Math.max(0, j))];
+  if (z.set) {
+    const set = (v >= 0 ? z.set.flood : z.set.ebb) * Math.PI / 180;
+    return Math.abs(v) * Math.cos(set - trackHeading(ch, pos));
+  }
+  const fav = z.split && pos < z.splitAlong ? z.favBefore : z.fav;
+  return fav === "flood" ? v : -v;
+}
+// stream along the track at a position and time, + = with you: the nearby zones blended by weight, at the strongest zone's weight
 function streamAt(ch, pos, t) {
-  let best = null, bw = 0;
+  let sw = 0, sv = 0, bw = 0;
   for (const z of zonesFor(ch)) {
     const d = Math.abs(pos - z.along), w = d <= z.core ? z.k : d >= z.r ? 0 : z.k * (z.r - d) / (z.r - z.core);
-    if (w > bw) { bw = w; best = z; }
+    if (w <= 0) continue;
+    sw += w; sv += w * zoneStream(ch, z, pos, t); if (w > bw) bw = w;
   }
-  if (!best) return 0;
-  const j = Math.round((t - best.grid.t0) / STEP), v = best.grid.g[Math.min(best.grid.g.length - 1, Math.max(0, j))];
-  const fav = best.split && pos < best.splitAlong ? best.favBefore : best.fav;
-  return bw * (fav === "flood" ? v : -v);
+  return sw ? (sv / sw) * bw : 0;
 }
 // Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise it rows, up to `hours` in each
 // 24 h from the start, unless the head current is stronger than `head` kn (see MIN_FOUL_H and MIN_LEG_NM).
@@ -723,6 +749,7 @@ function posAt(track, t) {
   for (let i = 1; i < track.length; i++) if (track[i][0] >= t) { const a = track[i - 1], b = track[i]; return a[1] + (b[1] - a[1]) * ((t - a[0]) / ((b[0] - a[0]) || 1)); }
   return track[track.length - 1][1];
 }
+const hullSpeed = (ft) => 1.34 * Math.sqrt(ft);
 function plan() {
   const ch = chains(), { s1, s2 } = starts();
   const human = true;
@@ -730,14 +757,18 @@ function plan() {
   const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
   const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, state.headKn, state.nightOn ? state.nightH : null);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
-  let v2, v1, solved = true, gap = null;
+  let v2, v1, solved = true, gap = null, hullCap = null;
   {
     const target = s2 + state.days * 24 * H;
-    let lo = 0.5, hi = 12;
+    // speed through the water can't exceed the hull speed of a displacement monohull: 1.34 x sqrt(waterline length in ft)
+    const vHull = hullSpeed(state.hullFt);
+    let lo = 0.5, hi = vHull;
+    const fCap = sim(ch.stage2, g2, s2, vHull).finish;
+    if (fCap > target + (win ? 6 : 12) * H) hullCap = { v: vHull, d: (fCap - s2) / (24 * H) };
     for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (sim(ch.stage2, g2, s2, mid).finish > target) lo = mid; else hi = mid; }
     v2 = v1 = hi;
     const fHi = sim(ch.stage2, g2, s2, hi).finish;
-    solved = Math.abs(fHi - target) < (win ? 6 : 12) * H;
+    solved = hullCap != null || Math.abs(fHi - target) < (win ? 6 : 12) * H;
     // The finish time jumps when a slightly slower boat misses the end of a paddling day or a slack, so some targets fall in a gap
     if (!solved) gap = { target, fast: { v: hi, d: (fHi - s2) / (24 * H) }, slow: { v: lo, d: (sim(ch.stage2, g2, s2, lo * 0.995).finish - s2) / (24 * H) } };
   }
@@ -749,7 +780,7 @@ function plan() {
     const sw = ((t - swDep) / H) * (SWEEPER_NM_DAY / 24), boat = ch.stage1.total + posAt(r2.track, t);
     if (sw >= boat) { swept = { t, pos: boat - ch.stage1.total }; break; }
   }
-  return { ch, s1, s2, v1, v2, solved, gap, win, r1, r2, swDep, raceEnd, swept, human };
+  return { ch, s1, s2, v1, v2, solved, gap, hullCap, win, r1, r2, swDep, raceEnd, swept, human };
 }
 
 // ---------- sun, night shading and the planned boat
@@ -857,7 +888,8 @@ function renderPlanner() {
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
   const rows = [];
-  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
+  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` +
+    (P.hullCap ? `<br><span class="warn">${state.days} days needs more than the hull speed of a ${state.hullFt} ft monohull (${P.hullCap.v.toFixed(2)} kn).</span> At hull speed you arrive in ${P.hullCap.d.toFixed(1)} days; the plan below rows at hull speed.` : ` (hull speed for ${state.hullFt} ft: ${hullSpeed(state.hullFt).toFixed(2)} kn)`) + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
@@ -1120,7 +1152,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = state.hullFt; $("hullFt-out").textContent = `${state.hullFt} ft`; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(1)} kn`; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -1146,6 +1178,7 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
+  $("hullFt").addEventListener("input", (e) => { state.hullFt = parseFloat(e.target.value); $("hullFt-out").textContent = `${state.hullFt} ft`; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(1)} kn`; changed(); });
   $("campGapH").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 8 && v <= 48) { state.campGapH = v; changed(); } });
   $("nightOn").addEventListener("change", (e) => { state.nightOn = e.target.checked; syncInputs(); changed(); });
   $("nightH").addEventListener("input", (e) => { state.nightH = parseFloat(e.target.value); $("nightH-out").textContent = `${state.nightH} h`; changed(); });

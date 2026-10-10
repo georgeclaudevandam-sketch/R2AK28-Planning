@@ -193,6 +193,36 @@ def chs_current(st, start, end):
     return chs_current_derived(st, start, end)
 
 
+def chs_directions(st):
+    """Flood and ebb set (degrees true, the way the stream runs) from CHS's predicted direction series:
+    the circular mean of the direction at each predicted flood and ebb maximum over one month of FIT_YEAR."""
+    a = datetime(FIT_YEAR, 6, 1, tzinfo=timezone.utc)
+    b = datetime(FIT_YEAR, 7, 1, tzinfo=timezone.utc)
+    events = chs_events_to_list(chs_series(st["id"], "wcp1-events", a, b, days=31))
+    try:
+        raw = chs_series(st["id"], "wcdp1", a, b, days=7, resolution="FIFTEEN_MINUTES")
+    except RuntimeError:
+        raw = chs_series(st["id"], "wcdp1", a, b, days=7)
+    dirs = sorted((parse_utc(r["eventDate"]).timestamp(), float(r["value"])) for r in raw if r.get("value") is not None)
+    if len(dirs) < 100:
+        raise RuntimeError("no CHS direction predictions")
+    ts = [d[0] for d in dirs]
+    out = {}
+    for kind in ("flood", "ebb"):
+        sx = sy = 0.0
+        for e in events:
+            if e["type"] != kind:
+                continue
+            t = parse_utc(e["t"]).timestamp()
+            i = min(range(len(ts)), key=lambda k: abs(ts[k] - t))
+            if abs(ts[i] - t) > 1800:
+                continue
+            sx += math.cos(math.radians(dirs[i][1])); sy += math.sin(math.radians(dirs[i][1]))
+        if sx or sy:
+            out[f"{kind}_dir"] = round(math.degrees(math.atan2(sy, sx)) % 360)
+    return out
+
+
 def chs_current_derived(st, start, end):
     import numpy as np
     import utide
@@ -331,6 +361,12 @@ def main():
         try:
             data = fn(st, start, end)
             data.setdefault("method", "official")
+            if (st["source"], st["kind"]) == ("chs", "current"):
+                try:
+                    data.update(chs_directions(st))
+                    log(f"  set: flood {data.get('flood_dir')}, ebb {data.get('ebb_dir')}")
+                except Exception as e:
+                    log(f"  no directions: {e}")
             result[st["key"]] = data
             log(f"  {len(data['events'])} events ({data['method']})")
         except Exception as e:  # keep going; report at the end
