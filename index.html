@@ -103,6 +103,12 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; font-size: 13px; color: var(--ink); }
 .summary dt { color: var(--muted); }
 .summary dd { margin: 0; font-family: var(--font-data); font-size: 12.5px; }
+.past-row { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 0 10px; padding: 5px 2px; border-bottom: 1px solid var(--rule); cursor: pointer; font-size: 13px; }
+.past-row:hover, .past-row.on { background: var(--chip); }
+.past-row .t { font: 12.5px var(--font-data); font-variant-numeric: tabular-nums; }
+.past-row .c { color: var(--muted); font-size: 12px; }
+.past-row i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 0; }
 .night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
 .leaflet-container { font: 13px var(--font-ui); }
@@ -183,6 +189,13 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
     <section aria-labelledby="h-days">
       <h2 id="h-days">Day by day</h2>
       <div class="tbl-wrap"><table id="days-tbl"></table></div>
+    </section>
+
+    <section aria-labelledby="h-past">
+      <h2 id="h-past">Past human-powered races</h2>
+      <p class="hint" id="past-hint">Loading past tracks.</p>
+      <div class="chips" id="past-years"></div>
+      <div id="past-list"></div>
     </section>
 
     <section aria-labelledby="h-src" class="sources">
@@ -285,9 +298,9 @@ function initMap() {
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
     maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" }).addTo(map);
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 0.85, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 0.4, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
   const noaa = new ChartLayer("", { service: "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7", opacity: 0.85, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7", opacity: 0.4, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
 
   const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
   ROUTE.legs.forEach((leg) => {
@@ -299,10 +312,10 @@ function initMap() {
   }).bindTooltip(m.name))).addTo(map);
   stationLayer = L.layerGroup().addTo(map);
 
-  L.control.layers({ "Esri World Imagery": imagery }, { "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
+  layersCtl = L.control.layers({ "Esri World Imagery": imagery }, { "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
   const Opacity = L.Control.extend({ onAdd() {
     const d = L.DomUtil.create("div", "opacity-ctl");
-    d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input type="range" min="0" max="100" value="85" aria-label="Chart opacity"></label>';
+    d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input type="range" min="0" max="100" value="40" aria-label="Chart opacity"></label>';
     L.DomEvent.disableClickPropagation(d);
     d.querySelector("input").addEventListener("input", (e) => { chs.setOpacity(e.target.value / 100); noaa.setOpacity(e.target.value / 100); });
     return d;
@@ -357,7 +370,7 @@ function pointAt(ch, along) {
 function nearPlace(ll) {
   let best = null;
   PLACES.forEach(([n, la, lo]) => { const d = nmBetween(ll, [la, lo]); if (!best || d < best.d) best = { n, d }; });
-  return best.d < 4 ? best.n : best.d < 25 ? `near ${best.n}` : `${best.d.toFixed(0)} nm from ${best.n}`;
+  return best.d < 4 ? `at ${best.n}` : best.d < 25 ? `near ${best.n}` : `${best.d.toFixed(0)} nm from ${best.n}`;
 }
 // minutes since the paddling window opened (local PDT), or null when paddling around the clock
 function winPos(t, win) { if (!win) return null; return ((((t / 60000 - 7 * 60 - win.start) % 1440) + 1440) % 1440); }
@@ -593,6 +606,60 @@ function setTime(t) {
   styleMarkers();
   if (state.selected) renderDetail();
 }
+let layersCtl;
+const PAST = { races: [], groups: {}, lines: {}, shown: new Set(), sel: null };
+const classColor = (c) => { c = (c || "").toLowerCase(); return /oar|row/.test(c) ? "#38bdf8" : /pedal/.test(c) ? "#4ade80" : /kayak|sup|canoe|paddle/.test(c) ? "#e879f9" : "#f8fafc"; };
+const dur = (h) => `${Math.floor(h / 24)}d ${String(Math.round(h % 24)).padStart(2, "0")}h`;
+const yearOf = (r) => new Date(r.start * 1000).getUTCFullYear();
+function pastLabel(r, t) {
+  const fin = t.elapsed_h ? `finished in ${dur(t.elapsed_h)}` : `${t.status || "did not finish"}, last fix ${nearPlace(t.track[t.track.length - 1].slice(1))}`;
+  return `<b>${esc(t.name)}</b> (${yearOf(r)})<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}<br>${esc(fin)}`;
+}
+async function loadPast() {
+  const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null);
+  const idx = await get("data/tracks/index.json");
+  const keys = ["r2ak2015-spot", ...((idx && idx.races) || []).map((r) => r.key)];
+  const races = (await Promise.all([...new Set(keys)].map((k) => get(`data/tracks/${k}.json`)))).filter((r) => r && r.teams && r.teams.length);
+  races.sort((a, b) => a.start - b.start);
+  PAST.races = races;
+  races.forEach((r) => {
+    const g = L.layerGroup();
+    r.teams.filter((t) => t.track.length > 1).forEach((t) => {
+      const line = L.polyline(t.track.map((p) => [p[1], p[2]]), { color: classColor(t.class), weight: 2, opacity: 0.8, dashArray: t.elapsed_h ? null : "4 5" })
+        .bindTooltip(pastLabel(r, t), { sticky: true }).on("click", () => selectPast(r.key, t.id, false));
+      line.addTo(g);
+      PAST.lines[r.key + "|" + t.id] = line;
+    });
+    g.on("add", () => { PAST.shown.add(r.key); renderPast(); }).on("remove", () => { PAST.shown.delete(r.key); renderPast(); });
+    PAST.groups[r.key] = g;
+    layersCtl.addOverlay(g, `${yearOf(r)} human-powered tracks (${r.teams.length})`);
+  });
+  $("past-hint").innerHTML = races.length
+    ? `Tracks of human-powered teams, timed from the Victoria start. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Oars</span><span><i style="background:#4ade80"></i>Pedal</span><span><i style="background:#e879f9"></i>Paddle</span></span>`
+    : "No past tracks loaded yet.";
+  $("past-years").innerHTML = races.map((r) => `<button type="button" data-k="${esc(r.key)}" aria-pressed="false">${yearOf(r)}</button>`).join("");
+  document.querySelectorAll("#past-years button").forEach((b) => b.onclick = () => { const g = PAST.groups[b.dataset.k]; map.hasLayer(g) ? map.removeLayer(g) : g.addTo(map); });
+  renderPast();
+}
+function selectPast(key, id, zoom) {
+  const prev = PAST.sel && PAST.lines[PAST.sel];
+  if (prev) prev.setStyle({ weight: 2, opacity: 0.8 });
+  PAST.sel = PAST.sel === key + "|" + id && zoom ? null : key + "|" + id;
+  const line = PAST.sel && PAST.lines[PAST.sel];
+  if (line) { line.setStyle({ weight: 5, opacity: 1 }).bringToFront(); if (zoom) map.fitBounds(line.getBounds(), { padding: [30, 30] }); }
+  renderPast();
+}
+function renderPast() {
+  document.querySelectorAll("#past-years button").forEach((b) => b.setAttribute("aria-pressed", PAST.shown.has(b.dataset.k)));
+  const races = PAST.races.filter((r) => PAST.shown.has(r.key));
+  $("past-list").innerHTML = races.map((r) => {
+    const fin = r.teams.filter((t) => t.elapsed_h).sort((a, b) => a.elapsed_h - b.elapsed_h);
+    const dnf = r.teams.filter((t) => !t.elapsed_h);
+    const row = (t) => `<div class="past-row${PAST.sel === r.key + "|" + t.id ? " on" : ""}" data-k="${esc(r.key)}" data-id="${esc(t.id)}"><span class="t">${t.elapsed_h ? dur(t.elapsed_h) : "DNF"}</span><span><i style="background:${classColor(t.class)}"></i>${esc(t.name)} <span class="c">${esc([t.boat, t.class].filter(Boolean).join(", "))}</span></span></div>`;
+    return `<h3 style="font-size:14px;margin:10px 0 4px">${esc(r.title || yearOf(r))}</h3><p class="hint">${fin.length} of ${r.teams.length} finished${r.note ? ". " + esc(r.note) : ""}</p>` + fin.map(row).join("") + dnf.map(row).join("");
+  }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
+  document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
+}
 function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "spd1", "spd2", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
@@ -630,6 +697,7 @@ async function main() {
   nightLayer = L.layerGroup().addTo(map);
   renderPlanner();
   setTime(starts().s1);
+  loadPast();
 }
 main().catch((e) => { document.querySelector("aside").insertAdjacentHTML("afterbegin", `<p class="warn">Could not load the planner data: ${esc(e.message)}</p>`); });
 </script>

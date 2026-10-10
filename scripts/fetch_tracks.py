@@ -26,17 +26,17 @@ YB = "https://yb.tl"
 UA = {"User-Agent": "r2ak28-planning (github.com/georgeclaudevandam-sketch/R2AK28-Planning)"}
 HUMAN_TAGS = {"human powered", "kayak", "rowboat", "row boat", "sup", "canoe", "pedal", "pedal power", "paddle", "rowing"}
 YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2026]
-SUFFIXES = ["", "s1", "stage1", "pg", "provingground", "-stage1", "victoria"]
+SUFFIXES = ["", "s1", "stage1"]
 
 
 def log(*a):
     print(*a, file=sys.stderr, flush=True)
 
 
-def get(url: str):
-    for i in range(3):
+def get(url: str, tries: int = 2, timeout: int = 20):
+    for i in range(tries):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
                 return r.read()
         except urllib.error.HTTPError as e:
             if e.code in (403, 404, 410):
@@ -107,6 +107,7 @@ def thin(pts, min_gap_s=900, min_nm=0.3):
 
 
 def race(key: str):
+    log(f"{key}: RaceSetup")
     raw = get(f"{YB}/JSON/{key}/RaceSetup")
     if not raw:
         return None
@@ -123,7 +124,7 @@ def race(key: str):
     log(f"  {len(teams)} human-powered teams")
     if not teams:
         return {"key": key, "title": setup.get("title"), "start": setup.get("start"), "teams": []}
-    buf = get(f"{YB}/BIN/{key}/AllPositions3")
+    buf = get(f"{YB}/BIN/{key}/AllPositions3", tries=3, timeout=120)
     if not buf:
         log("  no AllPositions3")
         return None
@@ -150,7 +151,7 @@ def race(key: str):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    keys = sys.argv[1:] or [f"r2ak{y}{s}" for y in YEARS for s in SUFFIXES] + [f"r2ak{str(y)[2:]}" for y in YEARS] + ["r2ak"]
+    keys = sys.argv[1:] or [f"r2ak{y}{s}" for s in SUFFIXES for y in reversed(YEARS)] + [f"r2ak{str(y)[2:]}" for y in YEARS]
     index = []
     for key in dict.fromkeys(keys):
         try:
@@ -163,6 +164,7 @@ def main():
         (OUT / f"{key}.json").write_text(json.dumps(r, separators=(",", ":")))
         index.append({"key": key, "title": r["title"], "start": r["start"], "teams": len(r["teams"]),
                       "finished": sum(1 for t in r["teams"] if t["finished"])})
+        (OUT / "index.json").write_text(json.dumps({"source": "YB Tracking (yb.tl)", "races": index}, indent=1))
     (OUT / "index.json").write_text(json.dumps({"source": "YB Tracking (yb.tl)", "races": index}, indent=1))
     log(f"wrote {len(index)} races")
 
