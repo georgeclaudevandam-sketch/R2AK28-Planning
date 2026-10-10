@@ -69,6 +69,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .playbar .pb span { color: #94a3b8; }
 .playbar .pb b { font-weight: 600; color: #f8fafc; }
 .leaflet-tile-pane { transition: filter .3s; }
+.mini { width: 230px; height: 270px; border-radius: 8px; overflow: hidden; border: 2px solid #f8fafc; box-shadow: 0 1px 6px rgba(0,0,0,.45); background: #0a2533; cursor: pointer; }
+.mini .leaflet-control-attribution { display: none; }
+.playbar label.follow { display: flex; align-items: center; gap: 4px; color: #e2e8f0; font-size: 12px; }
+@media (max-width: 760px) { .mini { width: 140px; height: 160px; } }
 .boat { background: none; border: none; }
 .boat svg { overflow: visible; filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); }
 .boat .lt { display: none; }
@@ -349,9 +353,11 @@ function initMap() {
     const d = L.DomUtil.create("div", "playbar");
     d.innerHTML = `<button type="button" id="play" aria-label="Play">&#9654;</button>
       <select id="play-speed" aria-label="Playback speed"><option value="1">1 h/s</option><option value="3" selected>3 h/s</option><option value="6">6 h/s</option><option value="12">12 h/s</option></select>
+      <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
       <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span>Through water</span><b id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Light</span><b id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
     d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
+    d.querySelector("#follow").addEventListener("change", (e) => { if (e.target.checked) { followKey = null; followBoat(); } });
     return d;
   } });
   new PlayBar({ position: "bottomleft" }).addTo(map);
@@ -391,6 +397,21 @@ function initMap() {
   } });
   new Opacity({ position: "bottomleft" }).addTo(map);
   L.control.scale({ imperial: true, metric: false, position: "bottomright" }).addTo(map);
+  // overview inset: the whole route, your stops, the boat and the area the big map shows. Click it to look there.
+  const Mini = L.Control.extend({ onAdd() { const d = L.DomUtil.create("div", "mini"); d.id = "mini"; L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d); return d; } });
+  new Mini({ position: "topright" }).addTo(map);
+  mini = L.map("mini", { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false });
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16 }).addTo(mini);
+  ROUTE.legs.forEach((leg) => L.polyline(leg.points, { color: leg.key === "stage1" ? "#f97316" : "#ca8a04", weight: 2, opacity: 0.9 }).addTo(mini));
+  miniStops = L.layerGroup().addTo(mini);
+  miniView = L.rectangle(map.getBounds(), { color: "#dc2626", weight: 2, fill: true, fillOpacity: 0.08, interactive: false }).addTo(mini);
+  miniBoat = L.circleMarker([0, 0], { radius: 5, color: "#fff", weight: 2, fillColor: "#dc2626", fillOpacity: 1, interactive: false });
+  mini.fitBounds(L.latLngBounds(ROUTE.legs.flatMap((l) => l.points)), { padding: [8, 8] });
+  mini.on("click", (e) => { setFollow(false); map.setView(e.latlng, Math.max(map.getZoom(), 10)); });
+  map.on("move zoom", () => miniView.setBounds(map.getBounds()));
+  // a drag or zoom by hand stops the big map following the boat (tick Follow to resume)
+  map.on("dragstart", () => setFollow(false));
+  map.getContainer().addEventListener("wheel", () => setFollow(false), { passive: true });
   map.fitBounds(L.latLngBounds(ROUTE.legs.flatMap((l) => l.points)), { padding: [20, 20] });
 
   STATIONS.forEach((st) => {
@@ -784,11 +805,33 @@ function renderSun() {
     $("pb-cur").textContent = cur == null ? "–" : Math.abs(cur) < 0.05 ? "slack / none modelled" : `${cur > 0 ? "+" : "−"}${Math.abs(cur).toFixed(1)} kn ${cur > 0 ? "with you" : "against you"}`;
     $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn` : "0";
   }
+  if (mini) { if (b) miniBoat.setLatLng(b.ll).addTo(mini); else miniBoat.remove(); }
+  followBoat();
   if (!b) { if (boatMarker) { boatMarker.remove(); boatMarker = null; } return; }
   const lit = navLights(t, b.ll), hd = Math.round(b.hd / 5) * 5, key = hd + (lit ? "L" : "");
   if (!boatMarker) boatMarker = L.marker(b.ll, { zIndexOffset: 1000, interactive: false, keyboard: false }).addTo(map);
   boatMarker.setLatLng(b.ll);
   if (boatMarker._key !== key) { boatMarker.setIcon(L.divIcon({ className: "boat" + (lit ? " lit" : ""), html: BOAT_SVG(hd), iconSize: [36, 36], iconAnchor: [18, 18] })); boatMarker._key = key; }
+}
+// ---------- big map follows the boat, framing the last stop and the next two
+let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [], followKey = null;
+function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
+function followBoat() {
+  const c = $("follow"); if (!map || !c || !c.checked) return;
+  const b = boatAt(state.t); if (!b) return;
+  // Stage 2: the stop before the boat and the next two; Stage 1: just the boat
+  let pts = [b.ll], key = "s1";
+  if (LAST_PLAN && state.t >= LAST_PLAN.s2 && STOP_LL.length) {
+    const k = STOP_LL.findIndex((x) => x.until > state.t), i = k < 0 ? STOP_LL.length : k;
+    key = i;
+    pts = pts.concat(STOP_LL.slice(Math.max(0, i - 1), i + 2).map((x) => x.ll));
+    if (i + 2 > STOP_LL.length) pts.push(pointAt(LAST_PLAN.ch.stage2, LAST_PLAN.ch.stage2.total));
+  }
+  if (key !== followKey || !map.getBounds().pad(-0.1).contains(b.ll)) {
+    followKey = key;
+    if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { padding: [70, 70], maxZoom: 13, animate: !!playTimer });
+    else map.setView(b.ll, Math.max(map.getZoom(), 11), { animate: !!playTimer });
+  }
 }
 // ---------- live play
 let playTimer = null, playT = 0;
@@ -803,8 +846,6 @@ function startPlay() {
     const end = Math.min(+r.max, LAST_PLAN ? LAST_PLAN.r2.finish : +r.max);
     if (playT >= end) { playT = end; stopPlay(); }
     setTime(playT);
-    const b = boatAt(state.t);
-    if (b && !map.getBounds().pad(-0.15).contains(b.ll)) map.panTo(b.ll, { animate: true, duration: 0.5 });
   }, 100);
 }
 
@@ -877,12 +918,14 @@ function renderPlanner() {
   $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th>nm</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>`;
 
   // night stops on the map
-  nightLayer.clearLayers();
+  nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
   let nc = 0, prev = 0;
   const stopRows = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
+    STOP_LL.push({ t: x.t, until: x.until, ll });
+    if (miniStops) L.circleMarker(ll, { radius: x.camp ? 3 : 2, color: x.camp ? "#7c2d12" : "#0f172a", weight: 1, fillColor: x.camp ? "#f59e0b" : "#fff", fillOpacity: 1, interactive: false }).addTo(miniStops);
     const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "coffee/snack"}`;
     const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite within reach, find a beach` : `${esc(nearPlace(on))}, on the water`;
     if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
@@ -918,7 +961,7 @@ function select(key, keepDay) {
   else state.day = dayStart(state.t);
   renderDetail();
   styleMarkers();
-  map.panTo([st.lat, st.lon]);
+  setFollow(false); map.panTo([st.lat, st.lon]);
 }
 function dayStart(t) {
   // local midnight (PDT) of the day containing t
@@ -1063,7 +1106,7 @@ function selectPast(key, id, zoom) {
   if (prev) prev.setStyle({ weight: 2, opacity: 0.8 });
   PAST.sel = PAST.sel === key + "|" + id && zoom ? null : key + "|" + id;
   const line = PAST.sel && PAST.lines[PAST.sel];
-  if (line) { line.setStyle({ weight: 5, opacity: 1 }).bringToFront(); if (zoom) map.fitBounds(line.getBounds(), { padding: [30, 30] }); }
+  if (line) { line.setStyle({ weight: 5, opacity: 1 }).bringToFront(); if (zoom) { setFollow(false); map.fitBounds(line.getBounds(), { padding: [30, 30] }); } }
   renderPast();
 }
 function renderPast() {
