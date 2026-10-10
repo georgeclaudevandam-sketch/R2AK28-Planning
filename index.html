@@ -109,6 +109,12 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .past-row .c { color: var(--muted); font-size: 12px; }
 .past-row i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
 .hint { font-size: 12.5px; color: var(--muted); margin: 0; }
+.stop { display: flex; align-items: center; justify-content: center; gap: 1px; background: #fff; border: 1.5px solid #111827; border-radius: 9px; font: 600 10px/1 var(--font-data); color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.stop.camp { background: #fde68a; font-size: 11px; }
+.stop.snack { background: #e0f2fe; }
+#stops-tbl tr[data-t] { cursor: pointer; }
+#stops-tbl td:nth-child(-n+3) { white-space: nowrap; }
+#stops-tbl tr[data-t]:hover { background: var(--chip); }
 .night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
 .leaflet-container { font: 13px var(--font-ui); }
@@ -177,6 +183,12 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
       <h2 id="h-gates">Tidal gates on your track</h2>
       <p class="sub">Arrival times include any waits for foul current. Times are Pacific Daylight Time.</p>
       <div class="gates" id="gates"></div>
+    </section>
+
+    <section aria-labelledby="h-stops">
+      <h2 id="h-stops">Stops</h2>
+      <p class="hint">⛺ Camp: 6 hours or more. ☕ Coffee/snack: 1 to 6 hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.</p>
+      <div class="tbl-wrap"><table id="stops-tbl"></table></div>
     </section>
 
     <section aria-labelledby="h-days">
@@ -454,7 +466,9 @@ function pickCamp(ch, s, lim) {
   });
   return best;
 }
-const CAMP_MAX_NM = 10;   // furthest a stop will go off the route to reach a past campsite
+const CAMP_MAX_NM = 10;
+const CAMP_H = 6;          // a stop this long or longer is a camp (tent); shorter is a coffee/snack stop
+const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 function simulateRow(ch, gates, start, v, hours, win, waits) {
   const total = ch.total, S = STEP / H;
   let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
@@ -521,14 +535,12 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
   out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v }));
   while (i < tr.length - 1) {
     let j = i; while (j + 1 < tr.length && tr[j + 1][1] - tr[i][1] < 0.05) j++;
-    if (tr[j][0] - tr[i][0] >= 3 * H && tr[i][1] < total - 0.1 && !out.camps.some((c) => c.t0 < tr[j][0] && c.back > tr[i][0])) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
+    if (tr[j][0] - tr[i][0] >= MIN_STOP_H * H && tr[i][1] < total - 0.1 && !out.camps.some((c) => c.t0 < tr[j][0] && c.back > tr[i][0])) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
     i = j + 1;
   }
   out.rests.sort((a, b) => a.t - b.t);
-  // the longest stop in each 24 h from the start is that day's camp; the others are waits for the tide
-  const best = {};
-  out.rests.forEach((r) => { const d = Math.floor(((r.t + r.until) / 2 - start) / (24 * H)); if (!best[d] || r.until - r.t > best[d].until - best[d].t) best[d] = r; });
-  Object.values(best).forEach((r) => { r.camp = true; });
+  // Type 1 camp (tent): 6 h or more. Type 2 coffee/snack: shorter.
+  out.rests.forEach((r) => { r.camp = r.until - r.t >= CAMP_H * H; });
   return { track: tr, nights: out.rests, passed: out.passed, finish: st.t };
 }
 function posAt(track, t) {
@@ -578,7 +590,7 @@ function renderPlanner() {
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
   { const c = r2.nights.filter((x) => x.camp).length, w = r2.nights.length - c;
     const atCamp = r2.nights.filter((x) => x.site), dnm = atCamp.reduce((a, x) => a + x.extra, 0), dh = atCamp.reduce((a, x) => a + x.detourH, 0);
-    rows.push(["Stops", `${c} camps (numbered on the map, the longest stop each day)${w ? `, plus ${w} shorter waits for the tide (small dots)` : ""}. ` +
+    rows.push(["Stops", `${c} camps (6 h or more) and ${w} coffee/snack stops; see the stops table. ` +
       (CAMPSITES.length ? `${atCamp.length} of ${r2.nights.length} are at past campsites; getting in and out of them adds ${dnm.toFixed(0)} nm and ${fmtDur(dh)} of rowing (straight-line distances).` : "Past campsites are still loading.")]); }
   rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
   rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
@@ -635,15 +647,19 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  let camp = 0;
+  let nc = 0, ns = 0;
+  const stopRows = [];
   r2.nights.forEach((x) => {
-    const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on;
-    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""}), ${x.d.toFixed(1)} nm off the route` : `${esc(nearPlace(on))}, on the water (no past campsite within ${CAMP_MAX_NM} nm)`;
-    const when = `${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur((x.until - x.t) / H)}), ${where}`;
+    const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
+    const label = x.camp ? `Camp ${++nc}` : `Coffee/snack ${++ns}`;
+    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : `${esc(nearPlace(on))}, on the water`;
     if (x.site) L.polyline([on, ll], { color: "#facc15", weight: 1.5, dashArray: "3 4", opacity: 0.9 }).addTo(nightLayer);
-    if (x.camp) { camp++; L.marker(ll, { icon: L.divIcon({ className: "night", html: String(camp), iconSize: [18, 14] }), zIndexOffset: 500 }).bindTooltip(`Camp ${camp}: ${when}`).addTo(nightLayer); }
-    else L.circleMarker(ll, { radius: 4, color: "#111827", weight: 1.5, fillColor: "#facc15", fillOpacity: 1 }).bindTooltip(`Wait for the tide: ${when}`).addTo(nightLayer);
+    L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? "⛺" : "☕"}<b>${x.camp ? nc : ns}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
+      .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${x.camp ? "⛺" : "☕"} ${x.camp ? nc : ns}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
   });
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th>Where</th></tr></thead><tbody>${stopRows.join("") || '<tr><td colspan="4">No stops of an hour or more.</td></tr>'}</tbody>`;
+  document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
   const ph = PHASES.map(([t, n]) => [Date.parse(t), n]).sort((x, y) => Math.abs(x[0] - P.s2) - Math.abs(y[0] - P.s2))[0];
