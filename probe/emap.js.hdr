@@ -1,0 +1,24 @@
+HTTP/2 200 
+date: Sat, 10 Oct 2026 18:50:00 GMT
+content-type: text/javascript; charset=utf-8
+vary: Accept-Encoding
+server: BunnyCDN-PHX1-1155
+cdn-pullzone: 2225575
+cdn-requestcountrycode: US
+access-control-allow-origin: *
+cache-control: public
+expires: Tue, 27 Apr 2027 16:42:58 GMT
+last-modified: Mon, 27 Apr 2026 16:42:58 GMT
+x-aspnet-version: 4.0.30319
+x-powered-by: ASP.NET
+cdn-proxyver: 1.51
+cdn-requestpullsuccess: True
+cdn-requestpullcode: 200
+cdn-cachedat: 04/27/2026 16:42:58
+cdn-edgestorageid: 1155
+cdn-requestid: 8ac551d0a3dec7d4b7b772525769171b
+cdn-cache: HIT
+cdn-status: 200
+cdn-requesttime: 0
+content-encoding: br
+

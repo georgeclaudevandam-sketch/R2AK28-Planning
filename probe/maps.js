@@ -1,0 +1,1 @@
+var mp={s:{n:"release",d:"maprogress.com",c:".maprogress.com",u:true,v:"17.22.4",s:"https://map6.b-cdn.net/",i:"https://map7.b-cdn.net/",S:"",l:"maprogress.png",m:false,r:"app.maprogress.com",R:"https://app.maprogress.com",b:"https://mpz.nz",h:"https://maprogress.com",C:"https://map0.b-cdn.net",k:'6LfaIOEZAAAAANuVBBYePYjc2O_i--t9bWIO3vXE'}};

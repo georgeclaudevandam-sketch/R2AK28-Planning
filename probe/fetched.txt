@@ -1,2 +1,0 @@
-s2.js https://map0.b-cdn.net/js/processError.min.js?v=2
-s3.js https://www.gstatic.com/charts/loader.js

@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Content-Length: 3623
+Content-Type: application/x-javascript; charset=utf-8
+Date: Sat, 10 Oct 2026 18:49:59 GMT
+Server: Microsoft-IIS/10.0
+Access-Control-Allow-Origin: *
+Cache-Control: public, max-age=10
+Content-Encoding: gzip
+Set-Cookie: ARRAffinity=c1f365836a2ddd39847913f19c669959b43e44b68bf301797ccca9327be34e12;Path=/;HttpOnly;Secure;Domain=mpz.nz
+Set-Cookie: ARRAffinitySameSite=c1f365836a2ddd39847913f19c669959b43e44b68bf301797ccca9327be34e12;Path=/;HttpOnly;SameSite=None;Secure;Domain=mpz.nz
+Vary: Accept-Encoding
+X-AspNetMvc-Version: 5.3
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+
