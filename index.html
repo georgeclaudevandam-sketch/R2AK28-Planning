@@ -76,7 +76,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .pill.good { color: var(--good); } .pill.bad { color: var(--bad); }
 .pill.derived { color: var(--accent); }
 .wp { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-left: 4px; }
-#detail[hidden] { display: none !important; }
+[hidden], #detail[hidden] { display: none !important; }
 .detail-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
 .detail-head h3 { margin: 0; font-size: 17px; font-weight: 600; }
 .close { font: inherit; background: none; border: 1px solid var(--rule); color: var(--muted); border-radius: 5px; cursor: pointer; padding: 2px 8px; }
@@ -143,7 +143,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
       <h2 id="h-boat">Boat</h2>
       <div class="seg" id="mode">
         <button type="button" data-m="sail">Sail<small>Moves around the clock at an average speed</small></button>
-        <button type="button" data-m="human">Rowing<small>Pick a finish time; rows a daily window</small></button>
+        <button type="button" data-m="human">Rowing<small>Pick a finish time; rows with the fair tide</small></button>
       </div>
       <div class="row" id="sail-inputs">
         <label for="spd1">Stage 1 avg kn<input id="spd1" type="number" min="1" max="25" step="0.5" value="5"></label>
@@ -153,9 +153,10 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
         <label for="days">Victoria to Ketchikan: <b class="clock" id="days-out"></b>
           <input id="days" type="range" min="8" max="24" step="0.5" value="16"></label>
         <p class="sub">For reference: human-powered boats usually take 2.5 to 3 weeks; the last 2026 finisher, a rowboat, took 21 d 06 h.</p>
+        <label for="sched">When to row<select id="sched"><option value="tides">Ride the fair tide, any time of day</option><option value="fixed">Same hours every day</option></select></label>
         <div class="row">
           <label for="wstart">Row from<input id="wstart" type="time" value="05:00"></label>
-          <label for="whours">Hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
+          <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
         </div>
       </div>
       <div class="row">
@@ -230,8 +231,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "mode", "spd1", "spd2", "days", "wstart", "whours", "north", "waits"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", mode: "human", spd1: 5, spd2: 5, days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "mode", "spd1", "spd2", "days", "wstart", "whours", "north", "waits", "sched"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", mode: "human", spd1: 5, spd2: 5, days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v3") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v3", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -411,6 +412,113 @@ function simulate(ch, gates, start, v, win, waits) {
   }
   return { track, nights, passed, finish: t };
 }
+// ---------- tidal stream along the track (rowing modes)
+// Each zone takes a current station's predicted stream, signed so + is with you heading north, and fades it
+// from full strength within `core` nm of the station (along the track) to nothing at `r` nm, scaled by k.
+// Directions for stations that are not tidal gates are assumptions from the charts; open water with no station gets no stream.
+const STREAM = [
+  { key: "point-wilson", fav: "ebb", core: 2, r: 8, k: 0.6 },
+  { key: "juan-de-fuca-east", fav: "ebb", core: 5, r: 15, k: 0.8 },
+  { key: "discovery-island-s", fav: "ebb", core: 3, r: 10, k: 0.6 },
+  { key: "trial-island", fav: "ebb", core: 2, r: 6, k: 0.6 },
+  { key: "south-haro", fav: "flood", core: 4, r: 12, k: 0.7 },
+  { key: "turn-point", fav: "flood", core: 3, r: 10, k: 0.6 },
+  { key: "active-pass", fav: "flood", core: 1, r: 3, k: 0.8, near: 2 },
+  { key: "porlier-pass", fav: "flood", core: 1, r: 3, k: 0.8, near: 2 },
+  { key: "seymour-narrows", fav: "ebb", core: 2, r: 14, k: 1 },
+  { key: "johnstone-central", fav: "ebb", core: 20, r: 35, k: 0.8 },
+  { key: "blackney-passage", fav: "ebb", core: 2, r: 8, k: 0.8, near: 2 },
+  { key: "weynton-passage", fav: "ebb", core: 3, r: 15, k: 0.6 },
+  { key: "hiekish-narrows", fav: "flood", core: 2, r: 10, k: 0.8 },
+  // the Grenville Channel floods meet near Lowe Inlet: flood is with you south of it, ebb north of it
+  { key: "grenville-channel", fav: "ebb", favBefore: "flood", split: [53.56, -129.58], core: 20, r: 30, k: 0.7 },
+];
+const STEP = 10 * 60e3;
+function streamGrid(key) {
+  const sd = PRED.stations[key]; if (!sd || !sd.events || !sd.events.length) return null;
+  if (sd._grid) return sd._grid;
+  const ts = sd._ts || (sd._ts = evTimes(sd.events)), t0 = ts[0], n = Math.ceil((ts[ts.length - 1] - t0) / STEP);
+  const g = new Float32Array(n + 1); let i = 1;
+  for (let j = 0; j <= n; j++) {
+    const t = t0 + j * STEP; while (i < ts.length - 1 && ts[i] <= t) i++;
+    const a = sd.events[i - 1], b = sd.events[i], sv = (e) => (e.type === "flood" ? e.kn : e.type === "ebb" ? -e.kn : 0);
+    const va = sv(a), vb = sv(b), f = Math.min(1, Math.max(0, (t - ts[i - 1]) / (ts[i] - ts[i - 1])));
+    g[j] = a.type === "slack" && b.type !== "slack" ? vb * Math.sin((Math.PI / 2) * f) : a.type !== "slack" && b.type === "slack" ? va * Math.cos((Math.PI / 2) * f) : va + (vb - va) * (1 - Math.cos(Math.PI * f)) / 2;
+  }
+  return (sd._grid = { t0, g });
+}
+function zonesFor(ch) {
+  if (ch._zones) return ch._zones;
+  return (ch._zones = STREAM.map((z) => {
+    const st = STATIONS.find((s) => s.key === z.key), grid = st && streamGrid(z.key); if (!grid) return null;
+    const p = project(ch, st.lat, st.lon); if (p.d > (z.near || 6)) return null;
+    return { ...z, along: p.along, grid, splitAlong: z.split ? project(ch, z.split[0], z.split[1]).along : null };
+  }).filter(Boolean));
+}
+// stream along the track at a position and time, + = with you
+function streamAt(ch, pos, t) {
+  let best = null, bw = 0;
+  for (const z of zonesFor(ch)) {
+    const d = Math.abs(pos - z.along), w = d <= z.core ? z.k : d >= z.r ? 0 : z.k * (z.r - d) / (z.r - z.core);
+    if (w > bw) { bw = w; best = z; }
+  }
+  if (!best) return 0;
+  const j = Math.round((t - best.grid.t0) / STEP), v = best.grid.g[Math.min(best.grid.g.length - 1, Math.max(0, j))];
+  const fav = best.split && pos < best.splitAlong ? best.favBefore : best.fav;
+  return bw * (fav === "flood" ? v : -v);
+}
+// Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise each 24 h from the start
+// it picks the rowing hours that get furthest, rowing whenever the stream is at least some threshold and resting otherwise.
+function simulateRow(ch, gates, start, v, hours, win, waits) {
+  const total = ch.total, S = STEP / H;
+  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0 }, out = { track: [[start, 0]], passed: [], rests: [] };
+  const step = (s, row, rec) => {
+    const g = s.gi < gates.length ? gates[s.gi] : null;
+    if (g && s.pos >= g.along - 1e-9) {
+      if (!s.wait) { s.arr = s.t; s.wait = waits && g.st.favourable && againstAt(g.st, s.t) > FOUL_KN; }
+      if (s.wait && againstAt(g.st, s.t) > 0.5) { s.t += STEP; if (rec) rec.track.push([s.t, s.pos]); return false; }
+      if (rec) rec.passed.push({ ...g, arr: s.arr, dep: s.t, wait: (s.t - s.arr) / H });
+      s.wait = false; s.gi++;
+    }
+    if (row && !s.wait) {
+      const sog = Math.max(0, v + streamAt(ch, s.pos, s.t)), lim = s.gi < gates.length ? gates[s.gi].along : total;
+      const dpos = sog * S;
+      if (s.pos + dpos >= lim) { const dt = sog > 0 ? ((lim - s.pos) / sog) * H : STEP; s.pos = lim; s.t += dt; if (rec) rec.track.push([s.t, s.pos]); return true; }
+      s.pos += dpos;
+    }
+    s.t += STEP; if (rec) rec.track.push([s.t, s.pos]);
+    return row && !s.wait;
+  };
+  const runDay = (s0, end, theta, rec) => {
+    const s = { ...s0 }; let rowed = 0;
+    while (s.t < end && s.pos < total - 1e-6) {
+      const want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
+      if (step(s, want, rec)) rowed += S;
+    }
+    return s;
+  };
+  for (let day = 0; st.pos < total - 1e-6 && day < 45; day++) {
+    const end = start + (day + 1) * 24 * H;
+    let theta = -99;
+    if (!win) {
+      let best = null;
+      for (const th of [-99, -2, -1, -0.5, 0, 0.3, 0.6, 1, 1.5, 2, 3]) {
+        const s = runDay(st, end, th, null), score = s.pos >= total - 1e-6 ? total + (end - s.t) / H : s.pos;
+        if (!best || score > best.score + 1e-6) best = { th, score };
+      }
+      theta = best.th;
+    }
+    st = runDay(st, end, theta, out);
+  }
+  // rest stops: pauses of 3 h or more
+  const tr = out.track; let i = 0;
+  while (i < tr.length - 1) {
+    let j = i; while (j + 1 < tr.length && tr[j + 1][1] - tr[i][1] < 0.05) j++;
+    if (tr[j][0] - tr[i][0] >= 3 * H && tr[i][1] < total - 0.1) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
+    i = j + 1;
+  }
+  return { track: tr, nights: out.rests, passed: out.passed, finish: st.t };
+}
 function posAt(track, t) {
   if (t <= track[0][0]) return track[0][1];
   for (let i = 1; i < track.length; i++) if (track[i][0] >= t) { const a = track[i - 1], b = track[i]; return a[1] + (b[1] - a[1]) * ((t - a[0]) / ((b[0] - a[0]) || 1)); }
@@ -420,20 +528,21 @@ function plan() {
   const ch = chains(), { s1, s2 } = starts();
   const human = state.mode === "human";
   const [hh, mm] = state.wstart.split(":").map(Number);
-  const win = human && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
+  const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
+  const sim = (c, g, st, v) => human ? simulateRow(c, g, st, v, state.whours, win, state.waits) : simulate(c, g, st, v, null, state.waits);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
   let v2 = state.spd2, v1 = state.spd1, solved = true, gap = null;
   if (human) {
     const target = s2 + state.days * 24 * H;
-    let lo = 0.3, hi = 15;
-    for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (simulate(ch.stage2, g2, s2, mid, win, state.waits).finish > target) lo = mid; else hi = mid; }
+    let lo = 0.5, hi = 12;
+    for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (sim(ch.stage2, g2, s2, mid).finish > target) lo = mid; else hi = mid; }
     v2 = v1 = hi;
-    const fHi = simulate(ch.stage2, g2, s2, hi, win, state.waits).finish;
-    solved = Math.abs(fHi - target) < 6 * H;
+    const fHi = sim(ch.stage2, g2, s2, hi).finish;
+    solved = Math.abs(fHi - target) < (win ? 6 : 12) * H;
     // The finish time jumps when a slightly slower boat misses the end of a paddling day or a slack, so some targets fall in a gap
-    if (!solved) gap = { target, fast: { v: hi, d: (fHi - s2) / (24 * H) }, slow: { v: lo, d: (simulate(ch.stage2, g2, s2, lo * 0.995, win, state.waits).finish - s2) / (24 * H) } };
+    if (!solved) gap = { target, fast: { v: hi, d: (fHi - s2) / (24 * H) }, slow: { v: lo, d: (sim(ch.stage2, g2, s2, lo * 0.995).finish - s2) / (24 * H) } };
   }
-  const r1 = simulate(ch.stage1, g1, s1, v1, win, state.waits), r2 = simulate(ch.stage2, g2, s2, v2, win, state.waits);
+  const r1 = sim(ch.stage1, g1, s1, v1), r2 = sim(ch.stage2, g2, s2, v2);
   // Grim Sweeper: leaves Port Townsend SWEEPER_DAYS after the Stage 2 start, at noon, at SWEEPER_NM_DAY
   const swDep = pdt(addDays(state.s2d, SWEEPER_DAYS), "12:00"), raceEnd = pdt(addDays(state.s2d, RACE_END_DAYS), "12:00");
   let swept = null;
@@ -453,7 +562,7 @@ function renderPlanner() {
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
   const rows = [];
-  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a slack"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
+  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
@@ -512,7 +621,7 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  r2.nights.forEach((x, i) => L.marker(pointAt(ch.stage2, x.pos), { icon: L.divIcon({ className: "night", html: String(i + 1), iconSize: [18, 14] }) }).bindTooltip(`Night ${i + 1}: ${fmt.format(x.t)}, ${esc(nearPlace(pointAt(ch.stage2, x.pos)))}`).addTo(nightLayer));
+  r2.nights.forEach((x, i) => L.marker(pointAt(ch.stage2, x.pos), { icon: L.divIcon({ className: "night", html: String(i + 1), iconSize: [18, 14] }) }).bindTooltip(`Stop ${i + 1}: ${fmt.format(x.t)}${x.until ? " to " + fmtT.format(x.until) : ""}, ${esc(nearPlace(pointAt(ch.stage2, x.pos)))}`).addTo(nightLayer));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
   const ph = PHASES.map(([t, n]) => [Date.parse(t), n]).sort((x, y) => Math.abs(x[0] - P.s2) - Math.abs(y[0] - P.s2))[0];
@@ -664,7 +773,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "spd1", "spd2", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "spd1", "spd2", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -689,6 +798,7 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
+  $("sched").addEventListener("change", (e) => { state.sched = e.target.value; syncInputs(); changed(); });
   document.querySelectorAll("#mode button").forEach((b) => b.onclick = () => { state.mode = b.dataset.m; changed(); });
   syncInputs();
 
