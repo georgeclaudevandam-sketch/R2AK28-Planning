@@ -113,7 +113,8 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .stop.camp { background: #fde68a; font-size: 11px; }
 .stop.snack { background: #e0f2fe; }
 #stops-tbl tr[data-t] { cursor: pointer; }
-#stops-tbl td:nth-child(-n+3) { white-space: nowrap; }
+#stops-tbl td:nth-child(-n+5) { white-space: nowrap; }
+#stops-tbl td:nth-child(4), #stops-tbl td:nth-child(5), #stops-tbl th:nth-child(4), #stops-tbl th:nth-child(5) { text-align: right; }
 #stops-tbl tr[data-t]:hover { background: var(--chip); }
 .night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
@@ -650,7 +651,7 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  let nc = 0, ns = 0;
+  let nc = 0, ns = 0, prev = 0;
   const stopRows = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
@@ -659,10 +660,12 @@ function renderPlanner() {
     if (x.site) L.polyline([on, ll], { color: "#facc15", weight: 1.5, dashArray: "3 4", opacity: 0.9 }).addTo(nightLayer);
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? "⛺" : "☕"}<b>${x.camp ? nc : ns}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${x.camp ? "⛺" : "☕"} ${x.camp ? nc : ns}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${x.camp ? "⛺" : "☕"} ${x.camp ? nc : ns}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    prev = x.pos;
   });
-  $("stops-hint").innerHTML = `⛺ Camp: ${state.campH} hours or more. ☕ Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.`;
-  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th>Where</th></tr></thead><tbody>${stopRows.join("") || '<tr><td colspan="4">No stops of an hour or more.</td></tr>'}</tbody>`;
+  $("stops-hint").innerHTML = `⛺ Camp: ${state.campH} hours or more. ☕ Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Leg and total distances are along the route from the Victoria start, not counting the trips in and out of campsites. Click a row to set the map time.`;
+  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td>${(ch.stage2.total - prev).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th title="Along the route since the previous stop">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
