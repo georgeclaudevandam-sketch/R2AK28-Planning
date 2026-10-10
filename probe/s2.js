@@ -1,0 +1,2 @@
+﻿async function processError(r,s,t,e,a){"use strict";async function n(){try{let r=await fetch("/home/getipaddress"),s=await r.json();return s}catch(t){return console.log("Error fetching IP address: "+t),null}}var o=mp.getErrorMessage(r,s,t,e,a);if(o){var i=await n();i&&(o+=`
+IP Address: ${i}`),o.length>1e6&&(o=o.substring(0,1e6)),$.postJSON("/errors/LogJavascriptError",{message:o})}return!1}
