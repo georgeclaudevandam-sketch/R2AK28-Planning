@@ -2,10 +2,12 @@
 """Fetch 2015 R2AK SPOT tracker logs from searunners.net and keep human-powered teams.
 
 Source: http://searunners.net/data/R2AK_position_logs-sorted.tsv (name, obs_time
-in Pacific Daylight Time, lat, lon) for every 2015 team. The file carries no boat
-class, so data/tracks/spot2015-teams.json says which teams were human powered
-(and their boat and result where known). Teams not listed there are logged so
-the list can be completed.
+in Pacific Daylight Time, lat, lon) for every 2015 team. The file is the 28
+teams that used human power at the start (oars, pedals or paddles; several also
+carried sail). data/tracks/spot2015-teams.json gives each team's propulsion.
+A team counts as finished at its first fix within 1.5 nm of Thomas Basin,
+Ketchikan; other tracks are cut at their northernmost fix so the trip home
+after retiring is left out.
 """
 import json, math, sys, urllib.request
 from datetime import datetime, timedelta, timezone
@@ -48,7 +50,7 @@ def main():
             continue
         if 40 < la < 60 and -140 < lo < -115:
             teams.setdefault(f[0], []).append((t, la, lo))
-    meta = json.loads(META.read_text()) if META.exists() else {}
+    meta = json.loads(META.read_text())["teams"] if META.exists() else {}
     print(f"{len(teams)} teams in SPOT log", file=sys.stderr)
     out = []
     for name, pts in sorted(teams.items()):
@@ -58,15 +60,25 @@ def main():
               f"{datetime.fromtimestamp(pts[-1][0], PDT):%m-%d %H:%M}  last {pts[-1][1]:.2f},{pts[-1][2]:.2f}", file=sys.stderr)
         if not m:
             continue
-        out.append({"id": name, "name": name.removeprefix("Team ").strip(), "boat": m.get("boat"), "captain": m.get("captain"),
-                    "class": m.get("class", "Human powered"), "status": m.get("result"), "start": STAGE2_START,
-                    "finished": None, "elapsed_h": m.get("elapsed_h"), "track": thin(pts)})
+        pts = [p for p in pts if p[0] >= STAGE2_START - 3600]
+        fin = next((p for p in pts if math.hypot((p[1] - 55.339) * 60, (p[2] + 131.637) * 60 * 0.57) < 1.5), None)
+        if fin:
+            pts = [p for p in pts if p[0] <= fin[0]]
+            status = "Finished"
+        else:
+            north = max(range(len(pts)), key=lambda i: pts[i][1])
+            pts = pts[:north + 1]
+            status = "Did not finish"
+        out.append({"id": name, "name": name.removeprefix("Team ").strip(), "boat": m.get("boat"), "captain": None,
+                    "class": m.get("class"), "status": status, "start": STAGE2_START,
+                    "finished": fin[0] if fin else None,
+                    "elapsed_h": round((fin[0] - STAGE2_START) / 3600, 2) if fin else None, "track": thin(pts)})
     missing = sorted(set(meta) - set(teams))
     if missing:
         print(f"listed but not in SPOT log: {missing}", file=sys.stderr)
-    OUT.write_text(json.dumps({"key": "r2ak2015-spot", "title": "R2AK 2015 (SPOT trackers, searunners.net)",
+    OUT.write_text(json.dumps({"key": "r2ak2015-spot", "title": "R2AK 2015 (SPOT trackers via searunners.net)", "note": json.loads(META.read_text()).get("_note"),
                                "start": STAGE2_START, "source": SRC, "teams": out}, separators=(",", ":")))
-    print(f"wrote {len(out)} human-powered teams", file=sys.stderr)
+    print(f"wrote {len(out)} teams", file=sys.stderr)
 
 
 if __name__ == "__main__":

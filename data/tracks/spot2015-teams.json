@@ -1,1 +1,89 @@
-{}
+{
+ "_note": "Human propulsion each team used at the 2015 start, from Matt Johnson's analysis of the same SPOT data (mattjohnsonboats.com, 5 June 2016). Several of these boats also carried sail.",
+ "teams": {
+  "Team Broderna": {
+   "class": "Oars"
+  },
+  "Team Barefoot Wooden Boats": {
+   "class": "Oars"
+  },
+  "Team Soggy Beavers": {
+   "class": "Paddle (6-person outrigger canoe)"
+  },
+  "Team Hexagram 59": {
+   "class": "Pedal"
+  },
+  "Team Sea Runners": {
+   "class": "Pedal (17' catamaran)"
+  },
+  "Team Turn Point Design": {
+   "class": "Pedal (catamaran)"
+  },
+  "Team Discovery": {
+   "class": "Pedal (Mirage drive)"
+  },
+  "Team Mikes Kayak": {
+   "class": "Paddle (kayak)"
+  },
+  "Team Pure and Wild": {
+   "class": "Pedal"
+  },
+  "Team Boatyard Boys": {
+   "class": "Oars"
+  },
+  "Team Mau": {
+   "class": "Pedal"
+  },
+  "Team John": {
+   "class": "Paddle (kayak with outriggers)"
+  },
+  "Team Elsie Piddock": {
+   "class": "Oars"
+  },
+  "Team Puffin": {
+   "class": "Pedal"
+  },
+  "Team MOB Mentality": {
+   "class": "Oars"
+  },
+  "Team Kohara": {
+   "class": "Pedal"
+  },
+  "Team UnCruise": {
+   "class": "Pedal (Mirage drive)"
+  },
+  "Team Blackfish": {
+   "class": "Oars"
+  },
+  "Team Grin": {
+   "class": "Oars"
+  },
+  "Team Por Favor": {
+   "class": "Oars"
+  },
+  "Team Golden Oldies": {
+   "class": "Oars"
+  },
+  "Team Coastal Express": {
+   "class": "Oars"
+  },
+  "Team Excellent Adventure": {
+   "class": "Oars"
+  },
+  "Team Real Thing": {
+   "class": "Pedal"
+  },
+  "Team FreeBurd": {
+   "class": "Oars"
+  },
+  "Team Y Triamoto": {
+   "class": "Oars"
+  },
+  "Team Super Friends": {
+   "class": "Oars"
+  },
+  "Team SeaWolf": {
+   "class": "Pedal"
+  }
+ }
+}
