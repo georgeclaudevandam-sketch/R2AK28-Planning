@@ -1,0 +1,35 @@
+name: Probe CHS current stations
+on:
+  push:
+    branches: [claude/project-thread-o3esgd]
+    paths: [.github/workflows/probe-chs.yml]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: claude/project-thread-o3esgd }
+      - run: |
+          mkdir -p probe
+          python3 - <<'PY'
+          import json, urllib.request
+          B = "https://api-iwls.dfo-mpo.gc.ca/api/v1"
+          get = lambda u: json.load(urllib.request.urlopen(u, timeout=120))
+          st = get(B + "/stations")
+          print(len(st), "stations")
+          cur = [s for s in st if any(str(t.get("code", "")).startswith("wc") for t in s.get("timeSeries", [])) and 47.5 < s.get("latitude", 0) < 56]
+          print(len(cur), "current stations in BC")
+          out = []
+          for s in cur:
+            try: d = get(f"{B}/stations/{s['id']}/metadata")
+            except Exception as e: d = {"error": str(e)}
+            out.append({"code": s.get("code"), "name": s.get("officialName"), "lat": s.get("latitude"), "lon": s.get("longitude"),
+                        "series": [t.get("code") for t in s.get("timeSeries", [])], "meta": d})
+          json.dump(out, open("probe/chs_currents.json", "w"), indent=1)
+          print(json.dumps(out[0], indent=1)[:3000] if out else "none")
+          PY
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add probe; git commit -m "CHS current station probe (temporary)" || true
+          git pull --rebase origin claude/project-thread-o3esgd; git push origin HEAD:claude/project-thread-o3esgd
