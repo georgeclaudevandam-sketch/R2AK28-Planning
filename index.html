@@ -651,16 +651,16 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  let nc = 0, ns = 0, prev = 0;
+  let nc = 0, prev = 0;
   const stopRows = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
-    const label = x.camp ? `Camp ${++nc}` : `Coffee/snack ${++ns}`;
+    const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "coffee/snack"}`;
     const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : `${esc(nearPlace(on))}, on the water`;
     if (x.site) L.polyline([on, ll], { color: "#facc15", weight: 1.5, dashArray: "3 4", opacity: 0.9 }).addTo(nightLayer);
-    L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? "⛺" : "☕"}<b>${x.camp ? nc : ns}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
+    L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? "⛺" : "☕"}<b>${n}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${x.camp ? "⛺" : "☕"} ${x.camp ? nc : ns}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? "⛺" : "☕"}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     prev = x.pos;
   });
   $("stops-hint").innerHTML = `⛺ Camp: ${state.campH} hours or more. ☕ Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Leg and total distances are along the route from the Victoria start, not counting the trips in and out of campsites. Click a row to set the map time.`;
