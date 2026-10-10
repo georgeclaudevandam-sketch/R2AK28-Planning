@@ -33,4 +33,5 @@ jobs:
           git add data/predictions.json
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Update tide and current predictions"
+          git pull --rebase
           git push

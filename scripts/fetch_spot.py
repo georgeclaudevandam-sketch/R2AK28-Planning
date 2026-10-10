@@ -9,7 +9,7 @@ A team counts as finished at its first fix within 1.5 nm of Thomas Basin,
 Ketchikan; other tracks are cut at their northernmost fix so the trip home
 after retiring is left out.
 """
-import json, math, sys, urllib.request
+import json, math, sys, time, urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -37,7 +37,15 @@ def thin(pts, min_gap_s=900, min_nm=0.3):
 
 
 def main():
-    raw = urllib.request.urlopen(urllib.request.Request(SRC, headers=UA), timeout=120).read().decode("utf-8", "replace")
+    for attempt in range(4):
+        try:
+            raw = urllib.request.urlopen(urllib.request.Request(SRC, headers=UA), timeout=120).read().decode("utf-8", "replace")
+            break
+        except OSError as e:  # the archive host is slow at times
+            if attempt == 3:
+                raise
+            print(f"retry {attempt + 1}: {e}", file=sys.stderr)
+            time.sleep(15 * (attempt + 1))
     teams = {}
     for line in raw.splitlines()[1:]:
         f = [x.strip().strip('"') for x in line.split("\t")]
