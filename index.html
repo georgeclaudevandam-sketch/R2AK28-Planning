@@ -612,7 +612,8 @@ const classColor = (c) => { c = (c || "").toLowerCase(); return /oar|row/.test(c
 const dur = (h) => `${Math.floor(h / 24)}d ${String(Math.round(h % 24)).padStart(2, "0")}h`;
 const yearOf = (r) => new Date(r.start * 1000).getUTCFullYear();
 function pastLabel(r, t) {
-  const fin = t.elapsed_h ? `finished in ${dur(t.elapsed_h)}` : `${t.status || "did not finish"}, last fix ${nearPlace(t.track[t.track.length - 1].slice(1))}`;
+  const ord = (n) => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
+  const fin = t.elapsed_h ? `finished ${t.place ? ord(t.place) + " " : ""}in ${dur(t.elapsed_h)}` : `${t.status || "did not finish"}, last fix ${nearPlace(t.track[t.track.length - 1].slice(1))}`;
   return `<b>${esc(t.name)}</b> (${yearOf(r)})<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}<br>${esc(fin)}`;
 }
 async function loadPast() {

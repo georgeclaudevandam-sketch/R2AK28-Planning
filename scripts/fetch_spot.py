@@ -62,21 +62,23 @@ def main():
             continue
         pts = [p for p in pts if p[0] >= STAGE2_START - 3600]
         fin = next((p for p in pts if math.hypot((p[1] - 55.339) * 60, (p[2] + 131.637) * 60 * 0.57) < 1.5), None)
-        if fin:
-            pts = [p for p in pts if p[0] <= fin[0]]
-            status = "Finished"
+        if fin or m.get("official_elapsed_h"):
+            if fin:
+                pts = [p for p in pts if p[0] <= fin[0]]
+            status = f"Finished {m['place']}" if m.get("place") else "Finished"
         else:
             north = max(range(len(pts)), key=lambda i: pts[i][1])
             pts = pts[:north + 1]
             status = "Did not finish"
         out.append({"id": name, "name": name.removeprefix("Team ").strip(), "boat": m.get("boat"), "captain": None,
                     "class": m.get("class"), "status": status, "start": STAGE2_START,
-                    "finished": fin[0] if fin else None,
-                    "elapsed_h": round((fin[0] - STAGE2_START) / 3600, 2) if fin else None, "track": thin(pts)})
+                    "finished": STAGE2_START + round(m["official_elapsed_h"] * 3600) if m.get("official_elapsed_h") else fin[0] if fin else None,
+                    "elapsed_h": m.get("official_elapsed_h") or (round((fin[0] - STAGE2_START) / 3600, 2) if fin else None),
+                    "place": m.get("place"), "track": thin(pts)})
     missing = sorted(set(meta) - set(teams))
     if missing:
         print(f"listed but not in SPOT log: {missing}", file=sys.stderr)
-    OUT.write_text(json.dumps({"key": "r2ak2015-spot", "title": "R2AK 2015 (SPOT trackers via searunners.net)", "note": json.loads(META.read_text()).get("_note"),
+    OUT.write_text(json.dumps({"key": "r2ak2015-spot", "title": "R2AK 2015 (SPOT trackers via searunners.net)", "note": json.loads(META.read_text()).get("_note") + " Finish times are the official results (r2ak.com).",
                                "start": STAGE2_START, "source": SRC, "teams": out}, separators=(",", ":")))
     print(f"wrote {len(out)} teams", file=sys.stderr)
 
