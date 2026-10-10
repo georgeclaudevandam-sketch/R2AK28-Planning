@@ -158,6 +158,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
         <div class="row">
           <label for="wstart">Row from<input id="wstart" type="time" value="05:00"></label>
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
+          <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
         </div>
       </div>
       <div class="row">
@@ -242,8 +243,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -458,8 +459,8 @@ function streamAt(ch, pos, t) {
   const fav = best.split && pos < best.splitAlong ? best.favBefore : best.fav;
   return bw * (fav === "flood" ? v : -v);
 }
-// Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise each 24 h from the start
-// it picks the rowing hours that get furthest, rowing whenever the stream is at least some threshold and resting otherwise.
+// Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise it rows, up to `hours` in each
+// 24 h from the start, unless the head current is stronger than `head` kn (see MIN_FOUL_H and MIN_LEG_NM).
 let CAMPSITES = [];
 // drawn icons (emoji tents and cups are missing on some systems)
 const ICON = {
@@ -480,7 +481,9 @@ function pickCamp(ch, s, lim) {
 }
 const CAMP_MAX_NM = 10;
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
-function simulateRow(ch, gates, start, v, hours, win, waits) {
+const MIN_FOUL_H = 1;      // tides mode: row through head-current spells shorter than this rather than stopping
+const MIN_LEG_NM = 10;     // tides mode: after a stop, set off only if the fair stream and rowing hours left carry you this far (less for slow boats)
+function simulateRow(ch, gates, start, v, hours, win, waits, head) {
   const total = ch.total, S = STEP / H;
   let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
@@ -510,7 +513,24 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
   const runDay = (s0, end, theta, rec) => {
     const s = { ...s0 }; let rowed = 0;
     while (s.t < end && s.pos < total - 1e-6) {
-      const want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
+      // tides mode: row unless the head current is stronger than the cutoff, and only change between rowing and stopped
+      // when the new state will last MIN_RUN_H (short spells are rowed through, or sat out)
+      let want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
+      if (!win && rowed < hours - 1e-9 && want !== s.rowing && !s.wait) {
+        if (want) {   // stopped: look ahead and set off only if this fair spell gives a worthwhile leg
+          const need = Math.min(MIN_LEG_NM, 2.5 * v, total - s.pos);
+          let t = s.t, pos = s.pos, h = rowed, foul = 0;
+          while (pos - s.pos < need && h < hours && foul < MIN_FOUL_H * H) {
+            const c = streamAt(ch, pos, t);
+            foul = c >= theta ? 0 : foul + STEP;
+            pos += Math.max(0, v + c) * S; h += S; t += STEP;
+          }
+          if (pos - s.pos < need) want = false;
+        } else {      // rowing: row through head-current spells shorter than MIN_FOUL_H
+          let t = s.t + STEP; while (t < s.t + MIN_FOUL_H * H && streamAt(ch, s.pos, t) < theta) t += STEP;
+          if (t < s.t + MIN_FOUL_H * H) want = true;
+        }
+      }
       // stopping for 2 h or more: row to the nearest past campsite (counts as rowing time), and back when you set off
       if (!want && s.rowing && !s.camp && !s.wait && CAMPSITES.length && restLength(s, theta, rowed, end) >= 2 * H) {
         const c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity));
@@ -530,16 +550,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
   };
   for (let day = 0; st.pos < total - 1e-6 && day < 45; day++) {
     const end = start + (day + 1) * 24 * H;
-    let theta = -99;
-    if (!win) {
-      let best = null;
-      for (const th of [-99, -2, -1, -0.5, 0, 0.3, 0.6, 1, 1.5, 2, 3]) {
-        const s = runDay(st, end, th, null), score = s.pos >= total - 1e-6 ? total + (end - s.t) / H : s.pos;
-        if (!best || score > best.score + 1e-6) best = { th, score };
-      }
-      theta = best.th;
-    }
-    st = runDay(st, end, theta, out);
+    st = runDay(st, end, win ? -99 : -head, out);
   }
   // stops: campsite visits, plus pauses of 3 h or more on the water where no campsite was within reach
   const tr = out.track; let i = 0;
@@ -564,7 +575,7 @@ function plan() {
   const human = true;
   const [hh, mm] = state.wstart.split(":").map(Number);
   const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
-  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits);
+  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, state.headKn);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
   let v2, v1, solved = true, gap = null;
   {
@@ -855,7 +866,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -879,6 +890,7 @@ async function main() {
   $("s2d").addEventListener("change", (e) => { if (e.target.value) { state.s2d = e.target.value; changed(); } });
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
+  $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
   $("sched").addEventListener("change", (e) => { state.sched = e.target.value; syncInputs(); changed(); });
   syncInputs();
