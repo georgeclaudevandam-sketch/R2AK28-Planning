@@ -1,0 +1,35 @@
+name: Fetch past human-powered tracks
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/fetch_tracks.py"
+      - ".github/workflows/tracks.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tracks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python --version
+      - run: python scripts/fetch_tracks.py
+      - name: Commit updated tracks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/tracks
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update past human-powered tracks"
+          git push
