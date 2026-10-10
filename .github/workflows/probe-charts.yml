@@ -1,0 +1,16 @@
+name: Probe chart services
+on:
+  push:
+    branches: [claude/project-thread-o3esgd]
+    paths: [.github/workflows/probe-charts.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for S in https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer; do
+            echo "=== $S"
+            curl -sS -m 60 "$S?f=pjson" | head -c 4000; echo
+            curl -sS -m 60 "$S/layers?f=json" | python3 -c "import json,sys;d=json.load(sys.stdin);[print('LAYER',l['id'],l['name'],l.get('minScale'),l.get('maxScale'),[s.get('id') for s in (l.get('subLayers') or [])]) for l in d.get('layers',[])]" || true
+            curl -sS -m 60 "$S/parameters?f=pjson" | head -c 8000; echo
+          done
