@@ -32,4 +32,5 @@ jobs:
           git add data/tracks
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Update past human-powered tracks"
+          git pull --rebase
           git push

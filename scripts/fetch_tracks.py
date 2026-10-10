@@ -25,7 +25,7 @@ OUT = ROOT / "data" / "tracks"
 YB = "https://yb.tl"
 UA = {"User-Agent": "r2ak28-planning (github.com/georgeclaudevandam-sketch/R2AK28-Planning)"}
 HUMAN_TAGS = {"human powered", "kayak", "rowboat", "row boat", "sup", "canoe", "pedal", "pedal power", "paddle", "rowing"}
-YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2026]
+YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026]
 SUFFIXES = ["", "s1", "stage1"]
 
 
@@ -33,14 +33,16 @@ def log(*a):
     print(*a, file=sys.stderr, flush=True)
 
 
-def get(url: str, tries: int = 2, timeout: int = 20):
+def get(url: str, tries: int = 4, timeout: int = 30):
     for i in range(tries):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
                 return r.read()
         except urllib.error.HTTPError as e:
-            if e.code in (403, 404, 410):
+            if e.code in (403, 404, 410, 500):
                 return None
+            if e.code in (429, 503):
+                time.sleep(20 * (i + 1))
             log(f"  HTTP {e.code} retry {i + 1}: {url}")
         except Exception as e:
             log(f"  {type(e).__name__} {e} retry {i + 1}: {url}")
@@ -114,8 +116,10 @@ def race(key: str):
     try:
         setup = json.loads(raw)
     except ValueError:
+        log(f"  not JSON ({len(raw)} bytes): {raw[:300]!r}")
         return None
     if not isinstance(setup, dict) or not setup.get("teams"):
+        log(f"  no teams; keys {list(setup)[:20] if isinstance(setup, dict) else type(setup).__name__}")
         return None
     tags = {t["id"]: t["name"] for t in setup.get("tags", [])}
     human_ids = {i for i, n in tags.items() if n.strip().lower() in HUMAN_TAGS}
