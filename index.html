@@ -134,7 +134,9 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .leaflet-container { font: 13px var(--font-ui); }
 .leaflet-tooltip.stn { font: 12px var(--font-data); padding: 3px 6px; }
 .opacity-ctl { background: #fff; padding: 6px 8px; border-radius: 4px; font: 12px var(--font-ui); color: #102a3a; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
-.opacity-ctl input { width: 110px; vertical-align: middle; }
+.opacity-ctl input[type="range"] { width: 110px; vertical-align: middle; }
+.opacity-ctl label { display: flex; }
+.opacity-ctl label[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -171,6 +173,9 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
         </div>
+        <label class="check" for="nightOn"><input id="nightOn" type="checkbox" checked> No rowing at night: ashore at a past campsite</label>
+        <label for="nightH" id="nightH-l">From <b class="clock" id="nightH-out">0.5 h</b> after sunset to the same before sunrise
+          <input id="nightH" type="range" min="0" max="2" step="0.25" value="0.5"></label>
       </div>
       <div class="row">
         <label for="north">North of Bella Bella<select id="north"><option value="inside">Inside (Grenville Ch.)</option><option value="outside">Outside (Hecate Str.)</option></select></label>
@@ -254,8 +259,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -274,6 +279,18 @@ function chain(points) {
   const cum = [0];
   for (let i = 1; i < points.length; i++) cum.push(cum[i - 1] + nmBetween(points[i - 1], points[i]));
   return { points, cum, total: cum[cum.length - 1] };
+}
+// along-route distance and offset of a point, projected onto the route's segments
+function projectSeg(ch, p) {
+  let best = { d: Infinity, along: 0 };
+  const k = Math.cos(p[0] * Math.PI / 180);
+  for (let i = 1; i < ch.points.length; i++) {
+    const a = ch.points[i - 1], b = ch.points[i], bx = (b[1] - a[1]) * k, by = b[0] - a[0], px = (p[1] - a[1]) * k, py = p[0] - a[0];
+    const f = Math.max(0, Math.min(1, (px * bx + py * by) / ((bx * bx + by * by) || 1)));
+    const q = [a[0] + by * f, a[1] + (b[1] - a[1]) * f], d = nmBetween(q, p);
+    if (d < best.d) best = { d, along: ch.cum[i - 1] + (ch.cum[i] - ch.cum[i - 1]) * f };
+  }
+  return best;
 }
 function project(ch, lat, lon) {
   let best = { d: Infinity, along: 0 };
@@ -331,11 +348,11 @@ function initMap() {
   } });
   new PlayBar({ position: "bottomleft" }).addTo(map);
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" }).addTo(map);
+    maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 0.4, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
   const noaa = new ChartLayer("", { service: "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7", opacity: 0.4, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7", opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
 
   const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
   ROUTE.legs.forEach((leg) => {
@@ -347,12 +364,18 @@ function initMap() {
   }).bindTooltip(m.name))).addTo(map);
   stationLayer = L.layerGroup().addTo(map);
 
-  layersCtl = L.control.layers({ "Esri World Imagery": imagery }, { "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
+  layersCtl = L.control.layers({}, { "Satellite imagery (Esri)": imagery, "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
   const Opacity = L.Control.extend({ onAdd() {
     const d = L.DomUtil.create("div", "opacity-ctl");
-    d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input type="range" min="0" max="100" value="40" aria-label="Chart opacity"></label>';
+    d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a"><input type="checkbox" id="sat"> Satellite</label>' +
+      '<label id="op-l" hidden style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input id="op" type="range" min="0" max="100" value="40" aria-label="Chart opacity"></label>';
     L.DomEvent.disableClickPropagation(d);
-    d.querySelector("input").addEventListener("input", (e) => { chs.setOpacity(e.target.value / 100); noaa.setOpacity(e.target.value / 100); });
+    const op = d.querySelector("#op"), sat = d.querySelector("#sat");
+    const setOp = (v) => { chs.setOpacity(v / 100); noaa.setOpacity(v / 100); };
+    op.addEventListener("input", (e) => setOp(e.target.value));
+    // charts only by default (full strength); with satellite on, the charts go translucent over the imagery
+    sat.addEventListener("change", () => { if (sat.checked) map.addLayer(imagery); else map.removeLayer(imagery); });
+    map.on("layeradd layerremove", (e) => { if (e.layer !== imagery) return; const on = map.hasLayer(imagery); sat.checked = on; d.querySelector("#op-l").hidden = !on; setOp(on ? op.value : 100); });
     return d;
   } });
   new Opacity({ position: "bottomleft" }).addTo(map);
@@ -387,7 +410,8 @@ function styleMarkers() {
 // ---------- planner
 function chains() {
   const leg = (k) => ROUTE.legs.find((l) => l.key === k).points;
-  return { stage1: chain(leg("stage1")), stage2: chain(leg("south").concat(leg(state.north).slice(1))) };
+  const s2 = chain(leg("south").concat(leg(state.north).slice(1))); s2.north = state.north;
+  return { stage1: chain(leg("stage1")), stage2: s2 };
 }
 function onTrack(st) { return st.leg === "stage1" || st.leg === "stage2" || st.leg === state.north; }
 
@@ -490,34 +514,52 @@ const ICON = {
   snack: '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6h9v4.5a3.5 3.5 0 0 1-3.5 3.5h-2a3.5 3.5 0 0 1-3.5-3.5z" fill="#7c2d12" stroke="#111827" stroke-width="1.1"/><path d="M11.5 7.2h1.2a1.8 1.8 0 0 1 0 3.6h-1.4" fill="none" stroke="#111827" stroke-width="1.1"/><path d="M5 2.2c.8.9-.8 1.6 0 2.6M8 2.2c.8.9-.8 1.6 0 2.6" fill="none" stroke="#475569" stroke-width="0.9" stroke-linecap="round"/></svg>',
 };
 // The campsite that costs the least extra rowing from here: in and out to it, plus rowing back if it is behind you.
-// One just ahead costs only the trip in and out, since rowing there is progress you would make anyway. Distances are straight lines.
+// One just ahead costs only the trip in and out, since rowing there is progress you would make anyway.
+// With a water path from data/camp_paths.json you leave the route at ain and rejoin it further on at aout; otherwise it is a straight line in and back.
+let CAMP_PATHS = {};
+function campPaths(ch, c) {
+  const e = CAMP_PATHS[`${c.ll[0].toFixed(4)},${c.ll[1].toFixed(4)}`];
+  const p = e && ch.north && (e[ch.north] || e.inside);
+  if (!p) return null;
+  const i = projectSeg(ch, p.in[0]), o = projectSeg(ch, p.out[p.out.length - 1]);
+  return i.d < 0.3 && o.d < 0.3 && o.along >= i.along ? { ain: i.along, aout: o.along, din: p.nm_in, dout: p.nm_out, pin: p.in, pout: p.out } : null;
+}
 function pickCamp(ch, s, lim) {
-  if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]); return { ...c, a: p.along, o: p.d }; });
+  if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]);
+    return { ...c, a: p.along, o: p.d, ...(campPaths(ch, c) || { ain: p.along, aout: p.along, din: p.d, dout: p.d }) }; });
   // prefer one near the route within a few miles; failing that, the cheapest past campsite anywhere short of the next gate
   const pick = (ok) => {
     let best = null;
     ch._camps.forEach((c) => {
-      if (c.a > lim || c.a <= (s.left ?? -1) + 0.5 || !ok(c)) return;
-      const cost = 2 * c.o + 2 * Math.max(0, s.pos - c.a);
+      if (c.aout > lim || c.a <= (s.left ?? -1) + 0.5 || !ok(c)) return;
+      const cost = c.din + c.dout - (c.aout - c.ain) + 2 * Math.max(0, s.pos - c.ain);
       if (!best || cost < best.cost - 0.05 || (Math.abs(cost - best.cost) <= 0.05 && c.teams > best.teams)) best = { ...c, cost };
     });
     return best;
   };
-  return pick((c) => c.o <= CAMP_MAX_NM && c.a >= s.pos - 6 && c.a <= s.pos + 8) || pick((c) => c.a >= s.pos - 15 && c.a <= s.pos + 12 && 2 * c.o + 2 * Math.max(0, s.pos - c.a) <= CAMP_MAX_EXTRA_NM);
+  return pick((c) => c.o <= CAMP_MAX_NM && c.a >= s.pos - 6 && c.a <= s.pos + 8) || pick((c) => c.a >= s.pos - 15 && c.a <= s.pos + 12 && c.din + c.dout - (c.aout - c.ain) + 2 * Math.max(0, s.pos - c.ain) <= CAMP_MAX_EXTRA_NM);
 }
 const CAMP_MAX_NM = 10;
-const CAMP_MAX_EXTRA_NM = 30;   // furthest extra rowing (in and out, and back) to reach a campsite when none is near the route
+const CAMP_MAX_EXTRA_NM = 30;
+const HOLD_MAX_NM = 10;        // stop early at a campsite rather than on the water only when the planned stop is at most this much further on   // furthest extra rowing (in and out, and back) to reach a campsite when none is near the route
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 const MIN_FOUL_H = 1;      // tides mode: row through head-current spells shorter than this rather than stopping
 const MIN_LEG_NM = 10;     // tides mode: after a stop, set off only if the fair stream and rowing hours left carry you this far (less for slow boats)
-function simulateRow(ch, gates, start, v, hours, win, waits, head) {
+function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   const total = ch.total, S = STEP / H;
+  // night: no rowing from `night` hours after sunset to `night` hours before sunrise (null = row at night too)
+  const llCache = new Map();
+  const isNight = night == null ? () => false : (pos, t) => {
+    const k = Math.round(pos / 2); let ll = llCache.get(k); if (!ll) { ll = pointAt(ch, k * 2); llCache.set(k, ll); }
+    return isDark(t - night * H, ll) && isDark(t + night * H, ll);
+  };
+  const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= theta;
   let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
   const restLength = (s, theta, rowed, end) => {
-    if (win) return inWin(s.t, win) ? 0 : (1440 - winPos(s.t, win)) * 60000;
-    if (rowed >= hours - 1e-9) return Math.max(0, end - s.t);
-    let t = s.t; while (t < s.t + 16 * H && streamAt(ch, s.pos, t) < theta) t += STEP;
+    if (win) { let t = s.t; while (t < s.t + 24 * H && !(inWin(t, win) && !isNight(s.pos, t))) t += STEP; return t - s.t; }
+    if (rowed >= hours - 1e-9) { let t = Math.max(s.t, end); while (t < end + 16 * H && !ok(s.pos, t, theta)) t += STEP; return t - s.t; }
+    let t = s.t; while (t < s.t + 16 * H && !ok(s.pos, t, theta)) t += STEP;
     return t - s.t;
   };
   const step = (s, row, rec) => {
@@ -541,14 +583,14 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head) {
   if (!ch._near) { pickCamp(ch, { pos: 0 }, Infinity); ch._near = ch._camps.filter((c) => c.o <= CAMP_MAX_NM).map((c) => c.a).sort((a, b) => a - b); }
   // tides mode: where and when the next stop of 2 h or more would start if you keep rowing, and when it would end
   const nextStop = (s, theta, rowed, end) => {
-    let t = s.t, pos = s.pos, h = rowed, foul = 0;
+    let t = s.t, pos = s.pos, h = rowed;
     while (t < end && pos < total - 1e-6) {
       if (h >= hours - 1e-9) return end - t >= 2 * H ? { pos, until: end } : null;
       const c = streamAt(ch, pos, t);
-      foul = c >= theta ? 0 : foul + STEP;
-      if (foul >= MIN_FOUL_H * H) {
-        let u = t; while (u < t + 16 * H && streamAt(ch, pos, u) < theta) u += STEP;
-        return u - t + MIN_FOUL_H * H >= 2 * H ? { pos, until: u } : null;
+      if (isNight(pos, t)) { let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP; return u - t >= 2 * H ? { pos, until: u } : null; }
+      if (c < theta) {   // same test as the simulator: stop if the head current here lasts MIN_FOUL_H
+        let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP;
+        if (u - t >= MIN_FOUL_H * H) return u - t >= 2 * H ? { pos, until: u } : null;
       }
       pos += Math.max(0, v + c) * S; h += S; t += STEP;
     }
@@ -562,42 +604,48 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head) {
         const x = nextStop(s, theta, rowed, end);
         if (x) {
           const g = gates.find((g) => g.along >= x.pos), lim = g ? g.along : total;
-          if (!ch._near.some((a) => a >= x.pos - 6 && a <= Math.min(lim, x.pos + 8))) { s.hold = x.until; s.holdPos = s.pos; }
+          if (x.pos - s.pos <= HOLD_MAX_NM && !ch._near.some((a) => a >= x.pos - 6 && a <= Math.min(lim, x.pos + 8))) { s.hold = x.until; s.holdPos = s.pos; }
         }
       }
       s.pos0 = s.pos;
       // tides mode: row unless the head current is stronger than the cutoff, and only change between rowing and stopped
       // when the new state will last MIN_RUN_H (short spells are rowed through, or sat out)
-      let want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
+      let want = win ? inWin(s.t, win) && !isNight(s.pos, s.t) : rowed < hours - 1e-9 && ok(s.pos, s.t, theta);
       if (s.hold && s.t >= s.hold) s.hold = 0;
       if (s.hold) want = false;
       else if (!win && rowed < hours - 1e-9 && want !== s.rowing && !s.wait) {
         if (want) {   // stopped: look ahead and set off only if this fair spell gives a worthwhile leg
           const need = Math.min(MIN_LEG_NM, 2.5 * v, total - s.pos);
           let t = s.t, pos = s.pos, h = rowed, foul = 0;
-          while (pos - s.pos < need && h < hours && foul < MIN_FOUL_H * H) {
+          while (pos - s.pos < need && h < hours && foul < MIN_FOUL_H * H && !isNight(pos, t)) {
             const c = streamAt(ch, pos, t);
             foul = c >= theta ? 0 : foul + STEP;
             pos += Math.max(0, v + c) * S; h += S; t += STEP;
           }
           if (pos - s.pos < need) want = false;
         } else {      // rowing: row through head-current spells shorter than MIN_FOUL_H
-          let t = s.t + STEP; while (t < s.t + MIN_FOUL_H * H && streamAt(ch, s.pos, t) < theta) t += STEP;
-          if (t < s.t + MIN_FOUL_H * H) want = true;
+          let t = s.t + STEP; while (t < s.t + MIN_FOUL_H * H && !ok(s.pos, t, theta)) t += STEP;
+          if (t < s.t + MIN_FOUL_H * H && !isNight(s.pos, s.t)) want = true;
         }
       }
       // stopping for 2 h or more: row to the nearest past campsite (counts as rowing time), and back when you set off
-      if (!want && s.rowing && !s.camp && !s.wait && CAMPSITES.length && (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) >= 2 * H) {
+      if (!want && (s.rowing || (s.wait && isNight(s.pos, s.t))) && !s.camp && CAMPSITES.length && (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) >= 2 * H && (!s.wait || isNight(s.pos, s.t))) {
         const c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity));
         if (c) {
           // row along the route to the point abreast of the campsite (ahead, or back if it is behind), then in to it
-          const t0 = s.t, along = Math.abs(c.a - s.pos), hrs = (along + c.o) / v;
-          s.t += hrs * H; rowed += hrs; s.pos = c.a;
-          s.camp = { site: c, d: c.o, extra: c.cost, t0, arrive: s.t };
+          const t0 = s.t, along = Math.abs(c.ain - s.pos), hrs = (along + c.din) / v;
+          s.t += hrs * H; rowed += hrs; s.pos = c.ain; s.wait = false;  // waiting at a gate when night falls: go ashore and come back to the gate in the morning
+          s.camp = { site: c, d: c.din, extra: c.cost, t0, arrive: s.t };
           if (rec) rec.track.push([s.t, s.pos]);
         }
       }
-      if (want && s.camp) { const leave = s.t; s.t += (s.camp.d / v) * H; rowed += s.camp.d / v; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: s.pos }); } s.left = s.pos; s.camp = null; }
+      // at a campsite: don't set off if you would have to stop again soon where there is no campsite (wait for a longer fair spell)
+      if (want && s.camp && !win && s.t - s.camp.arrive < 18 * H) {
+        const c = s.camp.site, x = nextStop({ t: s.t + (c.dout / v) * H, pos: c.aout }, theta, rowed + c.dout / v, end);
+        if (x && x.pos - c.aout <= HOLD_MAX_NM) { const g = gates.find((g) => g.along >= x.pos), lim = g ? g.along : total;
+          if (!ch._near.some((a) => a > c.a + 0.5 && a >= x.pos - 6 && a <= Math.min(lim, x.pos + 8))) want = false; }
+      }
+      if (want && s.camp) { const c = s.camp.site, leave = s.t, at = s.pos; s.t += (c.dout / v) * H; rowed += c.dout / v; s.pos = s.pos0 = c.aout; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: at }); } s.left = c.a; s.camp = null; }
       s.rowing = step(s, want, rec);
       if (s.rowing) rowed += S;
     }
@@ -630,7 +678,7 @@ function plan() {
   const human = true;
   const [hh, mm] = state.wstart.split(":").map(Number);
   const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
-  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, state.headKn);
+  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, state.headKn, state.nightOn ? state.nightH : null);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
   let v2, v1, solved = true, gap = null;
   {
@@ -740,7 +788,7 @@ function renderPlanner() {
   { const c = r2.nights.filter((x) => x.camp).length, w = r2.nights.length - c;
     const atCamp = r2.nights.filter((x) => x.site), dnm = atCamp.reduce((a, x) => a + x.extra, 0), dh = atCamp.reduce((a, x) => a + x.detourH, 0);
     rows.push(["Stops", `${c} camps (${state.campH} h or more) and ${w} coffee/snack stops; see the stops table. ` +
-      (CAMPSITES.length ? `${atCamp.length} of ${r2.nights.length} are at past campsites; getting in and out of them adds ${dnm.toFixed(0)} nm and ${fmtDur(dh)} of rowing (straight-line distances).` : "Past campsites are still loading.")]); }
+      (CAMPSITES.length ? `${atCamp.length} of ${r2.nights.length} are at past campsites; getting in and out of them adds ${dnm.toFixed(0)} nm and ${fmtDur(dh)} of rowing (along water paths in and out).` : "Past campsites are still loading.")]); }
   rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
   rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
   $("leg-summary").innerHTML = `<dl class="summary">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl><p class="sub">Sweeper and race-end dates are inferred from the 2026 schedule.</p>`;
@@ -801,8 +849,8 @@ function renderPlanner() {
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
     const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "coffee/snack"}`;
-    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : `${esc(nearPlace(on))}, on the water`;
-    if (x.site) L.polyline([on, ll], { color: "#facc15", weight: 1.5, dashArray: "3 4", opacity: 0.9 }).addTo(nightLayer);
+    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite within reach, find a beach` : `${esc(nearPlace(on))}, on the water`;
+    if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
     stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
@@ -994,7 +1042,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -1002,6 +1050,7 @@ async function main() {
   let cfg;
   [ROUTE, cfg] = await Promise.all([get("data/route.json"), get("data/stations.json")]);
   STATIONS = cfg.stations;
+  try { CAMP_PATHS = (await get("data/camp_paths.json")).sites; } catch (e) { console.warn("camp paths", e); }
   try { PRED = await get("data/predictions.json"); } catch (e) { PRED = { stations: {}, failures: ["predictions.json not found: run the Fetch predictions workflow"] }; }
   const r = $("time");
   r.min = Date.parse(cfg.window.start); r.max = Date.parse(cfg.window.end); r.step = 600e3;
@@ -1019,6 +1068,8 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
+  $("nightOn").addEventListener("change", (e) => { state.nightOn = e.target.checked; syncInputs(); changed(); });
+  $("nightH").addEventListener("input", (e) => { state.nightH = parseFloat(e.target.value); $("nightH-out").textContent = `${state.nightH} h`; changed(); });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
   $("sched").addEventListener("change", (e) => { state.sched = e.target.value; syncInputs(); changed(); });
   syncInputs();
