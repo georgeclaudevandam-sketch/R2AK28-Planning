@@ -7,21 +7,43 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
       - run: |
-          mkdir -p probe && cd probe && rm -f *
-          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
-          g() { curl -sSL --compressed -A "$UA" -e https://r2ak2022.maprogress.com/ -D "$1.hdr" "$2" -o "$1" || true; }
-          g mapm.js "https://map0.b-cdn.net/js/mapm?id=2915&v=173&mv=0"
-          g mapl.js "https://mpz.nz/js/mapl?i=2915&f=4&a=1657393200&v=226&l=0&m=0&z=1"
-          g mapl0.js "https://mpz.nz/js/mapl?i=2915&f=4&a=0&v=226&l=0&m=0&z=1"
-          g emap.js "https://map0.b-cdn.net/js/emap?v=rPQAxbztp91Oiw5QxzO-o7mztn8fVgY2nxWvrZtSItA1"
-          g mapc.js "https://map0.b-cdn.net/js/mapc?v=tPRs-es-3hABQXcbpKVC-EvxBo0yEj59pf_6SCKqr-01"
-          g maps.js "https://map0.b-cdn.net/js/maps?v=17.22.4"
-          ls -la; head -c 3000 mapm.js; echo; head -c 3000 mapl.js
+          mkdir -p probe
+          cat > probe.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'fs';
+          const b = await chromium.launch();
+          const p = await b.newPage();
+          const log = [];
+          p.on('response', async (r) => {
+            const u = r.url();
+            if (/\.(png|jpg|gif|css|woff2?|pbf|svg)(\?|$)/.test(u) || /tiles|maptiler|google|gstatic|b-cdn\.net\/(js|css)/.test(u)) return;
+            let body = '';
+            try { body = (await r.text()).slice(0, 1500); } catch (e) {}
+            log.push({ u, s: r.status(), m: r.request().method(), post: r.request().postData(), body });
+          });
+          await p.goto('https://r2ak2022.maprogress.com/', { waitUntil: 'networkidle', timeout: 60000 }).catch(e => console.log(e.message));
+          await p.waitForTimeout(8000);
+          fs.writeFileSync('probe/dom.html', await p.content());
+          // try to open first few teams so their full tracks load
+          const items = await p.$$('#sidebar [data-id], #sidebar li, #sidebar .team, #sidebar tr');
+          console.log('sidebar items', items.length);
+          for (const it of items.slice(0, 3)) { await it.click().catch(() => {}); await p.waitForTimeout(3000); }
+          await p.waitForTimeout(5000);
+          fs.writeFileSync('probe/net.json', JSON.stringify(log, null, 1));
+          const glob = await p.evaluate(() => JSON.stringify(Object.keys(window.mp || {})));
+          fs.writeFileSync('probe/mpkeys.txt', glob);
+          await b.close();
+          JS
+          node probe.mjs; ls -la probe
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
-          git add probe && git commit -m "Probe MAProgress output" && git push || true
+          git add probe && git commit -m "Probe MAProgress output" && git pull --rebase && git push || true
