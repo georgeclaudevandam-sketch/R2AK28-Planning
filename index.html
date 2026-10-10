@@ -441,9 +441,30 @@ function streamAt(ch, pos, t) {
 }
 // Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise each 24 h from the start
 // it picks the rowing hours that get furthest, rowing whenever the stream is at least some threshold and resting otherwise.
+let CAMPSITES = [];
+// The campsite that costs the least extra rowing from here: in and out to it, plus rowing back if it is behind you.
+// One just ahead costs only the trip in and out, since rowing there is progress you would make anyway. Distances are straight lines.
+function pickCamp(ch, s, lim) {
+  if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]); return { ...c, a: p.along, o: p.d }; });
+  let best = null;
+  ch._camps.forEach((c) => {
+    if (c.o > CAMP_MAX_NM || c.a > lim || c.a < s.pos - 6 || c.a > s.pos + 8) return;
+    const cost = 2 * c.o + 2 * Math.max(0, s.pos - c.a);
+    if (!best || cost < best.cost - 0.05 || (Math.abs(cost - best.cost) <= 0.05 && c.teams > best.teams)) best = { ...c, cost };
+  });
+  return best;
+}
+const CAMP_MAX_NM = 10;   // furthest a stop will go off the route to reach a past campsite
 function simulateRow(ch, gates, start, v, hours, win, waits) {
   const total = ch.total, S = STEP / H;
-  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0 }, out = { track: [[start, 0]], passed: [], rests: [] };
+  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
+  // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
+  const restLength = (s, theta, rowed, end) => {
+    if (win) return inWin(s.t, win) ? 0 : (1440 - winPos(s.t, win)) * 60000;
+    if (rowed >= hours - 1e-9) return Math.max(0, end - s.t);
+    let t = s.t; while (t < s.t + 16 * H && streamAt(ch, s.pos, t) < theta) t += STEP;
+    return t - s.t;
+  };
   const step = (s, row, rec) => {
     const g = s.gi < gates.length ? gates[s.gi] : null;
     if (g && s.pos >= g.along - 1e-9) {
@@ -465,7 +486,20 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
     const s = { ...s0 }; let rowed = 0;
     while (s.t < end && s.pos < total - 1e-6) {
       const want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
-      if (step(s, want, rec)) rowed += S;
+      // stopping for 2 h or more: row to the nearest past campsite (counts as rowing time), and back when you set off
+      if (!want && s.rowing && !s.camp && !s.wait && CAMPSITES.length && restLength(s, theta, rowed, end) >= 2 * H) {
+        const c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity));
+        if (c) {
+          // row along the route to the point abreast of the campsite (ahead, or back if it is behind), then in to it
+          const t0 = s.t, along = Math.abs(c.a - s.pos), hrs = (along + c.o) / v;
+          s.t += hrs * H; rowed += hrs; s.pos = c.a;
+          s.camp = { site: c, d: c.o, extra: c.cost, t0, arrive: s.t };
+          if (rec) rec.track.push([s.t, s.pos]);
+        }
+      }
+      if (want && s.camp) { const leave = s.t; s.t += (s.camp.d / v) * H; rowed += s.camp.d / v; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: s.pos }); } s.camp = null; }
+      s.rowing = step(s, want, rec);
+      if (s.rowing) rowed += S;
     }
     return s;
   };
@@ -482,13 +516,15 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
     }
     st = runDay(st, end, theta, out);
   }
-  // rest stops: pauses of 3 h or more
+  // stops: campsite visits, plus pauses of 3 h or more on the water where no campsite was within reach
   const tr = out.track; let i = 0;
+  out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v }));
   while (i < tr.length - 1) {
     let j = i; while (j + 1 < tr.length && tr[j + 1][1] - tr[i][1] < 0.05) j++;
-    if (tr[j][0] - tr[i][0] >= 3 * H && tr[i][1] < total - 0.1) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
+    if (tr[j][0] - tr[i][0] >= 3 * H && tr[i][1] < total - 0.1 && !out.camps.some((c) => c.t0 < tr[j][0] && c.back > tr[i][0])) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
     i = j + 1;
   }
+  out.rests.sort((a, b) => a.t - b.t);
   // the longest stop in each 24 h from the start is that day's camp; the others are waits for the tide
   const best = {};
   out.rests.forEach((r) => { const d = Math.floor(((r.t + r.until) / 2 - start) / (24 * H)); if (!best[d] || r.until - r.t > best[d].until - best[d].t) best[d] = r; });
@@ -541,7 +577,9 @@ function renderPlanner() {
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
   { const c = r2.nights.filter((x) => x.camp).length, w = r2.nights.length - c;
-    rows.push(["Stops", `${c} camps (numbered on the map, the longest stop each day)${w ? `, plus ${w} shorter waits for the tide (small dots)` : ""}`]); }
+    const atCamp = r2.nights.filter((x) => x.site), dnm = atCamp.reduce((a, x) => a + x.extra, 0), dh = atCamp.reduce((a, x) => a + x.detourH, 0);
+    rows.push(["Stops", `${c} camps (numbered on the map, the longest stop each day)${w ? `, plus ${w} shorter waits for the tide (small dots)` : ""}. ` +
+      (CAMPSITES.length ? `${atCamp.length} of ${r2.nights.length} are at past campsites; getting in and out of them adds ${dnm.toFixed(0)} nm and ${fmtDur(dh)} of rowing (straight-line distances).` : "Past campsites are still loading.")]); }
   rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
   rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
   $("leg-summary").innerHTML = `<dl class="summary">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl><p class="sub">Sweeper and race-end dates are inferred from the 2026 schedule.</p>`;
@@ -599,7 +637,10 @@ function renderPlanner() {
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
   let camp = 0;
   r2.nights.forEach((x) => {
-    const ll = pointAt(ch.stage2, x.pos), when = `${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur((x.until - x.t) / H)}), ${esc(nearPlace(ll))}`;
+    const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on;
+    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""}), ${x.d.toFixed(1)} nm off the route` : `${esc(nearPlace(on))}, on the water (no past campsite within ${CAMP_MAX_NM} nm)`;
+    const when = `${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur((x.until - x.t) / H)}), ${where}`;
+    if (x.site) L.polyline([on, ll], { color: "#facc15", weight: 1.5, dashArray: "3 4", opacity: 0.9 }).addTo(nightLayer);
     if (x.camp) { camp++; L.marker(ll, { icon: L.divIcon({ className: "night", html: String(camp), iconSize: [18, 14] }), zIndexOffset: 500 }).bindTooltip(`Camp ${camp}: ${when}`).addTo(nightLayer); }
     else L.circleMarker(ll, { radius: 4, color: "#111827", weight: 1.5, fillColor: "#facc15", fillOpacity: 1 }).bindTooltip(`Wait for the tide: ${when}`).addTo(nightLayer);
   });
@@ -752,6 +793,7 @@ function buildStops(races) {
   }));
   const sites = [];
   stops.forEach((s) => { const site = sites.find((x) => nmBetween(x.ll, s.ll) < 1); if (site) site.stops.push(s); else sites.push({ ll: s.ll, stops: [s] }); });
+  CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, "") }));
   const g = L.layerGroup();
   sites.forEach((site) => {
     const teams = new Set(site.stops.map((s) => s.team + s.year)).size;
@@ -816,9 +858,9 @@ async function main() {
 
   initMap();
   nightLayer = L.layerGroup().addTo(map);
+  await loadPast().catch((e) => console.warn("past tracks", e));
   renderPlanner();
   setTime(starts().s1);
-  loadPast();
 }
 main().catch((e) => { document.querySelector("aside").insertAdjacentHTML("afterbegin", `<p class="warn">Could not load the planner data: ${esc(e.message)}</p>`); });
 </script>
