@@ -356,11 +356,14 @@ function initMap() {
   } });
   new PlayBar({ position: "bottomleft" }).addTo(map);
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
+    maxZoom: 19, maxNativeZoom: 18, zIndex: 0, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
+  // NOAA's chart service also draws its coarse small-scale charts over Canadian waters, opaquely, which hides the CHS charts.
+  // So NOAA is drawn underneath and only over US waters (Washington, and Alaska north of Dixon Entrance), with CHS on top.
+  const NOAA_SVC = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer";
+  const noaaOpts = { zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
+  const noaa = L.layerGroup([new ChartLayer("", { ...noaaOpts, bounds: [[46.5, -126.5], [49.0, -122.0]] }), new ChartLayer("", { ...noaaOpts, bounds: [[54.65, -136.5], [60.0, -129.95]] })]).addTo(map);
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7,9,12", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
-  const noaa = new ChartLayer("", { service: "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7,9,12", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, zIndex: 2, bounds: [[48.2, -140], [54.72, -122.0]], attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
 
   const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
   ROUTE.legs.forEach((leg) => {
@@ -379,7 +382,7 @@ function initMap() {
       '<label id="op-l" hidden style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input id="op" type="range" min="0" max="100" value="40" aria-label="Chart opacity"></label>';
     L.DomEvent.disableClickPropagation(d);
     const op = d.querySelector("#op"), sat = d.querySelector("#sat");
-    const setOp = (v) => { chs.setOpacity(v / 100); noaa.setOpacity(v / 100); };
+    const setOp = (v) => { chs.setOpacity(v / 100); noaa.eachLayer((l) => l.setOpacity(v / 100)); };
     op.addEventListener("input", (e) => setOp(e.target.value));
     // charts only by default (full strength); with satellite on, the charts go translucent over the imagery
     sat.addEventListener("change", () => { if (sat.checked) map.addLayer(imagery); else map.removeLayer(imagery); });
