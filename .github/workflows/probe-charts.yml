@@ -3,14 +3,33 @@ on:
   push:
     branches: [claude/project-thread-o3esgd]
     paths: [.github/workflows/probe-charts.yml]
+permissions:
+  contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with: { ref: claude/project-thread-o3esgd }
       - run: |
-          for S in https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer; do
-            echo "=== $S"
-            curl -sS -m 60 "$S?f=pjson" | head -c 4000; echo
-            curl -sS -m 60 "$S/layers?f=json" | python3 -c "import json,sys;d=json.load(sys.stdin);[print('LAYER',l['id'],l['name'],l.get('minScale'),l.get('maxScale'),[s.get('id') for s in (l.get('subLayers') or [])]) for l in d.get('layers',[])]" || true
-            curl -sS -m 60 "$S/parameters?f=pjson" | head -c 8000; echo
-          done
+          mkdir -p probe
+          python3 - <<'PY'
+          import math, urllib.request, urllib.parse, json
+          CHS = "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer"
+          NOAA = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer"
+          def merc(lat, lon): return lon * 20037508.34 / 180, math.log(math.tan((90 + lat) * math.pi / 360)) * 20037508.34 / math.pi
+          dp = json.dumps({"ECDISParameters": {"version": "10.9.1", "DynamicParameters": {"Parameter": [{"name": "DisplayCategory", "value": "1,2,4"}, {"name": "DisplayDepthUnits", "value": 1}]}}})
+          for name, svc, lat, lon in [("chs-seymour", CHS, 50.13, -125.35), ("chs-nanaimo", CHS, 49.17, -123.93), ("noaa-ketchikan", NOAA, 55.33, -131.64)]:
+            for z in (11, 13):
+              x, y = merc(lat, lon); w = 40075016.68 / 2 ** z
+              bbox = f"{x - w/2},{y - w/2},{x + w/2},{y + w/2}"
+              for tag, extra in [("default", {}), ("params", {"display_params": dp})]:
+                q = {"bbox": bbox, "bboxSR": "3857", "imageSR": "3857", "size": "512,512", "dpi": "96", "format": "png32", "transparent": "true", "layers": "show:0,1,2,3,4,5,6,7,9,10,12", "f": "image", **extra}
+                try:
+                  d = urllib.request.urlopen(svc + "/export?" + urllib.parse.urlencode(q), timeout=90).read()
+                  open(f"probe/{name}-z{z}-{tag}.png", "wb").write(d); print(name, z, tag, len(d))
+                except Exception as e: print(name, z, tag, "ERR", e)
+          PY
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add probe; git commit -m "Chart probe images (temporary)" || true
+          git pull --rebase origin claude/project-thread-o3esgd; git push origin HEAD:claude/project-thread-o3esgd
