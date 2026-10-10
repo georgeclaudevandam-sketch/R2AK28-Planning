@@ -114,8 +114,9 @@ def race(key: str):
     if not raw:
         return None
     try:
-        setup = json.loads(raw)
-    except ValueError:
+        setup = json.JSONDecoder(strict=False).raw_decode(raw.decode("utf-8", "replace").strip())[0]
+    except ValueError as e:
+        log(f"  JSON error {e}")
         log(f"  not JSON ({len(raw)} bytes): {raw[:300]!r}")
         return None
     if not isinstance(setup, dict) or not setup.get("teams"):
