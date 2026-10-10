@@ -187,7 +187,11 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 
     <section aria-labelledby="h-stops">
       <h2 id="h-stops">Stops</h2>
-      <p class="hint">⛺ Camp: 6 hours or more. ☕ Coffee/snack: 1 to 6 hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.</p>
+      <div class="row" style="align-items:flex-end">
+        <label for="campH-r" style="flex:1">Camp when a stop is at least<input id="campH-r" type="range" min="1" max="12" step="0.5" value="6"></label>
+        <label for="campH">hours<input id="campH" type="number" min="1" max="12" step="0.5" value="6" style="width:70px"></label>
+      </div>
+      <p class="hint" id="stops-hint">⛺ Camp: 6 hours or more. ☕ Coffee/snack: 1 to 6 hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.</p>
       <div class="tbl-wrap"><table id="stops-tbl"></table></div>
     </section>
 
@@ -235,8 +239,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -467,7 +471,6 @@ function pickCamp(ch, s, lim) {
   return best;
 }
 const CAMP_MAX_NM = 10;
-const CAMP_H = 6;          // a stop this long or longer is a camp (tent); shorter is a coffee/snack stop
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 function simulateRow(ch, gates, start, v, hours, win, waits) {
   const total = ch.total, S = STEP / H;
@@ -539,8 +542,8 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
     i = j + 1;
   }
   out.rests.sort((a, b) => a.t - b.t);
-  // Type 1 camp (tent): 6 h or more. Type 2 coffee/snack: shorter.
-  out.rests.forEach((r) => { r.camp = r.until - r.t >= CAMP_H * H; });
+  // Type 1 camp (tent): state.campH hours or more. Type 2 coffee/snack: shorter.
+  out.rests.forEach((r) => { r.camp = r.until - r.t >= state.campH * H - 1; });
   return { track: tr, nights: out.rests, passed: out.passed, finish: st.t };
 }
 function posAt(track, t) {
@@ -590,7 +593,7 @@ function renderPlanner() {
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
   { const c = r2.nights.filter((x) => x.camp).length, w = r2.nights.length - c;
     const atCamp = r2.nights.filter((x) => x.site), dnm = atCamp.reduce((a, x) => a + x.extra, 0), dh = atCamp.reduce((a, x) => a + x.detourH, 0);
-    rows.push(["Stops", `${c} camps (6 h or more) and ${w} coffee/snack stops; see the stops table. ` +
+    rows.push(["Stops", `${c} camps (${state.campH} h or more) and ${w} coffee/snack stops; see the stops table. ` +
       (CAMPSITES.length ? `${atCamp.length} of ${r2.nights.length} are at past campsites; getting in and out of them adds ${dnm.toFixed(0)} nm and ${fmtDur(dh)} of rowing (straight-line distances).` : "Past campsites are still loading.")]); }
   rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
   rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
@@ -658,6 +661,7 @@ function renderPlanner() {
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
     stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${x.camp ? "⛺" : "☕"} ${x.camp ? nc : ns}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
   });
+  $("stops-hint").innerHTML = `⛺ Camp: ${state.campH} hours or more. ☕ Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.`;
   $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th>Where</th></tr></thead><tbody>${stopRows.join("") || '<tr><td colspan="4">No stops of an hour or more.</td></tr>'}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
@@ -841,7 +845,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -855,6 +859,8 @@ async function main() {
   r.addEventListener("input", () => setTime(+r.value));
   $("presets").innerHTML = PRESETS.map(([d, l, sub]) => `<button type="button" data-d="${d}" title="${sub}">${l}</button>`).join("");
   document.querySelectorAll("#presets button").forEach((b) => b.onclick = () => { state.s1d = b.dataset.d; state.s1t = "05:00"; state.s2d = nextWednesday(b.dataset.d); state.s2t = "12:00"; syncInputs(); changed(true); });
+  const setCampH = (e) => { const v = parseFloat(e.target.value); if (v >= 1 && v <= 12) { state.campH = v; (e.target.id === "campH" ? $("campH-r") : $("campH")).value = v; changed(); } };
+  $("campH").addEventListener("input", setCampH); $("campH-r").addEventListener("input", setCampH);
   $("whours").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 4 && v <= 24) { state.whours = v; changed(); } });
   $("days").addEventListener("input", (e) => { state.days = parseFloat(e.target.value); changed(); });
   $("wstart").addEventListener("change", (e) => { if (e.target.value) { state.wstart = e.target.value; changed(); } });
