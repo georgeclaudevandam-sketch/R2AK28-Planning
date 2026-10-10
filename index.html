@@ -422,13 +422,16 @@ function plan() {
   const [hh, mm] = state.wstart.split(":").map(Number);
   const win = human && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
-  let v2 = state.spd2, v1 = state.spd1, solved = true;
+  let v2 = state.spd2, v1 = state.spd1, solved = true, gap = null;
   if (human) {
     const target = s2 + state.days * 24 * H;
     let lo = 0.3, hi = 15;
     for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (simulate(ch.stage2, g2, s2, mid, win, state.waits).finish > target) lo = mid; else hi = mid; }
     v2 = v1 = hi;
-    solved = Math.abs(simulate(ch.stage2, g2, s2, hi, win, state.waits).finish - target) < 3 * H;
+    const fHi = simulate(ch.stage2, g2, s2, hi, win, state.waits).finish;
+    solved = Math.abs(fHi - target) < 6 * H;
+    // The finish time jumps when a slightly slower boat misses the end of a paddling day or a slack, so some targets fall in a gap
+    if (!solved) gap = { target, fast: { v: hi, d: (fHi - s2) / (24 * H) }, slow: { v: lo, d: (simulate(ch.stage2, g2, s2, lo * 0.995, win, state.waits).finish - s2) / (24 * H) } };
   }
   const r1 = simulate(ch.stage1, g1, s1, v1, win, state.waits), r2 = simulate(ch.stage2, g2, s2, v2, win, state.waits);
   // Grim Sweeper: leaves Port Townsend SWEEPER_DAYS after the Stage 2 start, at noon, at SWEEPER_NM_DAY
@@ -438,7 +441,7 @@ function plan() {
     const sw = ((t - swDep) / H) * (SWEEPER_NM_DAY / 24), boat = ch.stage1.total + posAt(r2.track, t);
     if (sw >= boat) { swept = { t, pos: boat - ch.stage1.total }; break; }
   }
-  return { ch, s1, s2, v1, v2, solved, win, r1, r2, swDep, raceEnd, swept, human };
+  return { ch, s1, s2, v1, v2, solved, gap, win, r1, r2, swDep, raceEnd, swept, human };
 }
 
 let nightLayer;
@@ -450,7 +453,7 @@ function renderPlanner() {
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
   const rows = [];
-  if (P.human) rows.push(["Paddling speed", `${P.v2.toFixed(2)} kn through the water while paddling${P.solved ? "" : ' <span class="warn">(cannot hit this duration with this schedule)</span>'}`]);
+  if (P.human) rows.push(["Paddling speed", `${P.v2.toFixed(2)} kn through the water while paddling` + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that paddling day or a slack" : "misses a slack"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the paddling hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
