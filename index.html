@@ -62,9 +62,13 @@ input[type="number"], select { font: 14px var(--font-data); color: var(--ink); b
 select { width: auto; font-family: var(--font-ui); }
 input[type="range"] { width: 100%; accent-color: var(--accent); }
 .clock { font: 500 15px var(--font-data); font-variant-numeric: tabular-nums; }
-.play { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-.play button { width: 34px; height: 28px; border-radius: 5px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); cursor: pointer; font-size: 13px; }
-#night { position: absolute; inset: 0; z-index: 350; pointer-events: none; background: #020617; opacity: 0; transition: opacity .25s; }
+.playbar { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; background: rgba(15, 23, 42, .86); color: #f1f5f9; font: 13px var(--font-data); font-variant-numeric: tabular-nums; box-shadow: 0 1px 6px rgba(0,0,0,.4); }
+.playbar button { width: 36px; height: 32px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: #f8fafc; cursor: pointer; font-size: 14px; }
+.playbar select { font: 12px var(--font-data); background: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 5px; padding: 3px; }
+.playbar .pb { display: grid; grid-template-columns: auto auto; gap: 1px 12px; }
+.playbar .pb span { color: #94a3b8; }
+.playbar .pb b { font-weight: 600; color: #f8fafc; }
+.leaflet-tile-pane { transition: filter .3s; }
 .boat { background: none; border: none; }
 .boat svg { overflow: visible; filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); }
 .boat .lt { display: none; }
@@ -178,11 +182,6 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
     <section aria-labelledby="h-time">
       <h2 id="h-time">Map time</h2>
       <div class="clock" id="clock"></div>
-      <div class="play">
-        <button type="button" id="play" aria-label="Play">&#9654;</button>
-        <select id="play-speed" aria-label="Playback speed"><option value="1">1 h/s</option><option value="3" selected>3 h/s</option><option value="6">6 h/s</option><option value="12">12 h/s</option></select>
-        <span class="sub" id="sun"></span>
-      </div>
       <input id="time" type="range" min="0" max="1" step="1" aria-label="Map time">
       <div class="legend">
         <span><i style="background:var(--flood)"></i>Flood</span>
@@ -320,7 +319,17 @@ const ChartLayer = L.TileLayer.extend({
 
 function initMap() {
   map = L.map("map", { zoomControl: true, worldCopyJump: false, preferCanvas: false }).setView([51.3, -127.2], 6);
-  map.getContainer().insertAdjacentHTML("beforeend", '<div id="night"></div>');
+  // play bar over the map: play/pause, playback speed, and the planned boat's time, day, distance and speed
+  const PlayBar = L.Control.extend({ onAdd() {
+    const d = L.DomUtil.create("div", "playbar");
+    d.innerHTML = `<button type="button" id="play" aria-label="Play">&#9654;</button>
+      <select id="play-speed" aria-label="Playback speed"><option value="1">1 h/s</option><option value="3" selected>3 h/s</option><option value="6">6 h/s</option><option value="12">12 h/s</option></select>
+      <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span>Speed</span><b id="pb-speed"></b><span>Light</span><b id="pb-sun"></b></div>`;
+    L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+    d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
+    return d;
+  } });
+  new PlayBar({ position: "bottomleft" }).addTo(map);
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
     maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" }).addTo(map);
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
@@ -645,9 +654,20 @@ function renderSun() {
   if (!map) return;
   const t = state.t, b = boatAt(t), c = map.getCenter(), ll = b ? b.ll : [c.lat, c.lng];
   const alt = sunAlt(t, ll[0], ll[1]);
-  // full daylight above the horizon, darkening through civil and nautical twilight
-  $("night").style.opacity = (0.62 * Math.min(1, Math.max(0, (SUN_DOWN - alt) / 11))).toFixed(3);
-  $("sun").textContent = alt > SUN_DOWN ? `Sun ${alt.toFixed(0)}°` : alt > -6 ? "Twilight" : "Night";
+  // full daylight above the horizon, darkening the imagery and charts through civil and nautical twilight
+  const f = Math.min(1, Math.max(0, (SUN_DOWN - alt) / 11));
+  map.getPane("tilePane").style.filter = f > 0 ? `brightness(${(1 - 0.78 * f).toFixed(2)}) saturate(${(1 - 0.5 * f).toFixed(2)})` : "";
+  $("pb-sun").textContent = alt > SUN_DOWN ? (alt < 6 ? "Low sun" : "Day") : alt > -6 ? "Twilight" : "Night";
+  $("pb-time").textContent = `${fmt.format(t)} PDT`;
+  const P = LAST_PLAN;
+  if (P) {
+    const s2 = t >= P.s2, tr = s2 ? P.r2.track : P.r1.track, total = s2 ? P.ch.stage2.total : P.ch.stage1.total;
+    const pos = t < P.s1 ? 0 : t > P.r2.finish ? total : !s2 && t > P.r1.finish ? total : posAt(tr, t);
+    const sog = (posAt(tr, t + STEP / 2) - posAt(tr, t - STEP / 2)) / (STEP / H);
+    $("pb-day").textContent = t < P.s1 ? "Before the start" : !s2 ? (t > P.r1.finish ? "In Victoria" : "Stage 1") : t > P.r2.finish ? "Finished" : `Day ${Math.floor((t - P.s2) / (24 * H)) + 1}`;
+    $("pb-dist").textContent = `${pos.toFixed(0)} of ${total.toFixed(0)} nm${s2 ? "" : " (Stage 1)"}`;
+    $("pb-speed").textContent = !b ? "–" : sog > 0.05 ? `${sog.toFixed(1)} kn over ground (rowing ${(s2 ? P.v2 : P.v1).toFixed(1)})` : "Stopped";
+  }
   if (!b) { if (boatMarker) { boatMarker.remove(); boatMarker = null; } return; }
   const lit = navLights(t, b.ll), hd = Math.round(b.hd / 5) * 5, key = hd + (lit ? "L" : "");
   if (!boatMarker) boatMarker = L.marker(b.ll, { zIndexOffset: 1000, interactive: false, keyboard: false }).addTo(map);
@@ -953,7 +973,6 @@ async function main() {
   const r = $("time");
   r.min = Date.parse(cfg.window.start); r.max = Date.parse(cfg.window.end); r.step = 600e3;
   r.addEventListener("input", () => { if (playTimer) stopPlay(); setTime(+r.value); });
-  $("play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
   $("presets").innerHTML = PRESETS.map(([d, l, sub]) => `<button type="button" data-d="${d}" title="${sub}">${l}</button>`).join("");
   document.querySelectorAll("#presets button").forEach((b) => b.onclick = () => { state.s1d = b.dataset.d; state.s1t = "05:00"; state.s2d = nextWednesday(b.dataset.d); state.s2t = "12:00"; syncInputs(); changed(true); });
   const setCampH = (e) => { const v = parseFloat(e.target.value); if (v >= 1 && v <= 12) { state.campH = v; (e.target.id === "campH" ? $("campH-r") : $("campH")).value = v; changed(); } };
