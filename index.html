@@ -493,15 +493,20 @@ const ICON = {
 // One just ahead costs only the trip in and out, since rowing there is progress you would make anyway. Distances are straight lines.
 function pickCamp(ch, s, lim) {
   if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]); return { ...c, a: p.along, o: p.d }; });
-  let best = null;
-  ch._camps.forEach((c) => {
-    if (c.o > CAMP_MAX_NM || c.a > lim || c.a < s.pos - 6 || c.a > s.pos + 8) return;
-    const cost = 2 * c.o + 2 * Math.max(0, s.pos - c.a);
-    if (!best || cost < best.cost - 0.05 || (Math.abs(cost - best.cost) <= 0.05 && c.teams > best.teams)) best = { ...c, cost };
-  });
-  return best;
+  // prefer one near the route within a few miles; failing that, the cheapest past campsite anywhere short of the next gate
+  const pick = (ok) => {
+    let best = null;
+    ch._camps.forEach((c) => {
+      if (c.a > lim || c.a <= (s.left ?? -1) + 0.5 || !ok(c)) return;
+      const cost = 2 * c.o + 2 * Math.max(0, s.pos - c.a);
+      if (!best || cost < best.cost - 0.05 || (Math.abs(cost - best.cost) <= 0.05 && c.teams > best.teams)) best = { ...c, cost };
+    });
+    return best;
+  };
+  return pick((c) => c.o <= CAMP_MAX_NM && c.a >= s.pos - 6 && c.a <= s.pos + 8) || pick((c) => c.a >= s.pos - 15 && c.a <= s.pos + 12 && 2 * c.o + 2 * Math.max(0, s.pos - c.a) <= CAMP_MAX_EXTRA_NM);
 }
 const CAMP_MAX_NM = 10;
+const CAMP_MAX_EXTRA_NM = 30;   // furthest extra rowing (in and out, and back) to reach a campsite when none is near the route
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 const MIN_FOUL_H = 1;      // tides mode: row through head-current spells shorter than this rather than stopping
 const MIN_LEG_NM = 10;     // tides mode: after a stop, set off only if the fair stream and rowing hours left carry you this far (less for slow boats)
@@ -532,13 +537,41 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head) {
     s.t += STEP; if (rec) rec.track.push([s.t, s.pos]);
     return row && !s.wait;
   };
+  // campsites within CAMP_MAX_NM of the route, in order along it
+  if (!ch._near) { pickCamp(ch, { pos: 0 }, Infinity); ch._near = ch._camps.filter((c) => c.o <= CAMP_MAX_NM).map((c) => c.a).sort((a, b) => a - b); }
+  // tides mode: where and when the next stop of 2 h or more would start if you keep rowing, and when it would end
+  const nextStop = (s, theta, rowed, end) => {
+    let t = s.t, pos = s.pos, h = rowed, foul = 0;
+    while (t < end && pos < total - 1e-6) {
+      if (h >= hours - 1e-9) return end - t >= 2 * H ? { pos, until: end } : null;
+      const c = streamAt(ch, pos, t);
+      foul = c >= theta ? 0 : foul + STEP;
+      if (foul >= MIN_FOUL_H * H) {
+        let u = t; while (u < t + 16 * H && streamAt(ch, pos, u) < theta) u += STEP;
+        return u - t + MIN_FOUL_H * H >= 2 * H ? { pos, until: u } : null;
+      }
+      pos += Math.max(0, v + c) * S; h += S; t += STEP;
+    }
+    return null;
+  };
   const runDay = (s0, end, theta, rec) => {
     const s = { ...s0 }; let rowed = 0;
     while (s.t < end && s.pos < total - 1e-6) {
+      // passing a past campsite: if the next stop would fall where no campsite is in reach, stop here instead
+      if (!win && s.rowing && !s.hold && CAMPSITES.length && s.pos > (s.holdPos || -1) + MIN_LEG_NM && ch._near.some((a) => a > s.pos0 && a <= s.pos)) {
+        const x = nextStop(s, theta, rowed, end);
+        if (x) {
+          const g = gates.find((g) => g.along >= x.pos), lim = g ? g.along : total;
+          if (!ch._near.some((a) => a >= x.pos - 6 && a <= Math.min(lim, x.pos + 8))) { s.hold = x.until; s.holdPos = s.pos; }
+        }
+      }
+      s.pos0 = s.pos;
       // tides mode: row unless the head current is stronger than the cutoff, and only change between rowing and stopped
       // when the new state will last MIN_RUN_H (short spells are rowed through, or sat out)
       let want = win ? inWin(s.t, win) : rowed < hours - 1e-9 && streamAt(ch, s.pos, s.t) >= theta;
-      if (!win && rowed < hours - 1e-9 && want !== s.rowing && !s.wait) {
+      if (s.hold && s.t >= s.hold) s.hold = 0;
+      if (s.hold) want = false;
+      else if (!win && rowed < hours - 1e-9 && want !== s.rowing && !s.wait) {
         if (want) {   // stopped: look ahead and set off only if this fair spell gives a worthwhile leg
           const need = Math.min(MIN_LEG_NM, 2.5 * v, total - s.pos);
           let t = s.t, pos = s.pos, h = rowed, foul = 0;
@@ -554,7 +587,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head) {
         }
       }
       // stopping for 2 h or more: row to the nearest past campsite (counts as rowing time), and back when you set off
-      if (!want && s.rowing && !s.camp && !s.wait && CAMPSITES.length && restLength(s, theta, rowed, end) >= 2 * H) {
+      if (!want && s.rowing && !s.camp && !s.wait && CAMPSITES.length && (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) >= 2 * H) {
         const c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity));
         if (c) {
           // row along the route to the point abreast of the campsite (ahead, or back if it is behind), then in to it
@@ -564,7 +597,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head) {
           if (rec) rec.track.push([s.t, s.pos]);
         }
       }
-      if (want && s.camp) { const leave = s.t; s.t += (s.camp.d / v) * H; rowed += s.camp.d / v; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: s.pos }); } s.camp = null; }
+      if (want && s.camp) { const leave = s.t; s.t += (s.camp.d / v) * H; rowed += s.camp.d / v; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: s.pos }); } s.left = s.pos; s.camp = null; }
       s.rowing = step(s, want, rec);
       if (s.rowing) rowed += S;
     }
