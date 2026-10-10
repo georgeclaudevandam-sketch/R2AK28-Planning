@@ -144,13 +144,18 @@ def race(key: str):
         cls = [tags[i] for i in t.get("tags") or [] if i in tags and i in human_ids and tags[i].lower() != "human powered"]
         start = t.get("start") or setup.get("start")
         fin = t.get("finishedAt")
+        status = str(t.get("explain") or t.get("status") or "")
+        if "DNF" in status.upper() or "RETIRED" in status.upper():
+            fin = None
+        elif fin:
+            status = "Finished"
         out.append({
             "id": t["id"], "name": t.get("name"), "boat": t.get("model"), "captain": t.get("captain"),
-            "class": cls[0] if cls else "Human powered", "status": t.get("explain") or t.get("status"),
+            "class": cls[0] if cls else "Human powered", "status": status,
             "start": start, "finished": fin, "elapsed_h": round((fin - start) / 3600, 2) if fin and start else None,
             "track": pts,
         })
-        log(f"  {t.get('name')!r:40} {len(pts):5} pts  {'finished %.1f d' % ((fin - start) / 86400) if fin and start else t.get('explain') or t.get('status')}")
+        log(f"  {t.get('name')!r:40} {len(pts):5} pts  {'finished %.1f d' % ((fin - start) / 86400) if fin and start else status}")
     return {"key": key, "title": setup.get("title"), "start": setup.get("start"), "stop": setup.get("stop"), "teams": out}
 
 
