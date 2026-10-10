@@ -2,6 +2,13 @@
  "source": "YB Tracking (yb.tl)",
  "races": [
   {
+   "key": "r2ak2026",
+   "title": "Race to Alaska R2AK",
+   "start": 1781722140,
+   "teams": 12,
+   "finished": 8
+  },
+  {
    "key": "r2ak2024",
    "title": "Race to Alaska R2AK 2024",
    "start": 1718217000,
