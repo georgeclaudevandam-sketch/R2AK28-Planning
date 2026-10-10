@@ -769,7 +769,7 @@ function renderPast() {
     const fin = r.teams.filter((t) => t.elapsed_h).sort((a, b) => a.elapsed_h - b.elapsed_h);
     const dnf = r.teams.filter((t) => !t.elapsed_h);
     const row = (t) => `<div class="past-row${PAST.sel === r.key + "|" + t.id ? " on" : ""}" data-k="${esc(r.key)}" data-id="${esc(t.id)}"><span class="t">${t.elapsed_h ? dur(t.elapsed_h) : "DNF"}</span><span><i style="background:${classColor(t.class)}"></i>${esc(t.name)} <span class="c">${esc([t.boat, t.class].filter(Boolean).join(", "))}</span></span></div>`;
-    return `<h3 style="font-size:14px;margin:10px 0 4px">${esc(r.title || yearOf(r))}</h3><p class="hint">${fin.length} of ${r.teams.length} finished${r.note ? ". " + esc(r.note) : ""}</p>` + fin.map(row).join("") + dnf.map(row).join("");
+    return `<h3 style="font-size:14px;margin:10px 0 4px">R2AK ${yearOf(r)} <span class="c" style="font-weight:400">${/spot/.test(r.key) ? "SPOT trackers via searunners.net" : "YB Tracking"}</span></h3><p class="hint">${fin.length} of ${r.teams.length} finished${r.note ? ". " + esc(r.note) : ""}</p>` + fin.map(row).join("") + dnf.map(row).join("");
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
