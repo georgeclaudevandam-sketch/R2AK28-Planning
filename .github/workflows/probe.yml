@@ -11,15 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          mkdir -p probe && cd probe
+          mkdir -p probe && cd probe && rm -f *
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
-          curl -sSL -A "$UA" -D page.hdr https://r2ak2022.maprogress.com/ -o page.html || true
-          grep -oE '(src|href)="[^"]+\.js[^"]*"' page.html | sed -E 's/^(src|href)="//; s/"$//' | sort -u > scripts.txt || true
-          i=0; while read -r u; do i=$((i+1)); case "$u" in http*) ;; //*) u="https:$u";; /*) u="https://r2ak2022.maprogress.com$u";; *) u="https://r2ak2022.maprogress.com/$u";; esac
-            case "$u" in *jquery*|*bootstrap*|*google*) continue;; esac
-            curl -sSL -A "$UA" "$u" -o "s$i.js" || true; echo "s$i.js $u" >> fetched.txt; done < scripts.txt
-          grep -ohE '["'"'"'][^"'"'"' ]*(api|Api|json|Json|track|Track|position|Position|gpx|kml|Data|data)[^"'"'"' ]*["'"'"']' page.html s*.js 2>/dev/null | sort -u | head -400 > urls.txt || true
-          ls -la
+          g() { curl -sSL --compressed -A "$UA" -e https://r2ak2022.maprogress.com/ -D "$1.hdr" "$2" -o "$1" || true; }
+          g mapm.js "https://map0.b-cdn.net/js/mapm?id=2915&v=173&mv=0"
+          g mapl.js "https://mpz.nz/js/mapl?i=2915&f=4&a=1657393200&v=226&l=0&m=0&z=1"
+          g mapl0.js "https://mpz.nz/js/mapl?i=2915&f=4&a=0&v=226&l=0&m=0&z=1"
+          g emap.js "https://map0.b-cdn.net/js/emap?v=rPQAxbztp91Oiw5QxzO-o7mztn8fVgY2nxWvrZtSItA1"
+          g mapc.js "https://map0.b-cdn.net/js/mapc?v=tPRs-es-3hABQXcbpKVC-EvxBo0yEj59pf_6SCKqr-01"
+          g maps.js "https://map0.b-cdn.net/js/maps?v=17.22.4"
+          ls -la; head -c 3000 mapm.js; echo; head -c 3000 mapl.js
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
