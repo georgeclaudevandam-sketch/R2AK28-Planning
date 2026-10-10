@@ -767,6 +767,11 @@ function plan() {
     if (fCap > target + (win ? 6 : 12) * H) hullCap = { v: vHull, d: (fCap - s2) / (24 * H) };
     for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (sim(ch.stage2, g2, s2, mid).finish > target) lo = mid; else hi = mid; }
     v2 = v1 = hi;
+    if (hullCap) {
+      // a slightly slower boat can catch a fairer tide or slack and finish sooner, so take the quickest finish at or under hull speed
+      for (let v = vHull; v >= vHull * 0.85; v -= 0.02) { const f = sim(ch.stage2, g2, s2, v).finish; if (f < s2 + hullCap.d * 24 * H - 1) hullCap = { v, d: (f - s2) / (24 * H) }; }
+      v2 = v1 = hullCap.v;
+    }
     const fHi = sim(ch.stage2, g2, s2, hi).finish;
     solved = hullCap != null || Math.abs(fHi - target) < (win ? 6 : 12) * H;
     // The finish time jumps when a slightly slower boat misses the end of a paddling day or a slack, so some targets fall in a gap
@@ -889,7 +894,7 @@ function renderPlanner() {
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
   const rows = [];
   if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` +
-    (P.hullCap ? `<br><span class="warn">${state.days} days needs more than the hull speed of a ${state.hullFt} ft monohull (${P.hullCap.v.toFixed(2)} kn).</span> At hull speed you arrive in ${P.hullCap.d.toFixed(1)} days; the plan below rows at hull speed.` : ` (hull speed for ${state.hullFt} ft: ${hullSpeed(state.hullFt).toFixed(2)} kn)`) + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
+    (P.hullCap ? `<br><span class="warn">${state.days} days needs more than the hull speed of a ${state.hullFt} ft monohull (${hullSpeed(state.hullFt).toFixed(2)} kn).</span> At hull speed you arrive in ${P.hullCap.d.toFixed(1)} days; the plan below rows at ${P.v2.toFixed(2)} kn, the quickest finish at or under hull speed.` : ` (hull speed for ${state.hullFt} ft: ${hullSpeed(state.hullFt).toFixed(2)} kn)`) + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the faster option. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
