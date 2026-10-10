@@ -1,120 +1,22 @@
 {
- "_note": "Human propulsion each team used at the 2015 start, from Matt Johnson's analysis of the same SPOT data (mattjohnsonboats.com, 5 June 2016). Several of these boats also carried sail.",
+ "_note": "Only boats that are a kayak, canoe, paddleboard or rowboat. Boat types from the R2AK 2015-2017 finisher comparison (r2ak.com) and, for Team John, Matt Johnson's analysis of the SPOT data. Teams whose boat type could not be confirmed are left out.",
+ "_results": "Official finish order and elapsed times from Victoria: r2ak.com/2015-full-race-results/",
  "teams": {
-  "Team Broderna": {
-   "class": "Oars"
-  },
-  "Team Barefoot Wooden Boats": {
-   "class": "Oars",
-   "place": 15,
-   "official_elapsed_h": 626.55
-  },
   "Team Soggy Beavers": {
-   "class": "Paddle (6-person outrigger canoe)",
+   "class": "Canoe",
+   "boat": "OC6 outrigger canoe, 6 crew",
    "place": 7,
    "official_elapsed_h": 268.4
   },
-  "Team Hexagram 59": {
-   "class": "Pedal"
-  },
-  "Team Sea Runners": {
-   "class": "Pedal (17' catamaran)"
-  },
-  "Team Turn Point Design": {
-   "class": "Pedal (catamaran)"
-  },
-  "Team Discovery": {
-   "class": "Pedal (Mirage drive)",
-   "place": 11,
-   "official_elapsed_h": 313.167
-  },
   "Team Mikes Kayak": {
-   "class": "Paddle (kayak)",
+   "class": "Kayak",
+   "boat": "Prijon Kodiak, 1 crew",
    "place": 14,
    "official_elapsed_h": 556.983
   },
-  "Team Pure and Wild": {
-   "class": "Pedal"
-  },
-  "Team Boatyard Boys": {
-   "class": "Oars",
-   "place": 13,
-   "official_elapsed_h": 535.867
-  },
-  "Team Mau": {
-   "class": "Pedal",
-   "place": 8,
-   "official_elapsed_h": 282.4
-  },
   "Team John": {
-   "class": "Paddle (kayak with outriggers)"
-  },
-  "Team Elsie Piddock": {
-   "class": "Oars",
-   "place": 1,
-   "official_elapsed_h": 121.917
-  },
-  "Team Puffin": {
-   "class": "Pedal"
-  },
-  "Team MOB Mentality": {
-   "class": "Oars",
-   "place": 2,
-   "official_elapsed_h": 195.75
-  },
-  "Team Kohara": {
-   "class": "Pedal",
-   "place": 5,
-   "official_elapsed_h": 226.867
-  },
-  "Team UnCruise": {
-   "class": "Pedal (Mirage drive)",
-   "place": 6,
-   "official_elapsed_h": 244.8
-  },
-  "Team Blackfish": {
-   "class": "Oars",
-   "place": 9,
-   "official_elapsed_h": 300.167
-  },
-  "Team Grin": {
-   "class": "Oars",
-   "place": 10,
-   "official_elapsed_h": 301.117
-  },
-  "Team Por Favor": {
-   "class": "Oars",
-   "place": 3,
-   "official_elapsed_h": 195.817
-  },
-  "Team Golden Oldies": {
-   "class": "Oars"
-  },
-  "Team Coastal Express": {
-   "class": "Oars"
-  },
-  "Team Excellent Adventure": {
-   "class": "Oars",
-   "place": 12,
-   "official_elapsed_h": 454.867
-  },
-  "Team Real Thing": {
-   "class": "Pedal"
-  },
-  "Team FreeBurd": {
-   "class": "Oars",
-   "place": 4,
-   "official_elapsed_h": 223.4
-  },
-  "Team Y Triamoto": {
-   "class": "Oars"
-  },
-  "Team Super Friends": {
-   "class": "Oars"
-  },
-  "Team SeaWolf": {
-   "class": "Pedal"
+   "class": "Kayak",
+   "boat": "kayak with outriggers"
   }
- },
- "_results": "Official finish order and elapsed times from Victoria: r2ak.com/2015-full-race-results/"
+ }
 }

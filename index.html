@@ -124,7 +124,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
   <aside>
     <header>
       <h1>R2AK 2028 tide and current planner</h1>
-      <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and boat speed to see what the stream is doing at each tidal gate when you get there.</p>
+      <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and how many days you want to take to see what the stream is doing at each tidal gate when you get there.</p>
     </header>
 
     <section aria-labelledby="h-scn">
@@ -140,15 +140,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
     </section>
 
     <section aria-labelledby="h-boat">
-      <h2 id="h-boat">Boat</h2>
-      <div class="seg" id="mode">
-        <button type="button" data-m="sail">Sail<small>Moves around the clock at an average speed</small></button>
-        <button type="button" data-m="human">Rowing<small>Pick a finish time; rows with the fair tide</small></button>
-      </div>
-      <div class="row" id="sail-inputs">
-        <label for="spd1">Stage 1 avg kn<input id="spd1" type="number" min="1" max="25" step="0.5" value="5"></label>
-        <label for="spd2">Stage 2 avg kn<input id="spd2" type="number" min="0.5" max="25" step="0.5" value="5"></label>
-      </div>
+      <h2 id="h-boat">Rowing plan</h2>
       <div id="human-inputs" class="stack">
         <label for="days">Victoria to Ketchikan: <b class="clock" id="days-out"></b>
           <input id="days" type="range" min="8" max="24" step="0.5" value="16"></label>
@@ -231,10 +223,10 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "mode", "spd1", "spd2", "days", "wstart", "whours", "north", "waits", "sched"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", mode: "human", spd1: 5, spd2: 5, days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", t: null, selected: null, day: null };
-try { const s = JSON.parse(localStorage.getItem("r2ak28v3") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
-function save() { try { localStorage.setItem("r2ak28v3", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", t: null, selected: null, day: null };
+try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
+function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
 function pdt(d, t) { return Date.parse(`${d}T${t}:00-07:00`); }
 function addDays(d, n) { const x = new Date(d + "T12:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); }
@@ -385,33 +377,6 @@ function gatesOn(ch, stage) {
   return STATIONS.filter((st) => (st.gate || st.waypoint) && onTrack(st) && (st.leg === "stage1") === (stage === 1))
     .map((st) => { const p = project(ch, st.lat, st.lon); return { st, along: p.along }; }).sort((a, b) => a.along - b.along);
 }
-function simulate(ch, gates, start, v, win, waits) {
-  let t = start, pos = 0, gi = 0, guard = 0;
-  const track = [[t, 0]], nights = [], passed = [];
-  while (pos < ch.total - 1e-6 && guard++ < 5000) {
-    if (!inWin(t, win)) { nights.push({ t, pos }); t += (1440 - winPos(t, win)) * 60000; track.push([t, pos]); continue; }
-    const g = gi < gates.length ? gates[gi] : null;
-    const target = g ? g.along : ch.total;
-    const tEnd = win ? t + (win.hours * 60 - winPos(t, win)) * 60000 : Infinity;
-    const tArr = t + ((target - pos) / v) * H;
-    if (tArr <= tEnd) {
-      t = tArr; pos = target; track.push([t, pos]);
-      if (g) {
-        let dep = t;
-        // only stop for a stream against you stronger than FOUL_KN; then wait for slack (under 0.5 kn against)
-        if (waits && g.st.favourable && againstAt(g.st, t) > FOUL_KN) {
-          let k = 0;
-          while ((againstAt(g.st, dep) > 0.5 || !inWin(dep, win)) && k++ < 432) dep += 10 * 60000;
-          if (dep > t && win && winPos(t, win) + (dep - t) / 60000 >= win.hours * 60) nights.push({ t: t + (win.hours * 60 - winPos(t, win)) * 60000, pos });
-        }
-        passed.push({ ...g, arr: t, dep, wait: (dep - t) / H });
-        if (dep > t) { t = dep; track.push([t, pos]); }
-        gi++;
-      }
-    } else { pos += ((tEnd - t) / H) * v; t = tEnd; track.push([t, pos]); }
-  }
-  return { track, nights, passed, finish: t };
-}
 // ---------- tidal stream along the track (rowing modes)
 // Each zone takes a current station's predicted stream, signed so + is with you heading north, and fades it
 // from full strength within `core` nm of the station (along the track) to nothing at `r` nm, scaled by k.
@@ -526,13 +491,13 @@ function posAt(track, t) {
 }
 function plan() {
   const ch = chains(), { s1, s2 } = starts();
-  const human = state.mode === "human";
+  const human = true;
   const [hh, mm] = state.wstart.split(":").map(Number);
   const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
-  const sim = (c, g, st, v) => human ? simulateRow(c, g, st, v, state.whours, win, state.waits) : simulate(c, g, st, v, null, state.waits);
+  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
-  let v2 = state.spd2, v1 = state.spd1, solved = true, gap = null;
-  if (human) {
+  let v2, v1, solved = true, gap = null;
+  {
     const target = s2 + state.days * 24 * H;
     let lo = 0.5, hi = 12;
     for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (sim(ch.stage2, g2, s2, mid).finish > target) lo = mid; else hi = mid; }
@@ -556,8 +521,6 @@ function plan() {
 let nightLayer;
 function renderPlanner() {
   const P = plan(), { ch, r1, r2 } = P;
-  $("sail-inputs").hidden = P.human; $("human-inputs").hidden = !P.human;
-  document.querySelectorAll("#mode button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === state.mode)));
   $("days-out").textContent = `${state.days} days`;
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
@@ -720,7 +683,7 @@ function setTime(t) {
 }
 let layersCtl;
 const PAST = { races: [], groups: {}, lines: {}, shown: new Set(), sel: null };
-const classColor = (c) => { c = (c || "").toLowerCase(); return /oar|row/.test(c) ? "#38bdf8" : /pedal/.test(c) ? "#4ade80" : /kayak|sup|canoe|paddle/.test(c) ? "#e879f9" : "#f8fafc"; };
+const classColor = (c) => { c = (c || "").toLowerCase(); return /row|oar/.test(c) ? "#38bdf8" : /kayak/.test(c) ? "#e879f9" : /canoe/.test(c) ? "#fb923c" : /sup|paddleboard/.test(c) ? "#4ade80" : "#f8fafc"; };
 const dur = (h) => `${Math.floor(h / 24)}d ${String(Math.round(h % 24)).padStart(2, "0")}h`;
 const yearOf = (r) => new Date(r.start * 1000).getUTCFullYear();
 function pastLabel(r, t) {
@@ -748,7 +711,7 @@ async function loadPast() {
     layersCtl.addOverlay(g, `${yearOf(r)} human-powered tracks (${r.teams.length})`);
   });
   $("past-hint").innerHTML = races.length
-    ? `Tracks of human-powered teams, timed from the Victoria start. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Oars</span><span><i style="background:#4ade80"></i>Pedal</span><span><i style="background:#e879f9"></i>Paddle</span></span>`
+    ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
     : "No past tracks loaded yet.";
   $("past-years").innerHTML = races.map((r) => `<button type="button" data-k="${esc(r.key)}" aria-pressed="false">${yearOf(r)}</button>`).join("");
   document.querySelectorAll("#past-years button").forEach((b) => b.onclick = () => { const g = PAST.groups[b.dataset.k]; map.hasLayer(g) ? map.removeLayer(g) : g.addTo(map); });
@@ -773,7 +736,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "spd1", "spd2", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -787,8 +750,6 @@ async function main() {
   r.addEventListener("input", () => setTime(+r.value));
   $("presets").innerHTML = PRESETS.map(([d, l, sub]) => `<button type="button" data-d="${d}" title="${sub}">${l}</button>`).join("");
   document.querySelectorAll("#presets button").forEach((b) => b.onclick = () => { state.s1d = b.dataset.d; state.s1t = "05:00"; state.s2d = nextWednesday(b.dataset.d); state.s2t = "12:00"; syncInputs(); changed(true); });
-  const num = (k) => (e) => { const v = parseFloat(e.target.value); if (v > 0) { state[k] = v; changed(); } };
-  $("spd1").addEventListener("input", num("spd1")); $("spd2").addEventListener("input", num("spd2"));
   $("whours").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 4 && v <= 24) { state.whours = v; changed(); } });
   $("days").addEventListener("input", (e) => { state.days = parseFloat(e.target.value); changed(); });
   $("wstart").addEventListener("change", (e) => { if (e.target.value) { state.wstart = e.target.value; changed(); } });
@@ -799,7 +760,6 @@ async function main() {
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
   $("sched").addEventListener("change", (e) => { state.sched = e.target.value; syncInputs(); changed(); });
-  document.querySelectorAll("#mode button").forEach((b) => b.onclick = () => { state.mode = b.dataset.m; changed(); });
   syncInputs();
 
   const derived = Object.entries(PRED.stations).filter(([, s]) => s.method === "derived").map(([k]) => STATIONS.find((s) => s.key === k)?.name).filter(Boolean);

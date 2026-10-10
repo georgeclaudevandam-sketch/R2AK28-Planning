@@ -6,8 +6,8 @@ classes, finish times) and AllPositions3 (packed binary positions), keeps the
 human-powered teams, thins their tracks and writes data/tracks/<key>.json plus
 an index at data/tracks/index.json.
 
-Human-powered = tagged Human Powered, Kayak, Rowboat, SUP, Canoe, Pedal or
-Pedal Power by the race organisers in YB.
+Human-powered = tagged Kayak, Rowboat, SUP or Canoe by the race organisers in YB,
+and not also tagged with a sail, kite, wing, foil or pedal class.
 """
 from __future__ import annotations
 
@@ -24,7 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "tracks"
 YB = "https://yb.tl"
 UA = {"User-Agent": "r2ak28-planning (github.com/georgeclaudevandam-sketch/R2AK28-Planning)"}
-HUMAN_TAGS = {"human powered", "kayak", "rowboat", "row boat", "sup", "canoe", "pedal", "pedal power", "paddle", "rowing"}
+HUMAN_TAGS = {"kayak", "rowboat", "row boat", "rowing", "sup", "paddleboard", "stand up paddle", "canoe"}
+NOT_HUMAN = ("sail", "kite", "wing", "pedal", "foil")
 YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026]
 SUFFIXES = ["", "s1", "stage1"]
 
@@ -125,7 +126,8 @@ def race(key: str):
     tags = {t["id"]: t["name"] for t in setup.get("tags", [])}
     human_ids = {i for i, n in tags.items() if n.strip().lower() in HUMAN_TAGS}
     log(f"{key}: '{setup.get('title')}' {len(setup['teams'])} teams, tags {sorted(tags.values())}")
-    teams = [t for t in setup["teams"] if human_ids & set(t.get("tags") or [])]
+    banned = {i for i, n in tags.items() if any(w in n.lower() for w in NOT_HUMAN)}
+    teams = [t for t in setup["teams"] if human_ids & set(t.get("tags") or []) and not banned & set(t.get("tags") or [])]
     log(f"  {len(teams)} human-powered teams")
     if not teams:
         return {"key": key, "title": setup.get("title"), "start": setup.get("start"), "teams": []}
