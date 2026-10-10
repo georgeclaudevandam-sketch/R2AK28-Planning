@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>R2AK 2028 Tide Planner</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-bleed chart on the left, a pilot-book style side panel on the right (bottom sheet on phones). */
+:root {
+  --bg: #f3f5f6;
+  --panel: #ffffff;
+  --ink: #102a3a;
+  --muted: #5b6f7c;
+  --rule: #d6dee3;
+  --accent: #c2410c;        /* signal orange: waypoints, selected */
+  --flood: #0f766e;         /* teal */
+  --ebb: #b45309;           /* amber */
+  --slack: #64748b;
+  --good: #15803d;
+  --bad: #b91c1c;
+  --chip: #eef2f4;
+  --font-ui: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1820; --panel: #10222d; --ink: #e3ecf1; --muted: #93a8b5; --rule: #24404f;
+  --accent: #fb923c; --flood: #2dd4bf; --ebb: #fbbf24; --slack: #94a3b8; --good: #4ade80; --bad: #f87171; --chip: #183140;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b1820; --panel: #10222d; --ink: #e3ecf1; --muted: #93a8b5; --rule: #24404f;
+  --accent: #fb923c; --flood: #2dd4bf; --ebb: #fbbf24; --slack: #94a3b8; --good: #4ade80; --bad: #f87171; --chip: #183140;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--font-ui); }
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 400px; height: 100%; }
+#map { height: 100%; min-height: 300px; background: #0a2533; }
+aside { background: var(--panel); border-left: 1px solid var(--rule); overflow-y: auto; padding-block: 16px 32px; padding-inline: 18px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
+  #map { height: 58vh; }
+  aside { border-left: 0; border-top: 1px solid var(--rule); padding-inline: 16px; }
+}
+h1 { font-size: 21px; font-weight: 600; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+p { margin: 0; }
+.sub { color: var(--muted); font-size: 13px; }
+section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { font: inherit; color: var(--ink); background: transparent; border: 0; padding: 8px 6px; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 1px; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--chip); box-shadow: inset 0 -3px 0 var(--accent); }
+.seg button small { color: var(--muted); font-size: 12px; }
+.seg button:focus-visible, input:focus-visible, select:focus-visible, .gate:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+input[type="number"], select { font: 14px var(--font-data); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 5px; padding: 5px 7px; width: 88px; }
+select { width: auto; font-family: var(--font-ui); }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.clock { font: 500 15px var(--font-data); font-variant-numeric: tabular-nums; }
+.note { background: var(--chip); border-radius: 6px; padding: 9px 11px; font-size: 13px; }
+.gates { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+.gate { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 2px 10px; padding: 9px 2px; border-bottom: 1px solid var(--rule); cursor: pointer; }
+.gate:hover { background: var(--chip); }
+.gate .nm { font: 12px var(--font-data); color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.gate .nm b { display: block; font-weight: 500; color: var(--ink); font-size: 13px; }
+.gate .name { font-weight: 600; }
+.gate .eta { font: 12.5px var(--font-data); font-variant-numeric: tabular-nums; }
+.gate .advice { font-size: 13px; grid-column: 2; }
+.pill { display: inline-block; font: 500 11.5px var(--font-data); padding: 1px 6px; border-radius: 999px; background: var(--chip); white-space: nowrap; }
+.pill.flood { color: var(--flood); } .pill.ebb { color: var(--ebb); } .pill.slack { color: var(--slack); }
+.pill.good { color: var(--good); } .pill.bad { color: var(--bad); }
+.pill.derived { color: var(--accent); }
+.wp { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-left: 4px; }
+#detail[hidden] { display: none !important; }
+.detail-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.detail-head h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.close { font: inherit; background: none; border: 1px solid var(--rule); color: var(--muted); border-radius: 5px; cursor: pointer; padding: 2px 8px; }
+.daynav { display: flex; align-items: center; gap: 8px; }
+.daynav button { font: inherit; background: var(--chip); color: var(--ink); border: 0; border-radius: 5px; padding: 3px 9px; cursor: pointer; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { font: 10.5px var(--font-data); fill: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font: 13px var(--font-data); font-variant-numeric: tabular-nums; }
+th { text-align: left; font: 600 11px var(--font-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
+td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.sources { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.sources a { color: inherit; }
+.warn { color: var(--bad); font-weight: 600; }
+/* Leaflet overrides */
+.leaflet-container { font: 13px var(--font-ui); }
+.leaflet-tooltip.stn { font: 12px var(--font-data); padding: 3px 6px; }
+.opacity-ctl { background: #fff; padding: 6px 8px; border-radius: 4px; font: 12px var(--font-ui); color: #102a3a; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.opacity-ctl input { width: 110px; vertical-align: middle; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="map" role="region" aria-label="Course map"></div>
+  <aside>
+    <header>
+      <h1>R2AK 2028 tide and current planner</h1>
+      <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and boat speed to see what the stream is doing at each tidal gate when you get there.</p>
+    </header>
+
+    <section aria-labelledby="h-scn">
+      <h2 id="h-scn">Start date</h2>
+      <div class="seg" id="scenario"></div>
+      <p class="note" id="scn-note"></p>
+    </section>
+
+    <section aria-labelledby="h-boat">
+      <h2 id="h-boat">Boat</h2>
+      <div class="row">
+        <label for="spd1">Stage 1 avg kn<input id="spd1" type="number" min="1" max="25" step="0.5" value="5"></label>
+        <label for="spd2">Stage 2 avg kn<input id="spd2" type="number" min="0.5" max="25" step="0.5" value="5"></label>
+        <label for="north">North of Bella Bella<select id="north"><option value="inside">Inside (Grenville Ch.)</option><option value="outside">Outside (Hecate Str.)</option></select></label>
+      </div>
+      <p class="sub" id="leg-summary"></p>
+    </section>
+
+    <section aria-labelledby="h-time">
+      <h2 id="h-time">Map time</h2>
+      <div class="clock" id="clock"></div>
+      <input id="time" type="range" min="0" max="1" step="1" aria-label="Map time">
+      <div class="legend">
+        <span><i style="background:var(--flood)"></i>Flood</span>
+        <span><i style="background:var(--ebb)"></i>Ebb</span>
+        <span><i style="background:var(--slack)"></i>Slack (&lt;0.5 kn)</span>
+        <span><i style="background:#fff;border:2px solid #0e7490"></i>Tide station</span>
+      </div>
+    </section>
+
+    <section id="detail" hidden aria-live="polite"></section>
+
+    <section aria-labelledby="h-gates">
+      <h2 id="h-gates">Tidal gates on your track</h2>
+      <p class="sub">ETA assumes the average speed above from each stage start. Times are Pacific Daylight Time.</p>
+      <div class="gates" id="gates"></div>
+    </section>
+
+    <section aria-labelledby="h-src" class="sources">
+      <h2 id="h-src">Data</h2>
+      <div id="data-status"></div>
+      <p>Predictions: <a href="https://tidesandcurrents.noaa.gov/" target="_blank" rel="noopener">NOAA CO-OPS</a> and <a href="https://tides.gc.ca/" target="_blank" rel="noopener">Canadian Hydrographic Service</a>. Charts: CHS and NOAA ENC chart services. Imagery &copy; Esri, Maxar, Earthstar Geographics.</p>
+      <p>Tracks are shortest-water lines for distance and ETA only. Planning aid, not for navigation: use official CHS and NOAA tables and current charts aboard.</p>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+"use strict";
+const TZ = "America/Los_Angeles";
+const SCENARIOS = {
+  jun4: { label: "Sun 4 June", s1: "2028-06-04T12:00:00Z", s2: "2028-06-07T19:00:00Z",
+    note: "First Sunday in June. Stage 2 starts Wed 7 June at noon, about 12 hours before the full moon (6 June 23:08 PDT), so the first days of Stage 2 run on spring tides and the strongest currents of the month at Seymour Narrows." },
+  jun11: { label: "Sun 11 June", s1: "2028-06-11T12:00:00Z", s2: "2028-06-14T19:00:00Z",
+    note: "Matches the race's usual second-week pattern. Stage 2 starts Wed 14 June, the day of lunar apogee and a day before last quarter (15 June), so currents are near their weakest of the month." }
+};
+const MOON = [["2028-05-31T07:36Z", "First quarter"], ["2028-06-07T06:09Z", "Full moon"], ["2028-06-15T04:27Z", "Last quarter"], ["2028-06-22T18:27Z", "New moon"], ["2028-06-29T12:11Z", "First quarter"]];
+
+const fmt = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false });
+const fmtT = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false });
+const fmtD = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", day: "numeric", month: "short" });
+const fmtYMD = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
+const H = 3600e3;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
+const state = { scenario: "jun4", spd1: 5, spd2: 5, north: "inside", t: null, selected: null, day: null };
+try { const s = JSON.parse(localStorage.getItem("r2ak28") || "{}"); Object.assign(state, s, { t: null, selected: null, day: null }); } catch (e) {}
+function save() { try { localStorage.setItem("r2ak28", JSON.stringify({ scenario: state.scenario, spd1: state.spd1, spd2: state.spd2, north: state.north })); } catch (e) {} }
+
+// ---------- geometry
+function nmBetween(a, b) {
+  const R = 3440.065, toR = Math.PI / 180;
+  const dLat = (b[0] - a[0]) * toR, dLon = (b[1] - a[1]) * toR;
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * toR) * Math.cos(b[0] * toR) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+function chain(points) {
+  const cum = [0];
+  for (let i = 1; i < points.length; i++) cum.push(cum[i - 1] + nmBetween(points[i - 1], points[i]));
+  return { points, cum, total: cum[cum.length - 1] };
+}
+function project(ch, lat, lon) {
+  let best = { d: Infinity, along: 0 };
+  ch.points.forEach((p, i) => { const d = nmBetween(p, [lat, lon]); if (d < best.d) best = { d, along: ch.cum[i] }; });
+  return best;
+}
+
+// ---------- prediction interpolation
+function evTimes(ev) { return ev.map((e) => Date.parse(e.t)); }
+function currentAt(sd, t) {
+  const ev = sd.events, ts = sd._ts || (sd._ts = evTimes(ev));
+  let i = ts.findIndex((x) => x > t);
+  if (i <= 0) return null;
+  const a = ev[i - 1], b = ev[i];
+  const sv = (e) => (e.type === "flood" ? e.kn : e.type === "ebb" ? -e.kn : 0);
+  const va = sv(a), vb = sv(b), f = (t - ts[i - 1]) / (ts[i] - ts[i - 1]);
+  if (a.type === "slack" && b.type !== "slack") return vb * Math.sin((Math.PI / 2) * f);
+  if (a.type !== "slack" && b.type === "slack") return va * Math.cos((Math.PI / 2) * f);
+  return va + (vb - va) * (1 - Math.cos(Math.PI * f)) / 2;
+}
+function tideAt(sd, t) {
+  const ev = sd.events, ts = sd._ts || (sd._ts = evTimes(ev));
+  let i = ts.findIndex((x) => x > t);
+  if (i <= 0) return null;
+  const a = ev[i - 1], b = ev[i], f = (t - ts[i - 1]) / (ts[i] - ts[i - 1]);
+  return { h: a.h + (b.h - a.h) * (1 - Math.cos(Math.PI * f)) / 2, rising: b.h > a.h };
+}
+function valueAt(st, t) {
+  const sd = PRED.stations[st.key];
+  if (!sd) return null;
+  return st.kind === "current" ? currentAt(sd, t) : tideAt(sd, t);
+}
+
+// ---------- map
+const ChartLayer = L.TileLayer.extend({
+  getTileUrl(c) {
+    const s = this.getTileSize(), nw = c.scaleBy(s), se = nw.add(s), crs = this._map.options.crs;
+    const a = crs.project(this._map.unproject(nw, c.z)), b = crs.project(this._map.unproject(se, c.z));
+    const q = new URLSearchParams({ bbox: [a.x, b.y, b.x, a.y].join(","), bboxSR: "3857", imageSR: "3857", size: `${s.x},${s.y}`, dpi: "96", format: "png32", transparent: "true", layers: this.options.show, f: "image" });
+    return `${this.options.service}/export?${q}`;
+  }
+});
+
+function initMap() {
+  map = L.map("map", { zoomControl: true, worldCopyJump: false, preferCanvas: false }).setView([51.3, -127.2], 6);
+  const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" }).addTo(map);
+  const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
+    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 0.85, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
+  const noaa = new ChartLayer("", { service: "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer",
+    show: "show:0,1,2,3,4,5,6,7", opacity: 0.85, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
+
+  const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
+  ROUTE.legs.forEach((leg) => {
+    routeLayers[leg.key] = L.polyline(leg.points, { color: colors[leg.key], weight: 3, opacity: 0.95, dashArray: leg.key === "stage1" ? "8 6" : null }).bindTooltip(leg.name, { sticky: true });
+  });
+  const routeGroup = L.layerGroup(Object.values(routeLayers)).addTo(map);
+  const marks = L.layerGroup(ROUTE.marks.map((m) => L.circleMarker([m.lat, m.lon], {
+    radius: m.type === "waypoint" ? 8 : 6, color: "#fff", weight: 2, fillColor: m.type === "waypoint" ? "#c2410c" : m.type === "start" ? "#16a34a" : "#111827", fillOpacity: 1
+  }).bindTooltip(m.name))).addTo(map);
+  stationLayer = L.layerGroup().addTo(map);
+
+  L.control.layers({ "Esri World Imagery": imagery }, { "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
+  const Opacity = L.Control.extend({ onAdd() {
+    const d = L.DomUtil.create("div", "opacity-ctl");
+    d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input type="range" min="0" max="100" value="85" aria-label="Chart opacity"></label>';
+    L.DomEvent.disableClickPropagation(d);
+    d.querySelector("input").addEventListener("input", (e) => { chs.setOpacity(e.target.value / 100); noaa.setOpacity(e.target.value / 100); });
+    return d;
+  } });
+  new Opacity({ position: "bottomleft" }).addTo(map);
+  L.control.scale({ imperial: true, metric: false, position: "bottomright" }).addTo(map);
+  map.fitBounds(L.latLngBounds(ROUTE.legs.flatMap((l) => l.points)), { padding: [20, 20] });
+
+  STATIONS.forEach((st) => {
+    const m = L.circleMarker([st.lat, st.lon], { radius: 7, weight: 2 }).addTo(stationLayer);
+    m.on("click", () => select(st.key));
+    m.bindTooltip("", { className: "stn", direction: "top", offset: [0, -6] });
+    markers[st.key] = m;
+  });
+}
+
+function styleMarkers() {
+  const t = state.t;
+  STATIONS.forEach((st) => {
+    const m = markers[st.key], v = valueAt(st, t), sel = state.selected === st.key;
+    if (st.kind === "tide") {
+      m.setStyle({ radius: sel ? 8 : 6, color: sel ? "#c2410c" : "#0e7490", fillColor: "#ffffff", fillOpacity: 1, weight: sel ? 3 : 2.5 });
+      m.setTooltipContent(`${esc(st.name)}<br>${v ? v.h.toFixed(2) + " m " + (v.rising ? "rising" : "falling") : "no data"}`);
+    } else {
+      const css = getComputedStyle(document.documentElement);
+      const c = v == null ? "#94a3b8" : Math.abs(v) < 0.5 ? "#64748b" : v > 0 ? "#0f766e" : "#b45309";
+      const r = v == null ? 6 : 5 + Math.min(10, Math.abs(v) * 1.1);
+      m.setStyle({ radius: sel ? r + 2 : r, color: sel ? "#c2410c" : st.gate ? "#ffffff" : "#e2e8f0", weight: sel ? 3 : st.gate ? 2.5 : 1.5, fillColor: c, fillOpacity: 0.92 });
+      m.setTooltipContent(`${esc(st.name)}<br>${v == null ? "no data" : Math.abs(v) < 0.5 ? "slack" : (v > 0 ? "flood " : "ebb ") + Math.abs(v).toFixed(1) + " kn"}`);
+    }
+  });
+}
+
+// ---------- planner
+function chains() {
+  const leg = (k) => ROUTE.legs.find((l) => l.key === k).points;
+  return { stage1: chain(leg("stage1")), stage2: chain(leg("south").concat(leg(state.north).slice(1))) };
+}
+function onTrack(st) { return st.leg === "stage1" || st.leg === "stage2" || st.leg === state.north; }
+
+function slacksNear(sd, t, hours) {
+  return sd.events.filter((e) => e.type === "slack" && Math.abs(Date.parse(e.t) - t) <= hours * H);
+}
+function nextFavourableSlack(st, sd, t) {
+  // first slack at or after (t - 1h) that turns into the favourable stream
+  const ts = sd._ts || (sd._ts = evTimes(sd.events));
+  for (let i = 0; i < sd.events.length - 1; i++) {
+    const e = sd.events[i];
+    if (e.type !== "slack" || ts[i] < t - H) continue;
+    const nxt = sd.events.slice(i + 1).find((x) => x.type !== "slack");
+    if (nxt && nxt.type === st.favourable) return { t: ts[i], peak: nxt };
+  }
+  return null;
+}
+
+function renderPlanner() {
+  const sc = SCENARIOS[state.scenario], ch = chains();
+  const s1 = Date.parse(sc.s1), s2 = Date.parse(sc.s2);
+  const s1end = s1 + (ch.stage1.total / state.spd1) * H;
+  const s2end = s2 + (ch.stage2.total / state.spd2) * H;
+  $("leg-summary").innerHTML = `Stage 1 track ${ch.stage1.total.toFixed(0)} nm, finish about <b>${fmt.format(s1end)}</b>${(s1end - s1) / H > 36 ? ' <span class="warn">(over the 36 h limit)</span>' : ""}. Stage 2 track ${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan about <b>${fmt.format(s2end)}</b> after ${((s2end - s2) / H / 24).toFixed(1)} days.`;
+
+  const rows = STATIONS.filter((st) => (st.gate || st.waypoint) && onTrack(st)).map((st) => {
+    const c = st.leg === "stage1" ? ch.stage1 : ch.stage2, p = project(c, st.lat, st.lon);
+    const eta = (st.leg === "stage1" ? s1 : s2) + (p.along / (st.leg === "stage1" ? state.spd1 : state.spd2)) * H;
+    return { st, along: p.along, off: p.d, eta, stage: st.leg === "stage1" ? 1 : 2 };
+  }).sort((a, b) => a.stage - b.stage || a.along - b.along);
+
+  $("gates").innerHTML = rows.map(({ st, along, eta, stage }) => {
+    const sd = PRED.stations[st.key];
+    let advice = "", now = "";
+    if (sd && st.kind === "current") {
+      const v = currentAt(sd, eta);
+      if (v != null) {
+        const kind = Math.abs(v) < 0.5 ? "slack" : v > 0 ? "flood" : "ebb";
+        const fav = st.favourable ? (kind === "slack" ? "" : kind === st.favourable ? " good" : " bad") : "";
+        now = `<span class="pill ${kind}">${kind === "slack" ? "slack" : kind + " " + Math.abs(v).toFixed(1) + " kn"}</span>` + (fav ? ` <span class="pill${fav}">${fav === " good" ? "with you" : "against you"}</span>` : "");
+      }
+      const vEta = currentAt(sd, eta);
+      const running = vEta != null && Math.abs(vEta) >= 0.5 && (vEta > 0 ? "flood" : "ebb") === st.favourable;
+      if (st.favourable && running) {
+        const turn = sd.events.find((e) => e.type === "slack" && Date.parse(e.t) > eta);
+        advice = turn ? `The ${st.favourable} is with you until slack at <b>${fmtT.format(Date.parse(turn.t))}</b> ${fmtD.format(Date.parse(turn.t))} (${fmtDur((Date.parse(turn.t) - eta) / H)} after you arrive).` : "";
+      } else if (st.favourable) {
+        const n = nextFavourableSlack(st, sd, eta);
+        if (n) {
+          const wait = (n.t - eta) / H;
+          advice = `Slack before ${st.favourable} at <b>${fmtT.format(n.t)}</b> ${fmtD.format(n.t)} (${wait >= 0 ? "wait " + fmtDur(wait) : fmtDur(-wait) + " before you arrive"}), then ${st.favourable} peaks ${n.peak.kn.toFixed(1)} kn at ${fmtT.format(Date.parse(n.peak.t))}.`;
+        }
+      } else {
+        const sl = slacksNear(sd, eta, 4).map((e) => fmtT.format(Date.parse(e.t)));
+        advice = sl.length ? `Slacks within 4 h: ${sl.join(", ")}.` : "";
+      }
+      if (sd.method === "derived") advice += ' <span class="pill derived" title="Derived from CHS 2027 harmonics; replace with official CHS 2028 tables when published">derived</span>';
+    } else if (sd && st.kind === "tide") {
+      const v = tideAt(sd, eta);
+      if (v) now = `<span class="pill">${v.h.toFixed(1)} m ${v.rising ? "rising" : "falling"}</span>`;
+    } else if (!sd) {
+      advice = "No predictions loaded for this station yet.";
+    }
+    return `<div class="gate" tabindex="0" role="button" data-key="${st.key}" data-eta="${eta}">
+      <div class="nm"><b>${along.toFixed(0)}</b>nm S${stage}</div>
+      <div><span class="name">${esc(st.name)}</span>${st.waypoint ? '<span class="wp">Waypoint</span>' : ""}<div class="eta">ETA ${fmt.format(eta)} ${now}</div></div>
+      <div class="advice">${advice}</div></div>`;
+  }).join("");
+  document.querySelectorAll(".gate").forEach((g) => {
+    const go = () => { setTime(+g.dataset.eta); select(g.dataset.key, true); };
+    g.addEventListener("click", go);
+    g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+  Object.entries(routeLayers).forEach(([k, l]) => l.setStyle({ opacity: k === "inside" || k === "outside" ? (k === state.north ? 0.95 : 0.35) : 0.95, dashArray: k === "stage1" ? "8 6" : k === state.north || k === "south" ? null : "2 6" }));
+}
+function fmtDur(h) { const m = Math.round(h * 60); return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`; }
+
+// ---------- detail panel
+function select(key, keepDay) {
+  state.selected = key;
+  const st = STATIONS.find((s) => s.key === key);
+  if (!keepDay || !state.day) state.day = dayStart(state.t);
+  else state.day = dayStart(state.t);
+  renderDetail();
+  styleMarkers();
+  map.panTo([st.lat, st.lon]);
+}
+function dayStart(t) {
+  // local midnight (PDT) of the day containing t
+  const ymd = fmtYMD.format(t);
+  return Date.parse(ymd + "T07:00:00Z");
+}
+function renderDetail() {
+  const el = $("detail");
+  if (!state.selected) { el.hidden = true; return; }
+  const st = STATIONS.find((s) => s.key === state.selected), sd = PRED.stations[st.key];
+  const d0 = state.day, d1 = d0 + 24 * H;
+  el.hidden = false;
+  let body = "";
+  if (!sd) body = '<p class="sub">No predictions loaded for this station yet.</p>';
+  else {
+    const evs = sd.events.filter((e) => { const t = Date.parse(e.t); return t >= d0 && t < d1; });
+    body = svgCurve(st, sd, d0, d1) + `<div class="tbl-wrap"><table><thead><tr><th>Time PDT</th><th>${st.kind === "tide" ? "Tide" : "Event"}</th><th>${st.kind === "tide" ? "Height m" : "Speed kn"}</th></tr></thead><tbody>` +
+      evs.map((e) => `<tr><td>${fmtT.format(Date.parse(e.t))}</td><td>${st.kind === "tide" ? (e.type === "H" ? "High" : "Low") : e.type === "slack" ? "Slack" : "Max " + e.type}</td><td>${st.kind === "tide" ? e.h.toFixed(2) : e.type === "slack" ? "" : e.kn.toFixed(1)}</td></tr>`).join("") + "</tbody></table></div>";
+    const meta = [];
+    meta.push(st.source === "noaa" ? `NOAA station ${esc(st.id)}${sd.bin ? " (bin " + esc(sd.bin) + ")" : ""}` : `CHS station ${esc(st.id)}`);
+    if (st.kind === "tide") meta.push(`heights above ${esc(sd.datum)}`);
+    if (sd.flood_dir != null) meta.push(`flood sets ${Math.round(sd.flood_dir)}&deg;T, ebb ${Math.round(sd.ebb_dir)}&deg;T`);
+    if (sd.method === "derived") {
+      const v = sd.validation || {};
+      meta.push(`<span class="pill derived">derived</span> CHS has not published 2028 current tables yet. These come from ${sd.constituents} harmonic constituents fitted to CHS's 2027 predictions; on held-out Oct to Dec 2027 they matched CHS slack times within ${v.slack_minutes_median} min (median), ${v.slack_minutes_p90} min (90th percentile), and peak speeds within ${v.max_knots_median} kn (median).`);
+    }
+    body += `<p class="sub">${meta.join(". ")}.</p>`;
+  }
+  el.innerHTML = `<div class="detail-head"><h3>${esc(st.name)}</h3><button class="close" id="close" aria-label="Close station detail">Close</button></div>
+    <p class="sub">${esc(st.note || "")}</p>
+    <div class="daynav"><button id="dprev" aria-label="Previous day">&larr;</button><span class="clock">${fmtD.format(d0 + 12 * H)}</span><button id="dnext" aria-label="Next day">&rarr;</button></div>${body}`;
+  $("close").onclick = () => { state.selected = null; renderDetail(); styleMarkers(); };
+  $("dprev").onclick = () => { state.day -= 24 * H; renderDetail(); };
+  $("dnext").onclick = () => { state.day += 24 * H; renderDetail(); };
+}
+function svgCurve(st, sd, d0, d1) {
+  const W = 360, Hh = 150, padL = 30, padR = 8, padT = 10, padB = 20;
+  const pts = [];
+  for (let t = d0; t <= d1; t += 10 * 60e3) { const v = valueAt(st, t); if (v != null) pts.push([t, st.kind === "tide" ? v.h : v]); }
+  if (pts.length < 2) return "";
+  let lo = Math.min(...pts.map((p) => p[1])), hi = Math.max(...pts.map((p) => p[1]));
+  if (st.kind === "current") { const m = Math.max(Math.abs(lo), Math.abs(hi), 1); lo = -m; hi = m; } else { lo = Math.min(0, Math.floor(lo)); hi = Math.ceil(hi); }
+  const x = (t) => padL + ((t - d0) / (d1 - d0)) * (W - padL - padR);
+  const y = (v) => padT + (1 - (v - lo) / (hi - lo)) * (Hh - padT - padB);
+  const path = pts.map((p, i) => (i ? "L" : "M") + x(p[0]).toFixed(1) + " " + y(p[1]).toFixed(1)).join("");
+  const zero = y(st.kind === "current" ? 0 : lo);
+  const area = path + `L${x(pts[pts.length - 1][0]).toFixed(1)} ${zero.toFixed(1)}L${x(pts[0][0]).toFixed(1)} ${zero.toFixed(1)}Z`;
+  const step = st.kind === "current" ? Math.max(1, Math.ceil(hi / 3)) : Math.max(1, Math.ceil((hi - lo) / 4));
+  let grid = "";
+  for (let v = st.kind === "current" ? -Math.floor(hi / step) * step : lo; v <= hi + 1e-9; v += step) grid += `<line x1="${padL}" x2="${W - padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)" stroke-width="${v === 0 ? 1.2 : 0.6}"/><text x="${padL - 4}" y="${y(v) + 3.5}" text-anchor="end">${v}</text>`;
+  for (let h = 0; h <= 24; h += 6) grid += `<text x="${x(d0 + h * H)}" y="${Hh - 5}" text-anchor="middle">${String(h).padStart(2, "0")}</text>`;
+  const fill = st.kind === "current" ? "var(--flood)" : "#0e7490";
+  const now = state.t >= d0 && state.t <= d1 ? `<line x1="${x(state.t)}" x2="${x(state.t)}" y1="${padT}" y2="${Hh - padB}" stroke="var(--accent)" stroke-width="1.5"/>` : "";
+  const clipTop = `<clipPath id="ctop"><rect x="0" y="0" width="${W}" height="${zero}"/></clipPath><clipPath id="cbot"><rect x="0" y="${zero}" width="${W}" height="${Hh}"/></clipPath>`;
+  const shapes = st.kind === "current"
+    ? `<path d="${area}" fill="var(--flood)" fill-opacity=".25" clip-path="url(#ctop)"/><path d="${area}" fill="var(--ebb)" fill-opacity=".25" clip-path="url(#cbot)"/><path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.4"/>`
+    : `<path d="${area}" fill="${fill}" fill-opacity=".2"/><path d="${path}" fill="none" stroke="${fill}" stroke-width="1.6"/>`;
+  const unit = st.kind === "current" ? "kn (+ flood, &minus; ebb)" : "m";
+  return `<svg class="chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(st.name)} ${st.kind} curve"><defs>${clipTop}</defs>${grid}${shapes}${now}<text x="${padL}" y="${padT - 1}">${unit}</text></svg>`;
+}
+
+// ---------- time + controls
+function setTime(t) {
+  const r = $("time");
+  state.t = Math.max(+r.min, Math.min(+r.max, Math.round(t / 600e3) * 600e3));
+  r.value = state.t;
+  const moon = MOON.map(([d, n]) => [Date.parse(d), n]).sort((a, b) => Math.abs(a[0] - state.t) - Math.abs(b[0] - state.t))[0];
+  const dd = (moon[0] - state.t) / (24 * H);
+  $("clock").textContent = `${fmt.format(state.t)} PDT · ${moon[1]} ${Math.abs(dd) < 0.5 ? "today" : Math.abs(dd).toFixed(0) + " d " + (dd > 0 ? "ahead" : "ago")}`;
+  styleMarkers();
+  if (state.selected) renderDetail();
+}
+function renderScenario() {
+  $("scenario").innerHTML = Object.entries(SCENARIOS).map(([k, s]) => `<button type="button" aria-pressed="${k === state.scenario}" data-k="${k}">${s.label}<small>Stage 1 05:00 · Stage 2 ${fmtD.format(Date.parse(s.s2))} noon</small></button>`).join("");
+  document.querySelectorAll("#scenario button").forEach((b) => b.onclick = () => { state.scenario = b.dataset.k; save(); renderScenario(); renderPlanner(); setTime(Date.parse(SCENARIOS[state.scenario].s1)); });
+  $("scn-note").textContent = SCENARIOS[state.scenario].note;
+}
+
+async function main() {
+  const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(p + " " + r.status); return r.json(); });
+  let cfg;
+  [ROUTE, cfg] = await Promise.all([get("data/route.json"), get("data/stations.json")]);
+  STATIONS = cfg.stations;
+  try { PRED = await get("data/predictions.json"); } catch (e) { PRED = { stations: {}, failures: ["predictions.json not found: run the Fetch predictions workflow"] }; }
+  const r = $("time");
+  r.min = Date.parse(cfg.window.start); r.max = Date.parse(cfg.window.end); r.step = 600e3;
+  r.addEventListener("input", () => setTime(+r.value));
+  $("spd1").value = state.spd1; $("spd2").value = state.spd2; $("north").value = state.north;
+  $("spd1").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v > 0) { state.spd1 = v; save(); renderPlanner(); } });
+  $("spd2").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v > 0) { state.spd2 = v; save(); renderPlanner(); } });
+  $("north").addEventListener("change", (e) => { state.north = e.target.value; save(); renderPlanner(); });
+
+  const derived = Object.entries(PRED.stations).filter(([, s]) => s.method === "derived").map(([k]) => STATIONS.find((s) => s.key === k)?.name).filter(Boolean);
+  $("data-status").innerHTML = (PRED.generated ? `<p>Predictions fetched ${esc(PRED.generated.replace("T", " "))} UTC for ${Object.keys(PRED.stations).length} stations.</p>` : "") +
+    (derived.length ? `<p><span class="pill derived">derived</span> CHS 2028 current tables are not published yet, so ${esc(derived.join(", "))} use harmonics fitted to CHS's 2027 predictions. Re-run the fetch once CHS publishes 2028.</p>` : "") +
+    (PRED.failures && PRED.failures.length ? `<p class="warn">Missing: ${esc(PRED.failures.join("; "))}</p>` : "");
+
+  initMap();
+  renderScenario();
+  renderPlanner();
+  setTime(Date.parse(SCENARIOS[state.scenario].s1));
+}
+main().catch((e) => { document.querySelector("aside").insertAdjacentHTML("afterbegin", `<p class="warn">Could not load the planner data: ${esc(e.message)}</p>`); });
+</script>
+</body>
+</html>
