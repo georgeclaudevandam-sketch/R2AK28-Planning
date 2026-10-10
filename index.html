@@ -489,6 +489,10 @@ function simulateRow(ch, gates, start, v, hours, win, waits) {
     if (tr[j][0] - tr[i][0] >= 3 * H && tr[i][1] < total - 0.1) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
     i = j + 1;
   }
+  // the longest stop in each 24 h from the start is that day's camp; the others are waits for the tide
+  const best = {};
+  out.rests.forEach((r) => { const d = Math.floor(((r.t + r.until) / 2 - start) / (24 * H)); if (!best[d] || r.until - r.t > best[d].until - best[d].t) best[d] = r; });
+  Object.values(best).forEach((r) => { r.camp = true; });
   return { track: tr, nights: out.rests, passed: out.passed, finish: st.t };
 }
 function posAt(track, t) {
@@ -536,6 +540,8 @@ function renderPlanner() {
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
   if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
+  { const c = r2.nights.filter((x) => x.camp).length, w = r2.nights.length - c;
+    rows.push(["Stops", `${c} camps (numbered on the map, the longest stop each day)${w ? `, plus ${w} shorter waits for the tide (small dots)` : ""}`]); }
   rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
   rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
   $("leg-summary").innerHTML = `<dl class="summary">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl><p class="sub">Sweeper and race-end dates are inferred from the 2026 schedule.</p>`;
@@ -591,7 +597,12 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  r2.nights.forEach((x, i) => L.marker(pointAt(ch.stage2, x.pos), { icon: L.divIcon({ className: "night", html: String(i + 1), iconSize: [18, 14] }) }).bindTooltip(`Stop ${i + 1}: ${fmt.format(x.t)}${x.until ? " to " + fmtT.format(x.until) : ""}, ${esc(nearPlace(pointAt(ch.stage2, x.pos)))}`).addTo(nightLayer));
+  let camp = 0;
+  r2.nights.forEach((x) => {
+    const ll = pointAt(ch.stage2, x.pos), when = `${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur((x.until - x.t) / H)}), ${esc(nearPlace(ll))}`;
+    if (x.camp) { camp++; L.marker(ll, { icon: L.divIcon({ className: "night", html: String(camp), iconSize: [18, 14] }), zIndexOffset: 500 }).bindTooltip(`Camp ${camp}: ${when}`).addTo(nightLayer); }
+    else L.circleMarker(ll, { radius: 4, color: "#111827", weight: 1.5, fillColor: "#facc15", fillOpacity: 1 }).bindTooltip(`Wait for the tide: ${when}`).addTo(nightLayer);
+  });
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
   const ph = PHASES.map(([t, n]) => [Date.parse(t), n]).sort((x, y) => Math.abs(x[0] - P.s2) - Math.abs(y[0] - P.s2))[0];
