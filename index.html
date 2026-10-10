@@ -93,6 +93,17 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
 .sources { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
 .sources a { color: inherit; }
 .warn { color: var(--bad); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font: 13px var(--font-ui); color: var(--ink); background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+.chips button[aria-pressed="true"] { border-color: var(--accent); }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+input[type="date"], input[type="time"] { font: 14px var(--font-data); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 5px; padding: 4px 6px; }
+label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); }
+#days-tbl td:first-child, #days-tbl th:first-child { white-space: nowrap; }
+.summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; font-size: 13px; color: var(--ink); }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; font-family: var(--font-data); font-size: 12.5px; }
+.night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
 .leaflet-container { font: 13px var(--font-ui); }
 .leaflet-tooltip.stn { font: 12px var(--font-data); padding: 3px 6px; }
@@ -111,19 +122,41 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
     </header>
 
     <section aria-labelledby="h-scn">
-      <h2 id="h-scn">Start date</h2>
-      <div class="seg" id="scenario"></div>
+      <h2 id="h-scn">Start</h2>
+      <div class="chips" id="presets"></div>
+      <div class="row">
+        <label for="s1d">Stage 1 start<input id="s1d" type="date" min="2028-05-21" max="2028-06-30" value="2028-06-04"></label>
+        <label for="s1t">Time<input id="s1t" type="time" value="05:00"></label>
+        <label for="s2d">Stage 2 start<input id="s2d" type="date" min="2028-05-21" max="2028-07-05" value="2028-06-07"></label>
+        <label for="s2t">Time<input id="s2t" type="time" value="12:00"></label>
+      </div>
       <p class="note" id="scn-note"></p>
     </section>
 
     <section aria-labelledby="h-boat">
       <h2 id="h-boat">Boat</h2>
-      <div class="row">
+      <div class="seg" id="mode">
+        <button type="button" data-m="sail">Sail<small>Moves around the clock at an average speed</small></button>
+        <button type="button" data-m="human">Human power<small>Pick a finish time; paddles a daily window</small></button>
+      </div>
+      <div class="row" id="sail-inputs">
         <label for="spd1">Stage 1 avg kn<input id="spd1" type="number" min="1" max="25" step="0.5" value="5"></label>
         <label for="spd2">Stage 2 avg kn<input id="spd2" type="number" min="0.5" max="25" step="0.5" value="5"></label>
-        <label for="north">North of Bella Bella<select id="north"><option value="inside">Inside (Grenville Ch.)</option><option value="outside">Outside (Hecate Str.)</option></select></label>
       </div>
-      <p class="sub" id="leg-summary"></p>
+      <div id="human-inputs" class="stack">
+        <label for="days">Victoria to Ketchikan: <b class="clock" id="days-out"></b>
+          <input id="days" type="range" min="8" max="24" step="0.5" value="16"></label>
+        <p class="sub">For reference: human-powered boats usually take 2.5 to 3 weeks; the last 2026 finisher, a rowboat, took 21 d 06 h.</p>
+        <div class="row">
+          <label for="wstart">Paddle from<input id="wstart" type="time" value="05:00"></label>
+          <label for="whours">Hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
+        </div>
+      </div>
+      <div class="row">
+        <label for="north">North of Bella Bella<select id="north"><option value="inside">Inside (Grenville Ch.)</option><option value="outside">Outside (Hecate Str.)</option></select></label>
+        <label class="check" for="waits"><input id="waits" type="checkbox" checked> Wait for slack at gates when the stream against you is over 1.5 kn</label>
+      </div>
+      <div class="sub" id="leg-summary"></div>
     </section>
 
     <section aria-labelledby="h-time">
@@ -135,6 +168,7 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
         <span><i style="background:var(--ebb)"></i>Ebb</span>
         <span><i style="background:var(--slack)"></i>Slack (&lt;0.5 kn)</span>
         <span><i style="background:#fff;border:2px solid #0e7490"></i>Tide station</span>
+        <span><i style="background:#facc15;border-radius:2px"></i>Night stop</span>
       </div>
     </section>
 
@@ -142,8 +176,13 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
 
     <section aria-labelledby="h-gates">
       <h2 id="h-gates">Tidal gates on your track</h2>
-      <p class="sub">ETA assumes the average speed above from each stage start. Times are Pacific Daylight Time.</p>
+      <p class="sub">Arrival times include any waits for foul current. Times are Pacific Daylight Time.</p>
       <div class="gates" id="gates"></div>
+    </section>
+
+    <section aria-labelledby="h-days">
+      <h2 id="h-days">Day by day</h2>
+      <div class="tbl-wrap"><table id="days-tbl"></table></div>
     </section>
 
     <section aria-labelledby="h-src" class="sources">
@@ -159,13 +198,15 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
 <script>
 "use strict";
 const TZ = "America/Los_Angeles";
-const SCENARIOS = {
-  jun4: { label: "Sun 4 June", s1: "2028-06-04T12:00:00Z", s2: "2028-06-07T19:00:00Z",
-    note: "First Sunday in June. Stage 2 starts Wed 7 June at noon, about 12 hours before the full moon (6 June 23:08 PDT), so the first days of Stage 2 run on spring tides and the strongest currents of the month at Seymour Narrows." },
-  jun11: { label: "Sun 11 June", s1: "2028-06-11T12:00:00Z", s2: "2028-06-14T19:00:00Z",
-    note: "Matches the race's usual second-week pattern. Stage 2 starts Wed 14 June, the day of lunar apogee and a day before last quarter (15 June), so currents are near their weakest of the month." }
-};
-const MOON = [["2028-05-31T07:36Z", "First quarter"], ["2028-06-07T06:09Z", "Full moon"], ["2028-06-15T04:27Z", "Last quarter"], ["2028-06-22T18:27Z", "New moon"], ["2028-06-29T12:11Z", "First quarter"]];
+const PRESETS = [["2028-06-04", "Sun 4 Jun", "First Sunday in June"], ["2028-06-11", "Sun 11 Jun", "Usual second-week pattern"]];
+const MOON = [["2028-05-16T10:43Z","Last quarter"],["2028-05-17T10:00Z","Apogee"],["2028-05-24T08:16Z","New moon"],["2028-05-31T07:00Z","Perigee"],["2028-05-31T07:36Z","First quarter"],["2028-06-07T06:08Z","Full moon"],["2028-06-14T05:00Z","Apogee"],["2028-06-15T04:27Z","Last quarter"],["2028-06-22T18:27Z","New moon"],["2028-06-26T04:00Z","Perigee"],["2028-06-29T12:10Z","First quarter"],["2028-07-06T18:10Z","Full moon"],["2028-07-11T22:00Z","Apogee"],["2028-07-14T20:56Z","Last quarter"],["2028-07-22T03:01Z","New moon"],["2028-07-23T22:00Z","Perigee"],["2028-07-28T17:40Z","First quarter"],["2028-08-05T08:09Z","Full moon"]];
+const PHASES = MOON.filter((m) => /moon|quarter/.test(m[1]));
+// Places for naming night stops (approximate positions, "near X").
+const PLACES = [["Port Townsend",48.12,-122.76],["Victoria",48.42,-123.37],["Sidney",48.65,-123.40],["Nanaimo",49.17,-123.94],["Lasqueti Island",49.48,-124.27],["Comox",49.67,-124.93],["Campbell River",50.03,-125.24],["Seymour Narrows",50.13,-125.35],["Chatham Point",50.33,-125.44],["Kelsey Bay",50.40,-125.96],["Port Neville",50.49,-126.08],["Alert Bay",50.59,-126.93],["Port McNeill",50.59,-127.08],["Port Hardy",50.72,-127.49],["God's Pocket",50.84,-127.59],["Cape Caution",51.16,-127.79],["Namu",51.86,-127.87],["Bella Bella",52.16,-128.14],["Klemtu",52.59,-128.52],["Aristazabal Island",52.65,-129.10],["Butedale",53.16,-128.70],["Hartley Bay",53.42,-129.25],["Lowe Inlet",53.56,-129.58],["Banks Island",53.40,-130.10],["Bonilla Island",53.49,-130.64],["Prince Rupert",54.31,-130.32],["Dundas Island",54.55,-130.85],["Foggy Bay",54.95,-130.95],["Ketchikan",55.34,-131.64]];
+const FOUL_KN = 1.5;          // wait at a gate when the stream against you is stronger than this
+const SWEEPER_NM_DAY = 75;    // Grim Sweeper pace (2026 race packet)
+const SWEEPER_DAYS = 12;      // 2026: left Port Townsend 29 June noon, 12 days after the Stage 2 start (inferred for 2028)
+const RACE_END_DAYS = 22;     // 2026: race ended 9 July noon, 22 days after the Stage 2 start (inferred for 2028)
 
 const fmt = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false });
 const fmtT = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false });
@@ -176,9 +217,14 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const state = { scenario: "jun4", spd1: 5, spd2: 5, north: "inside", t: null, selected: null, day: null };
-try { const s = JSON.parse(localStorage.getItem("r2ak28") || "{}"); Object.assign(state, s, { t: null, selected: null, day: null }); } catch (e) {}
-function save() { try { localStorage.setItem("r2ak28", JSON.stringify({ scenario: state.scenario, spd1: state.spd1, spd2: state.spd2, north: state.north })); } catch (e) {} }
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "mode", "spd1", "spd2", "days", "wstart", "whours", "north", "waits"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", mode: "sail", spd1: 5, spd2: 5, days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, t: null, selected: null, day: null };
+try { const s = JSON.parse(localStorage.getItem("r2ak28v2") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
+function save() { try { localStorage.setItem("r2ak28v2", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
+// local (PDT, UTC-7) date + time to epoch ms
+function pdt(d, t) { return Date.parse(`${d}T${t}:00-07:00`); }
+function addDays(d, n) { const x = new Date(d + "T12:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); }
+function nextWednesday(d) { const dow = new Date(d + "T12:00:00Z").getUTCDay(); return addDays(d, ((3 - dow + 7) % 7) || 7); }
 
 // ---------- geometry
 function nmBetween(a, b) {
@@ -300,66 +346,129 @@ function onTrack(st) { return st.leg === "stage1" || st.leg === "stage2" || st.l
 function slacksNear(sd, t, hours) {
   return sd.events.filter((e) => e.type === "slack" && Math.abs(Date.parse(e.t) - t) <= hours * H);
 }
-function nextFavourableSlack(st, sd, t) {
-  // first slack at or after (t - 1h) that turns into the favourable stream
-  const ts = sd._ts || (sd._ts = evTimes(sd.events));
-  for (let i = 0; i < sd.events.length - 1; i++) {
-    const e = sd.events[i];
-    if (e.type !== "slack" || ts[i] < t - H) continue;
-    const nxt = sd.events.slice(i + 1).find((x) => x.type !== "slack");
-    if (nxt && nxt.type === st.favourable) return { t: ts[i], peak: nxt };
+
+function starts() { return { s1: pdt(state.s1d, state.s1t), s2: pdt(state.s2d, state.s2t) }; }
+function pointAt(ch, along) {
+  const i = Math.max(1, ch.cum.findIndex((c) => c >= along));
+  if (along >= ch.total) return ch.points[ch.points.length - 1];
+  const a = ch.points[i - 1], b = ch.points[i], f = (along - ch.cum[i - 1]) / ((ch.cum[i] - ch.cum[i - 1]) || 1);
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+}
+function nearPlace(ll) {
+  let best = null;
+  PLACES.forEach(([n, la, lo]) => { const d = nmBetween(ll, [la, lo]); if (!best || d < best.d) best = { n, d }; });
+  return best.d < 4 ? best.n : best.d < 25 ? `near ${best.n}` : `${best.d.toFixed(0)} nm from ${best.n}`;
+}
+// minutes since the paddling window opened (local PDT), or null when paddling around the clock
+function winPos(t, win) { if (!win) return null; return ((((t / 60000 - 7 * 60 - win.start) % 1440) + 1440) % 1440); }
+function inWin(t, win) { return !win || winPos(t, win) < win.hours * 60; }
+function againstAt(st, t) {
+  const sd = PRED.stations[st.key]; if (!sd || !st.favourable) return 0;
+  const v = currentAt(sd, t); if (v == null) return 0;
+  return st.favourable === "flood" ? -v : v;
+}
+function gatesOn(ch, stage) {
+  return STATIONS.filter((st) => (st.gate || st.waypoint) && onTrack(st) && (st.leg === "stage1") === (stage === 1))
+    .map((st) => { const p = project(ch, st.lat, st.lon); return { st, along: p.along }; }).sort((a, b) => a.along - b.along);
+}
+function simulate(ch, gates, start, v, win, waits) {
+  let t = start, pos = 0, gi = 0, guard = 0;
+  const track = [[t, 0]], nights = [], passed = [];
+  while (pos < ch.total - 1e-6 && guard++ < 5000) {
+    if (!inWin(t, win)) { nights.push({ t, pos }); t += (1440 - winPos(t, win)) * 60000; track.push([t, pos]); continue; }
+    const g = gi < gates.length ? gates[gi] : null;
+    const target = g ? g.along : ch.total;
+    const tEnd = win ? t + (win.hours * 60 - winPos(t, win)) * 60000 : Infinity;
+    const tArr = t + ((target - pos) / v) * H;
+    if (tArr <= tEnd) {
+      t = tArr; pos = target; track.push([t, pos]);
+      if (g) {
+        let dep = t;
+        // only stop for a stream against you stronger than FOUL_KN; then wait for slack (under 0.5 kn against)
+        if (waits && g.st.favourable && againstAt(g.st, t) > FOUL_KN) {
+          let k = 0;
+          while ((againstAt(g.st, dep) > 0.5 || !inWin(dep, win)) && k++ < 432) dep += 10 * 60000;
+          if (dep > t && win && winPos(t, win) + (dep - t) / 60000 >= win.hours * 60) nights.push({ t: t + (win.hours * 60 - winPos(t, win)) * 60000, pos });
+        }
+        passed.push({ ...g, arr: t, dep, wait: (dep - t) / H });
+        if (dep > t) { t = dep; track.push([t, pos]); }
+        gi++;
+      }
+    } else { pos += ((tEnd - t) / H) * v; t = tEnd; track.push([t, pos]); }
   }
-  return null;
+  return { track, nights, passed, finish: t };
+}
+function posAt(track, t) {
+  if (t <= track[0][0]) return track[0][1];
+  for (let i = 1; i < track.length; i++) if (track[i][0] >= t) { const a = track[i - 1], b = track[i]; return a[1] + (b[1] - a[1]) * ((t - a[0]) / ((b[0] - a[0]) || 1)); }
+  return track[track.length - 1][1];
+}
+function plan() {
+  const ch = chains(), { s1, s2 } = starts();
+  const human = state.mode === "human";
+  const [hh, mm] = state.wstart.split(":").map(Number);
+  const win = human && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
+  const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
+  let v2 = state.spd2, v1 = state.spd1, solved = true;
+  if (human) {
+    const target = s2 + state.days * 24 * H;
+    let lo = 0.3, hi = 15;
+    for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (simulate(ch.stage2, g2, s2, mid, win, state.waits).finish > target) lo = mid; else hi = mid; }
+    v2 = v1 = hi;
+    solved = Math.abs(simulate(ch.stage2, g2, s2, hi, win, state.waits).finish - target) < 3 * H;
+  }
+  const r1 = simulate(ch.stage1, g1, s1, v1, win, state.waits), r2 = simulate(ch.stage2, g2, s2, v2, win, state.waits);
+  // Grim Sweeper: leaves Port Townsend SWEEPER_DAYS after the Stage 2 start, at noon, at SWEEPER_NM_DAY
+  const swDep = pdt(addDays(state.s2d, SWEEPER_DAYS), "12:00"), raceEnd = pdt(addDays(state.s2d, RACE_END_DAYS), "12:00");
+  let swept = null;
+  for (let t = swDep; t <= r2.finish; t += H / 2) {
+    const sw = ((t - swDep) / H) * (SWEEPER_NM_DAY / 24), boat = ch.stage1.total + posAt(r2.track, t);
+    if (sw >= boat) { swept = { t, pos: boat - ch.stage1.total }; break; }
+  }
+  return { ch, s1, s2, v1, v2, solved, win, r1, r2, swDep, raceEnd, swept, human };
 }
 
+let nightLayer;
 function renderPlanner() {
-  const sc = SCENARIOS[state.scenario], ch = chains();
-  const s1 = Date.parse(sc.s1), s2 = Date.parse(sc.s2);
-  const s1end = s1 + (ch.stage1.total / state.spd1) * H;
-  const s2end = s2 + (ch.stage2.total / state.spd2) * H;
-  $("leg-summary").innerHTML = `Stage 1 track ${ch.stage1.total.toFixed(0)} nm, finish about <b>${fmt.format(s1end)}</b>${(s1end - s1) / H > 36 ? ' <span class="warn">(over the 36 h limit)</span>' : ""}. Stage 2 track ${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan about <b>${fmt.format(s2end)}</b> after ${((s2end - s2) / H / 24).toFixed(1)} days.`;
+  const P = plan(), { ch, r1, r2 } = P;
+  $("sail-inputs").hidden = P.human; $("human-inputs").hidden = !P.human;
+  document.querySelectorAll("#mode button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === state.mode)));
+  $("days-out").textContent = `${state.days} days`;
+  const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
+  const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
+  const rows = [];
+  if (P.human) rows.push(["Paddling speed", `${P.v2.toFixed(2)} kn through the water while paddling${P.solved ? "" : ' <span class="warn">(cannot hit this duration with this schedule)</span>'}`]);
+  rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
+  rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
+  if (waits > 0.05) rows.push(["Gate waits", fmtDur(waits) + " in total"]);
+  rows.push(["Grim Sweeper", P.swept ? `<span class="warn">passes you ${fmt.format(P.swept.t)}, ${esc(nearPlace(pointAt(ch.stage2, P.swept.pos)))}</span>` : `stays behind you (leaves Port Townsend ${fmtD.format(P.swDep)} noon, ${SWEEPER_NM_DAY} nm/day)`]);
+  rows.push(["Race end", r2.finish > P.raceEnd ? `<span class="warn">you finish after ${fmt.format(P.raceEnd)}</span>` : `${fmt.format(P.raceEnd)}, ${((P.raceEnd - r2.finish) / H / 24).toFixed(1)} d after you finish`]);
+  $("leg-summary").innerHTML = `<dl class="summary">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl><p class="sub">Sweeper and race-end dates are inferred from the 2026 schedule.</p>`;
 
-  const rows = STATIONS.filter((st) => (st.gate || st.waypoint) && onTrack(st)).map((st) => {
-    const c = st.leg === "stage1" ? ch.stage1 : ch.stage2, p = project(c, st.lat, st.lon);
-    const eta = (st.leg === "stage1" ? s1 : s2) + (p.along / (st.leg === "stage1" ? state.spd1 : state.spd2)) * H;
-    return { st, along: p.along, off: p.d, eta, stage: st.leg === "stage1" ? 1 : 2 };
-  }).sort((a, b) => a.stage - b.stage || a.along - b.along);
-
-  $("gates").innerHTML = rows.map(({ st, along, eta, stage }) => {
+  const gates = r1.passed.map((g) => ({ ...g, stage: 1 })).concat(r2.passed.map((g) => ({ ...g, stage: 2 })));
+  $("gates").innerHTML = gates.map(({ st, along, arr, dep, wait, stage }) => {
     const sd = PRED.stations[st.key];
-    let advice = "", now = "";
+    let now = "", advice = "";
     if (sd && st.kind === "current") {
-      const v = currentAt(sd, eta);
-      if (v != null) {
-        const kind = Math.abs(v) < 0.5 ? "slack" : v > 0 ? "flood" : "ebb";
-        const fav = st.favourable ? (kind === "slack" ? "" : kind === st.favourable ? " good" : " bad") : "";
-        now = `<span class="pill ${kind}">${kind === "slack" ? "slack" : kind + " " + Math.abs(v).toFixed(1) + " kn"}</span>` + (fav ? ` <span class="pill${fav}">${fav === " good" ? "with you" : "against you"}</span>` : "");
-      }
-      const vEta = currentAt(sd, eta);
-      const running = vEta != null && Math.abs(vEta) >= 0.5 && (vEta > 0 ? "flood" : "ebb") === st.favourable;
-      if (st.favourable && running) {
-        const turn = sd.events.find((e) => e.type === "slack" && Date.parse(e.t) > eta);
-        advice = turn ? `The ${st.favourable} is with you until slack at <b>${fmtT.format(Date.parse(turn.t))}</b> ${fmtD.format(Date.parse(turn.t))} (${fmtDur((Date.parse(turn.t) - eta) / H)} after you arrive).` : "";
-      } else if (st.favourable) {
-        const n = nextFavourableSlack(st, sd, eta);
-        if (n) {
-          const wait = (n.t - eta) / H;
-          advice = `Slack before ${st.favourable} at <b>${fmtT.format(n.t)}</b> ${fmtD.format(n.t)} (${wait >= 0 ? "wait " + fmtDur(wait) : fmtDur(-wait) + " before you arrive"}), then ${st.favourable} peaks ${n.peak.kn.toFixed(1)} kn at ${fmtT.format(Date.parse(n.peak.t))}.`;
-        }
+      const pill = (t) => { const v = currentAt(sd, t); if (v == null) return ""; const k = Math.abs(v) < 0.5 ? "slack" : v > 0 ? "flood" : "ebb";
+        const f = st.favourable && k !== "slack" ? (k === st.favourable ? ' <span class="pill good">with you</span>' : ' <span class="pill bad">against you</span>') : "";
+        return `<span class="pill ${k}">${k === "slack" ? "slack" : k + " " + Math.abs(v).toFixed(1) + " kn"}</span>${f}`; };
+      now = pill(arr);
+      if (wait > 0.01) advice = `Wait ${fmtDur(wait)} until <b>${fmt.format(dep)}</b>, then ${pill(dep)}.`;
+      else if (st.favourable) {
+        const turn = sd.events.find((e) => e.type === "slack" && Date.parse(e.t) > arr);
+        if (turn) advice = `Next slack ${fmt.format(Date.parse(turn.t))}.`;
       } else {
-        const sl = slacksNear(sd, eta, 4).map((e) => fmtT.format(Date.parse(e.t)));
+        const sl = slacksNear(sd, arr, 4).map((e) => fmtT.format(Date.parse(e.t)));
         advice = sl.length ? `Slacks within 4 h: ${sl.join(", ")}.` : "";
       }
       if (sd.method === "derived") advice += ' <span class="pill derived" title="Derived from CHS 2027 harmonics; replace with official CHS 2028 tables when published">derived</span>';
     } else if (sd && st.kind === "tide") {
-      const v = tideAt(sd, eta);
-      if (v) now = `<span class="pill">${v.h.toFixed(1)} m ${v.rising ? "rising" : "falling"}</span>`;
-    } else if (!sd) {
-      advice = "No predictions loaded for this station yet.";
-    }
-    return `<div class="gate" tabindex="0" role="button" data-key="${st.key}" data-eta="${eta}">
+      const v = tideAt(sd, arr); if (v) now = `<span class="pill">${v.h.toFixed(1)} m ${v.rising ? "rising" : "falling"}</span>`;
+    } else if (!sd) advice = "No predictions loaded for this station yet.";
+    return `<div class="gate" tabindex="0" role="button" data-key="${st.key}" data-eta="${arr}">
       <div class="nm"><b>${along.toFixed(0)}</b>nm S${stage}</div>
-      <div><span class="name">${esc(st.name)}</span>${st.waypoint ? '<span class="wp">Waypoint</span>' : ""}<div class="eta">ETA ${fmt.format(eta)} ${now}</div></div>
+      <div><span class="name">${esc(st.name)}</span>${st.waypoint ? '<span class="wp">Waypoint</span>' : ""}<div class="eta">${fmt.format(arr)} ${now}</div></div>
       <div class="advice">${advice}</div></div>`;
   }).join("");
   document.querySelectorAll(".gate").forEach((g) => {
@@ -367,6 +476,38 @@ function renderPlanner() {
     g.addEventListener("click", go);
     g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
   });
+
+  // day-by-day table (local calendar days)
+  const total1 = ch.stage1.total;
+  const cpos = (t) => t < P.s2 ? posAt(r1.track, t) : total1 + posAt(r2.track, t);
+  const where = (p) => p < total1 - 0.01 ? nearPlace(pointAt(ch.stage1, p)) : p - total1 < 0.01 ? "Victoria" : nearPlace(pointAt(ch.stage2, p - total1));
+  let d = state.s1d, out = [], n = 0;
+  const finishDay = fmtYMD.format(r2.finish);
+  while (d <= finishDay && n++ < 60) {
+    const a = pdt(d, "00:00"), b = Math.min(pdt(addDays(d, 1), "00:00"), r2.finish);
+    const pa = cpos(Math.max(a, P.s1)), pb = cpos(b);
+    const gd = gates.filter((g) => g.arr >= a && g.arr < b + 1).map((g) => `${esc(g.st.name.replace(/ \(.*\)/, ""))} ${fmtT.format(g.dep)}`);
+    const label = b >= r2.finish ? "Ketchikan finish " + fmtT.format(r2.finish) : where(pb);
+    out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td>${(pb - pa).toFixed(0)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
+    d = addDays(d, 1);
+  }
+  $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th>nm</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>`;
+
+  // night stops on the map
+  nightLayer.clearLayers();
+  r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
+  r2.nights.forEach((x, i) => L.marker(pointAt(ch.stage2, x.pos), { icon: L.divIcon({ className: "night", html: String(i + 1), iconSize: [18, 14] }) }).bindTooltip(`Night ${i + 1}: ${fmt.format(x.t)}, ${esc(nearPlace(pointAt(ch.stage2, x.pos)))}`).addTo(nightLayer));
+
+  // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
+  const ph = PHASES.map(([t, n]) => [Date.parse(t), n]).sort((x, y) => Math.abs(x[0] - P.s2) - Math.abs(y[0] - P.s2))[0];
+  const ap = MOON.filter(([t, n]) => /gee/.test(n) && Math.abs(Date.parse(t) - P.s2) < 3.5 * 24 * H).map(([t, n]) => `${n.toLowerCase()} ${fmtD.format(Date.parse(t))}`);
+  const dd = (ph[0] - P.s2) / (24 * H);
+  const tideKind = /Full|New/.test(ph[1]) ? (Math.abs(dd) <= 3 ? "spring tides" : "") : (Math.abs(dd) <= 3 ? "neap tides" : "");
+  const sn = PRED.stations["seymour-narrows"];
+  const pk = sn ? Math.max(0, ...sn.events.filter((e) => { const t = Date.parse(e.t); return t >= P.s2 && t < P.s2 + 4 * 24 * H; }).map((e) => e.kn)) : 0;
+  $("scn-note").innerHTML = `Stage 2 starts ${fmt.format(P.s2)}. ${ph[1]} ${Math.abs(dd) < 0.5 ? "that day" : Math.abs(dd).toFixed(1) + " days " + (dd > 0 ? "later" : "earlier")}${ap.length ? ", " + ap.join(", ") : ""}${tideKind ? `, so the first days run on <b>${tideKind}</b>` : ""}. Seymour Narrows peaks at <b>${pk.toFixed(1)} kn</b> in the first 4 days.`;
+  document.querySelectorAll("#presets button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.d === state.s1d)));
+
   Object.entries(routeLayers).forEach(([k, l]) => l.setStyle({ opacity: k === "inside" || k === "outside" ? (k === state.north ? 0.95 : 0.35) : 0.95, dashArray: k === "stage1" ? "8 6" : k === state.north || k === "south" ? null : "2 6" }));
 }
 function fmtDur(h) { const m = Math.round(h * 60); return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`; }
@@ -452,12 +593,9 @@ function setTime(t) {
   styleMarkers();
   if (state.selected) renderDetail();
 }
-function renderScenario() {
-  $("scenario").innerHTML = Object.entries(SCENARIOS).map(([k, s]) => `<button type="button" aria-pressed="${k === state.scenario}" data-k="${k}">${s.label}<small>Stage 1 05:00 · Stage 2 ${fmtD.format(Date.parse(s.s2))} noon</small></button>`).join("");
-  document.querySelectorAll("#scenario button").forEach((b) => b.onclick = () => { state.scenario = b.dataset.k; save(); renderScenario(); renderPlanner(); setTime(Date.parse(SCENARIOS[state.scenario].s1)); });
-  $("scn-note").textContent = SCENARIOS[state.scenario].note;
-}
-
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "spd1", "spd2", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("waits").checked = state.waits; }
+let rt;
+function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
   const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(p + " " + r.status); return r.json(); });
   let cfg;
@@ -467,10 +605,21 @@ async function main() {
   const r = $("time");
   r.min = Date.parse(cfg.window.start); r.max = Date.parse(cfg.window.end); r.step = 600e3;
   r.addEventListener("input", () => setTime(+r.value));
-  $("spd1").value = state.spd1; $("spd2").value = state.spd2; $("north").value = state.north;
-  $("spd1").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v > 0) { state.spd1 = v; save(); renderPlanner(); } });
-  $("spd2").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v > 0) { state.spd2 = v; save(); renderPlanner(); } });
-  $("north").addEventListener("change", (e) => { state.north = e.target.value; save(); renderPlanner(); });
+  $("presets").innerHTML = PRESETS.map(([d, l, sub]) => `<button type="button" data-d="${d}" title="${sub}">${l}</button>`).join("");
+  document.querySelectorAll("#presets button").forEach((b) => b.onclick = () => { state.s1d = b.dataset.d; state.s1t = "05:00"; state.s2d = nextWednesday(b.dataset.d); state.s2t = "12:00"; syncInputs(); changed(true); });
+  const num = (k) => (e) => { const v = parseFloat(e.target.value); if (v > 0) { state[k] = v; changed(); } };
+  $("spd1").addEventListener("input", num("spd1")); $("spd2").addEventListener("input", num("spd2"));
+  $("whours").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 4 && v <= 24) { state.whours = v; changed(); } });
+  $("days").addEventListener("input", (e) => { state.days = parseFloat(e.target.value); changed(); });
+  $("wstart").addEventListener("change", (e) => { if (e.target.value) { state.wstart = e.target.value; changed(); } });
+  $("s1d").addEventListener("change", (e) => { if (!e.target.value) return; state.s1d = e.target.value; state.s2d = nextWednesday(state.s1d); syncInputs(); changed(true); });
+  $("s1t").addEventListener("change", (e) => { if (e.target.value) { state.s1t = e.target.value; changed(true); } });
+  $("s2d").addEventListener("change", (e) => { if (e.target.value) { state.s2d = e.target.value; changed(); } });
+  $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
+  $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
+  $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
+  document.querySelectorAll("#mode button").forEach((b) => b.onclick = () => { state.mode = b.dataset.m; changed(); });
+  syncInputs();
 
   const derived = Object.entries(PRED.stations).filter(([, s]) => s.method === "derived").map(([k]) => STATIONS.find((s) => s.key === k)?.name).filter(Boolean);
   $("data-status").innerHTML = (PRED.generated ? `<p>Predictions fetched ${esc(PRED.generated.replace("T", " "))} UTC for ${Object.keys(PRED.stations).length} stations.</p>` : "") +
@@ -478,9 +627,9 @@ async function main() {
     (PRED.failures && PRED.failures.length ? `<p class="warn">Missing: ${esc(PRED.failures.join("; "))}</p>` : "");
 
   initMap();
-  renderScenario();
+  nightLayer = L.layerGroup().addTo(map);
   renderPlanner();
-  setTime(Date.parse(SCENARIOS[state.scenario].s1));
+  setTime(starts().s1);
 }
 main().catch((e) => { document.querySelector("aside").insertAdjacentHTML("afterbegin", `<p class="warn">Could not load the planner data: ${esc(e.message)}</p>`); });
 </script>

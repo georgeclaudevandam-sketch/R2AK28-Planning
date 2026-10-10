@@ -9,12 +9,16 @@ Planning tools for a Race to Alaska 2028 entry: Port Townsend to Victoria (Stage
 - Esri World Imagery base map with CHS (Canada) and NOAA (US) ENC chart overlays and an opacity slider.
 - Course tracks for Stage 1 and Stage 2, with inside (Grenville Channel) and outside (Hecate Strait) options north of Bella Bella.
 - 26 NOAA and CHS tide and current stations. Click one for its daily curve and table.
-- Two start scenarios: Sunday 4 June 2028 (first Sunday in June) and Sunday 11 June 2028 (the race's usual second-week pattern). Stage 1 starts 05:00, Stage 2 at noon the following Wednesday.
-- A gate planner: enter average boat speeds and it gives your ETA at each tidal gate, what the stream is doing then, and the next slack that turns in your favour.
+- Any start date from 21 May to 30 June 2028, with quick picks for Sunday 4 June (first Sunday in June) and Sunday 11 June (the race's usual second-week pattern). Stage 2 defaults to noon the following Wednesday and can be changed.
+- Two boat modes:
+  - **Sail:** moves around the clock at the average speed you enter for each stage.
+  - **Human power:** pick 8 to 24 days from Victoria to Ketchikan and a daily paddling window (default 05:00, 14 hours). The planner solves for the paddling speed that hits that time, stops each night, and waits at gates when the stream against you is over 1.5 kn.
+- A gate planner with arrival time, the stream at that moment, any wait, and the next slack; a day-by-day table of distance and where you end each day; numbered night stops on the map.
+- Checks against the 36-hour Stage 1 limit, the Grim Sweeper (75 nm/day, leaving Port Townsend 12 days after the Stage 2 start) and the race end (22 days after the Stage 2 start). The last two are inferred from the 2026 schedule.
 
 Open it from GitHub with `https://raw.githack.com/georgeclaudevandam-sketch/R2AK28-Planning/<branch>/index.html`, or serve the folder locally (`python3 -m http.server`) and open `http://localhost:8000`. It needs to be served over HTTP because it loads `data/*.json`.
 
-### What the dates mean
+### What the dates mean (the map works this out for any date)
 
 | | Stage 2 start | Moon | Seymour Narrows peak in first 4 days |
 |---|---|---|---|
