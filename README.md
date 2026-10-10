@@ -14,6 +14,7 @@ Planning tools for a Race to Alaska 2028 entry: Port Townsend to Victoria (Stage
   - **Sail:** moves around the clock at the average speed you enter for each stage.
   - **Human power:** pick 8 to 24 days from Victoria to Ketchikan and a daily paddling window (default 05:00, 14 hours). The planner solves for the paddling speed that hits that time, stops each night, and waits at gates when the stream against you is over 1.5 kn.
 - A gate planner with arrival time, the stream at that moment, any wait, and the next slack; a day-by-day table of distance and where you end each day; numbered night stops on the map.
+- Past human-powered races: one layer per year (layers control or the year buttons in the sidebar). Each track is coloured by propulsion (oars, pedal, paddle), solid if the team finished and dashed if not, and labelled with team, boat, class and time from the Victoria start. The sidebar lists every team's time; click one to zoom to its track.
 - Checks against the 36-hour Stage 1 limit, the Grim Sweeper (75 nm/day, leaving Port Townsend 12 days after the Stage 2 start) and the race end (22 days after the Stage 2 start). The last two are inferred from the 2026 schedule.
 
 Open it from GitHub with `https://raw.githack.com/georgeclaudevandam-sketch/R2AK28-Planning/<branch>/index.html`, or serve the folder locally (`python3 -m http.server`) and open `http://localhost:8000`. It needs to be served over HTTP because it loads `data/*.json`.
@@ -32,6 +33,11 @@ Open it from GitHub with `https://raw.githack.com/georgeclaudevandam-sketch/R2AK
 - **NOAA CO-OPS** tide (high/low, MLLW, metres) and current (max/slack, knots) predictions, including NOAA's subordinate current stations in northern BC.
 - **CHS IWLS** tide high/low predictions (chart datum, metres).
 - **CHS currents for 2028 are not published yet** (CHS currently publishes through 2027). For those stations the script fits harmonic constituents (UTide) to CHS's own published 2027 prediction series, checks the fit against CHS's Oct to Dec 2027 events (held out), and predicts June 2028. These are marked **derived** in the map with their validation numbers. Seymour Narrows reproduces CHS slack times within 1 minute (90th percentile). Juan de Fuca - East is the weakest fit (median 28 min). When CHS publishes 2028 tables, re-run the workflow and the script switches to the official events automatically.
+
+`data/tracks/` holds past tracks of human-powered teams:
+
+- **2015:** SPOT tracker logs archived at [searunners.net/data](http://searunners.net/data/), fetched by `scripts/fetch_spot.py` (the **Fetch 2015 SPOT tracks** workflow). The SPOT data has no class, so each team's propulsion comes from `data/tracks/spot2015-teams.json` (Matt Johnson's analysis of the same data). A team counts as finished at its first fix within 1.5 nm of Ketchikan; other tracks stop at their northernmost fix. Several 2015 human-powered boats also carried sail.
+- **YB Tracking years:** `scripts/fetch_tracks.py` (the **Fetch past human-powered tracks** workflow) reads each race's setup and packed positions from yb.tl and keeps teams tagged Human Powered, Kayak, Rowboat, SUP, Canoe or Pedal.
 
 `data/route.json` holds shortest-water tracks computed by `scripts/build_route.py` on GSHHG full-resolution and OpenStreetMap coastlines. They are for distances and ETAs, not navigation.
 
