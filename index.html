@@ -173,6 +173,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
         </div>
+        <label for="campGapH">Most hours from one camp to the next (coffee stops count)<input id="campGapH" type="number" min="8" max="48" step="1" value="20"></label>
         <label class="check" for="nightOn"><input id="nightOn" type="checkbox" checked> No rowing at night: ashore at a past campsite</label>
         <label for="nightH" id="nightH-l">From <b class="clock" id="nightH-out">0.5 h</b> after sunset to the same before sunrise
           <input id="nightH" type="range" min="0" max="2" step="0.25" value="0.5"></label>
@@ -259,8 +260,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -325,11 +326,16 @@ function valueAt(st, t) {
 }
 
 // ---------- map
+// chart text and symbols at full size (plus 30% for text) when zoomed out past a chart's own scale, so soundings stay readable
+const CHART_DISPLAY = JSON.stringify({ ECDISParameters: { version: "10.9.1", DynamicParameters: { Parameter: [], ParameterGroup: [
+  { name: "TextSize", Parameter: [{ name: "scaleFactor", value: 1.3 }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] },
+  { name: "PointSymbolSize", Parameter: [{ name: "scaleFactor", value: 1.2 }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] }] } } });
 const ChartLayer = L.TileLayer.extend({
   getTileUrl(c) {
     const s = this.getTileSize(), nw = c.scaleBy(s), se = nw.add(s), crs = this._map.options.crs;
     const a = crs.project(this._map.unproject(nw, c.z)), b = crs.project(this._map.unproject(se, c.z));
     const q = new URLSearchParams({ bbox: [a.x, b.y, b.x, a.y].join(","), bboxSR: "3857", imageSR: "3857", size: `${s.x},${s.y}`, dpi: "96", format: "png32", transparent: "true", layers: this.options.show, f: "image" });
+    if (this.options.display) q.set("display_params", this.options.display);
     return `${this.options.service}/export?${q}`;
   }
 });
@@ -350,9 +356,9 @@ function initMap() {
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
     maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7,9,10,12", opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7,9,10,12", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
   const noaa = new ChartLayer("", { service: "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7", opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
+    show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" }).addTo(map);
 
   const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
   ROUTE.legs.forEach((leg) => {
@@ -554,7 +560,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
     return isDark(t - night * H, ll) && isDark(t + night * H, ll);
   };
   const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= theta;
-  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
+  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null, lastCamp: start, stopFrom: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
   const restLength = (s, theta, rowed, end) => {
     if (win) { let t = s.t; while (t < s.t + 24 * H && !(inWin(t, win) && !isNight(s.pos, t))) t += STEP; return t - s.t; }
@@ -607,11 +613,23 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
           if (x.pos - s.pos <= HOLD_MAX_NM && !ch._near.some((a) => a >= x.pos - 6 && a <= Math.min(lim, x.pos + 8))) { s.hold = x.until; s.holdPos = s.pos; }
         }
       }
+      // at most state.campGapH hours from leaving one camp (a stop of state.campH hours or more) to reaching the next;
+      // coffee stops count as part of that time. Camp at a campsite you pass if the next one can't be reached in time.
+      if (!s.hold && !s.camp && state.campGapH) {
+        const due = s.lastCamp + state.campGapH * H, campLen = state.campH * H;
+        if (s.t >= due - 0.5 * H) s.hold = s.t + campLen;
+        else if (s.rowing && CAMPSITES.length && ch._near.some((a) => a > s.pos0 && a <= s.pos)) {
+          const next = ch._near.find((a) => a > s.pos + 0.5);
+          if (next == null || s.t + ((next - s.pos) / Math.max(0.5, v - 0.5) + 1) * H > due) { s.hold = s.t + campLen; s.holdPos = s.pos; }
+        }
+      }
       s.pos0 = s.pos;
       // tides mode: row unless the head current is stronger than the cutoff, and only change between rowing and stopped
       // when the new state will last MIN_RUN_H (short spells are rowed through, or sat out)
       let want = win ? inWin(s.t, win) && !isNight(s.pos, s.t) : rowed < hours - 1e-9 && ok(s.pos, s.t, theta);
       if (s.hold && s.t >= s.hold) s.hold = 0;
+      // a stop of state.campH hours or more is a camp: the clock to the next camp starts when you leave it
+      if (!s.rowing && s.stopFrom == null) s.stopFrom = s.t;
       if (s.hold) want = false;
       else if (!win && rowed < hours - 1e-9 && want !== s.rowing && !s.wait) {
         if (want) {   // stopped: look ahead and set off only if this fair spell gives a worthwhile leg
@@ -634,11 +652,16 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
         if (c) {
           // row along the route to the point abreast of the campsite (ahead, or back if it is behind), then in to it
           const t0 = s.t, along = Math.abs(c.ain - s.pos), hrs = (along + c.din) / v;
-          s.t += hrs * H; rowed += hrs; s.pos = c.ain; s.wait = false;  // waiting at a gate when night falls: go ashore and come back to the gate in the morning
+          s.t += hrs * H; rowed += hrs; s.pos = c.ain; if (s.hold) s.hold = Math.max(s.hold, s.t + (s.hold - t0));
+          // ashore for the night: make it a full camp (state.campH hours or more)
+          if (isNight(s.pos, s.t) || isNight(s.pos, s.t + H)) s.hold = Math.max(s.hold || 0, s.t + state.campH * H);
+          s.stopFrom = s.t; s.wait = false;  // waiting at a gate when night falls: go ashore and come back to the gate in the morning
           s.camp = { site: c, d: c.din, extra: c.cost, t0, arrive: s.t };
           if (rec) rec.track.push([s.t, s.pos]);
         }
       }
+      // at a campsite more than halfway to the camp deadline: make this stop a full camp
+      if (want && s.camp && state.campGapH && s.t - s.camp.arrive < state.campH * H && s.t - s.lastCamp > state.campGapH * H / 2) want = false;
       // at a campsite: don't set off if you would have to stop again soon where there is no campsite (wait for a longer fair spell)
       if (want && s.camp && !win && s.t - s.camp.arrive < 18 * H) {
         const c = s.camp.site, x = nextStop({ t: s.t + (c.dout / v) * H, pos: c.aout }, theta, rowed + c.dout / v, end);
@@ -647,6 +670,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       }
       if (want && s.camp) { const c = s.camp.site, leave = s.t, at = s.pos; s.t += (c.dout / v) * H; rowed += c.dout / v; s.pos = s.pos0 = c.aout; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: at }); } s.left = c.a; s.camp = null; }
       s.rowing = step(s, want, rec);
+      if (s.rowing && s.stopFrom != null) { if (s.t - s.stopFrom >= state.campH * H - STEP) s.lastCamp = s.t; s.stopFrom = null; }
       if (s.rowing) rowed += S;
     }
     return s;
@@ -1042,7 +1066,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -1068,6 +1092,7 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
+  $("campGapH").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 8 && v <= 48) { state.campGapH = v; changed(); } });
   $("nightOn").addEventListener("change", (e) => { state.nightOn = e.target.checked; syncInputs(); changed(); });
   $("nightH").addEventListener("input", (e) => { state.nightH = parseFloat(e.target.value); $("nightH-out").textContent = `${state.nightH} h`; changed(); });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
