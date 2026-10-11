@@ -155,8 +155,10 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .ico { width: 14px; height: 14px; vertical-align: -2px; flex: none; }
 .stop .ico { width: 13px; height: 13px; }
 .stop .dur { font-style: normal; font-weight: 500; margin-left: 3px; padding-left: 3px; border-left: 1px solid rgba(17,24,39,.35); }
-#stops-tbl td:nth-child(-n+5) { white-space: nowrap; }
-#stops-tbl td:nth-child(4), #stops-tbl td:nth-child(5), #stops-tbl th:nth-child(4), #stops-tbl th:nth-child(5) { text-align: right; }
+#stops-tbl td:nth-child(1), #stops-tbl td:nth-child(n+4):nth-child(-n+6) { white-space: nowrap; }
+#stops-tbl td:nth-child(n+5):nth-child(-n+6), #stops-tbl th:nth-child(n+5):nth-child(-n+6) { text-align: right; }
+#stops-tbl .when { white-space: nowrap; }
+#stops-tbl .sub { font-size: 10px; }
 #stops-tbl tr[data-t]:hover { background: var(--chip); }
 .night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
@@ -1322,14 +1324,14 @@ function renderPlanner() {
     const sd = shortDur(hrs), wd = (x.camp ? 34 : 28) + 6 * sd.length + 4;
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b><i class="dur">${sd}</i>`, iconSize: [wd, x.camp ? 20 : 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`<b>${label}</b><br>Stopped <b>${fmtDur(hrs)}</b><br>Arrive ${fmt.format(x.t)}<br>Leave ${fmt.format(x.until)}<br>${where}${x.site ? `<br>${x.d.toFixed(1)} nm off the route` : ""}`, { className: "stop-tip", direction: "auto" }).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${fmt.format(x.until)}</td><td><b>${fmtDur(hrs)}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${when(x.t)}</td><td>${when(x.until)}</td><td><b>${fmtDur(hrs).replace(" h ", "h ").replace(" min", "m")}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     pics.push({ n, x, ll, on, hrs, where });
     prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
   });
   renderPics(pics, ch.stage2);
   $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Snack/rest: ${Math.min(1, state.breakH)} to ${state.campH} hours${state.breakH < 1 ? ` (breaks under an hour are taken on the water)` : ""}. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
-  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
-  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Leave</th><th title="How long the crew is stopped, from arriving to leaving">Stopped for</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
+  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${when(r2.finish)}</td><td></td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Leave</th><th title="How long the crew is stopped, from arriving to leaving">Stopped</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg<br>nm</th><th title="Along the route from the Victoria start">Total<br>nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
@@ -1344,6 +1346,7 @@ function renderPlanner() {
 
   Object.entries(routeLayers).forEach(([k, l]) => l.setStyle({ opacity: k === "inside" || k === "outside" ? (k === state.north ? 0.95 : 0.35) : 0.95, dashArray: k === "stage1" ? "8 6" : k === state.north || k === "south" ? null : "2 6" }));
 }
+function when(t) { const d = new Date(t), p = (o) => new Intl.DateTimeFormat("en-US", Object.assign({ timeZone: TZ }, o)).format(d); return `<span class="when">${p({ month: "short", day: "numeric" })}</span><br>${p({ hour: "2-digit", minute: "2-digit", hour12: false })}`; }
 function shortDur(h) { const m = Math.round(h * 60); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, "0") : ""}`; }
 function fmtDur(h) { const m = Math.round(h * 60); return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`; }
 
