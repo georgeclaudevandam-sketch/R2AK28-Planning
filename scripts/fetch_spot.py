@@ -83,6 +83,20 @@ def main():
                     "finished": STAGE2_START + round(m["official_elapsed_h"] * 3600) if m.get("official_elapsed_h") else fin[0] if fin else None,
                     "elapsed_h": m.get("official_elapsed_h") or (round((fin[0] - STAGE2_START) / 3600, 2) if fin else None),
                     "place": m.get("place"), "track": thin(pts)})
+    # Stage 1 (Port Townsend to Victoria, 4 June 2015): every team in the log, written like fetch_tracks.py's Stage 1 files
+    s1 = []
+    for name, pts in sorted(teams.items()):
+        fx = sorted(p for p in set(pts) if STAGE2_START - 4 * 86400 < p[0] < STAGE2_START - 1800 and 47.9 < p[1] < 48.6 and -123.7 < p[2] < -122.5)
+        if len(fx) < 3:
+            continue
+        m = meta.get(name)
+        s1.append({"id": name, "name": name.removeprefix("Team ").strip(), "boat": (m or {}).get("boat"), "class": (m or {}).get("class") or "",
+                   "human": bool(m), "track": thin(fx, min_gap_s=300, min_nm=0.15)})
+    print(f"Stage 1: {len(s1)} teams with fixes, {sum(x['human'] for x in s1)} human-powered", file=sys.stderr)
+    if s1:
+        (OUT.parent / "stage1").mkdir(exist_ok=True)
+        (OUT.parent / "stage1" / "r2ak2015-spot.json").write_text(json.dumps(
+            {"key": "r2ak2015-spot", "title": "R2AK 2015 Stage 1 (SPOT)", "stage2_start": STAGE2_START, "teams": s1}, separators=(",", ":")))
     missing = sorted(set(meta) - set(teams))
     if missing:
         print(f"listed but not in SPOT log: {missing}", file=sys.stderr)
