@@ -237,7 +237,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
         <label for="campH-r" style="flex:1">Camp when a stop is at least<input id="campH-r" type="range" min="1" max="12" step="0.5" value="6"></label>
         <label for="campH">hours<input id="campH" type="number" min="1" max="12" step="0.5" value="6" style="width:70px"></label>
       </div>
-      <p class="hint" id="stops-hint">Camp: 6 hours or more. Coffee/snack: 1 to 6 hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Click a row to set the map time.</p>
+      <p class="hint" id="stops-hint">Camp: 6 hours or more. Coffee/snack: 1 to 6 hours. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Click a row to set the map time.</p>
       <div class="tbl-wrap"><table id="stops-tbl"></table></div>
     </section>
 
@@ -833,14 +833,20 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       }
       // stopping for MIN_STOP_H or more (also waiting at a gate): row to the nearest past campsite (counts as rowing time), and back when you set off
       const rest = (!want || s.wait) && (s.rowing || s.wait) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
-      if (rest >= MIN_STOP_H * H) {
-        let c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity), 2.5, BACK_NM);
+      // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
+      const capped = !win && rest > 0 && rowed >= hours - 1e-9 && !s.wait;
+      let longer = false;
+      if (rest >= MIN_STOP_H * H || capped) {
+        const lim = Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity);
         // not worth it if the stop would be mostly over by the time you are on the beach
-        if (c && rest - ((Math.abs(c.ain - s.pos) + c.din) / v) * H < (MIN_STOP_H / 2) * H) c = null;
+        const worth = (c, r) => c && r - ((Math.abs(c.ain - s.pos) + c.din) / v) * H >= (MIN_STOP_H / 2) * H ? c : null;
+        // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
+        let c = worth(pickCamp(ch, s, lim, 2.5, BACK_NM), capped ? Math.max(rest, state.campH * H) : rest); longer = capped && !!c;
         if (c) {
           // row on along the route to where the way in leaves it, then in to the campsite
           const t0 = s.t, along = Math.abs(c.ain - s.pos), hrs = (along + c.din) / v;   // (back, if the campsite is behind)
           s.t += hrs * H; rowed += hrs; s.pos = c.ain; if (s.hold) s.hold = Math.max(s.hold, s.t + (s.hold - t0));
+          if (longer) s.hold = Math.max(s.hold || 0, s.t + state.campH * H);
           // ashore for the night: make it a full camp (state.campH hours or more)
           if (isNight(s.pos, s.t) || isNight(s.pos, s.t + H)) s.hold = Math.max(s.hold || 0, s.t + state.campH * H);
           s.stopFrom = s.t; s.wait = false;  // waiting at a gate when night falls: go ashore and come back to the gate in the morning
@@ -1210,7 +1216,7 @@ function renderPlanner() {
     stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
   });
-  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
+  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Coffee/snack: 1 to ${state.campH} hours. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
   stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
   $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
