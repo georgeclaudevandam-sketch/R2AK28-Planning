@@ -357,9 +357,10 @@ const URLQ = new URLSearchParams(location.search);
 // next more detailed chart (harbour and approach charts with full soundings and contours when zoomed out), with text and
 // symbols scaled up to stay readable. ?chartdpi= and ?charttext= override for testing.
 const CHART_DPI = +(URLQ.get("chartdpi") || 96), CHART_TEXT = +(URLQ.get("charttext") || 2);
-const CHART_DISPLAY = JSON.stringify({ ECDISParameters: { version: "10.9.1", DynamicParameters: { Parameter: [{ name: "HonorScamin", value: 1 }], ParameterGroup: [
-  { name: "TextSize", Parameter: [{ name: "scaleFactor", value: CHART_TEXT }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] },
+const chartDisplay = (text) => JSON.stringify({ ECDISParameters: { version: "10.9.1", DynamicParameters: { Parameter: [{ name: "HonorScamin", value: 1 }], ParameterGroup: [
+  { name: "TextSize", Parameter: [{ name: "scaleFactor", value: text }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] },
   { name: "PointSymbolSize", Parameter: [{ name: "scaleFactor", value: 1.2 }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] }] } } });
+const CHART_DISPLAY = chartDisplay(CHART_TEXT);
 const ChartLayer = L.TileLayer.extend({
   getTileUrl(c) {
     const s = this.getTileSize(), nw = c.scaleBy(s), se = nw.add(s), crs = this._map.options.crs;
@@ -397,11 +398,15 @@ function initMap() {
   // NOAA's chart service also draws its coarse small-scale charts over Canadian waters, opaquely, which hides the CHS charts.
   // So NOAA is drawn underneath and only over US waters (Washington, and Alaska north of Dixon Entrance), with CHS on top.
   const NOAA_SVC = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer";
-  const noaaOpts = { pane: "noaaPane", zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
+  const noaaOpts = { pane: "noaaPane", zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: chartDisplay(1.3), opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
   const noaa = L.layerGroup([new ChartLayer("", { ...noaaOpts, bounds: [[46.5, -126.5], [49.0, -122.0]] }), new ChartLayer("", { ...noaaOpts, bounds: [[54.65, -136.5], [60.0, -129.95]] })]).addTo(map);
   noaa.eachLayer((l) => { l._noaaTag = true; });
-  const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
-    show: "show:0,1,2,3,4,5,6,7,9,12", display: CHART_DISPLAY, dpi: CHART_DPI, opacity: 1, maxZoom: 19, minZoom: 5, zIndex: 2, bounds: [[48.2, -140], [54.72, -122.0]], attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
+  // CHS twice: underneath, the chart CHS picks for the map scale (complete coverage, coarse in open water); on top, the next
+  // more detailed charts (e.g. 3443, 3447) wherever CHS has them. Gaps in the detailed set show the coarser chart, never NOAA.
+  const chsOpts = { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
+    show: "show:0,1,2,3,4,5,6,7,9,12", opacity: 1, maxZoom: 19, minZoom: 5, bounds: [[48.2, -140], [54.72, -122.0]], attribution: "Charts: CHS (Open Government Licence - Canada)" };
+  const chs = L.layerGroup([new ChartLayer("", { ...chsOpts, display: chartDisplay(1.3), dpi: 192, zIndex: 2 }),
+    new ChartLayer("", { ...chsOpts, display: CHART_DISPLAY, dpi: CHART_DPI, zIndex: 3 })]).addTo(map);
 
   const colors = { stage1: "#f97316", south: "#facc15", inside: "#facc15", outside: "#facc15" };
   ROUTE.legs.forEach((leg) => {
@@ -423,7 +428,7 @@ function initMap() {
       '<label id="op-l" hidden style="flex-direction:row;align-items:center;gap:6px;color:#102a3a">Chart opacity <input id="op" type="range" min="0" max="100" value="40" aria-label="Chart opacity"></label>';
     L.DomEvent.disableClickPropagation(d);
     const op = d.querySelector("#op"), sat = d.querySelector("#sat");
-    const setOp = (v) => { chs.setOpacity(v / 100); noaa.eachLayer((l) => l.setOpacity(v / 100)); };
+    const setOp = (v) => { chs.eachLayer((l) => l.setOpacity(v / 100)); noaa.eachLayer((l) => l.setOpacity(v / 100)); };
     op.addEventListener("input", (e) => setOp(e.target.value));
     // charts only by default (full strength); with satellite on, the charts go translucent over the imagery
     sat.addEventListener("change", () => { if (sat.checked) map.addLayer(imagery); else map.removeLayer(imagery); });
@@ -724,8 +729,15 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   if (!ch._near) { pickCamp(ch, { pos: 0 }, Infinity); ch._near = ch._camps.filter((c) => c.o <= CAMP_MAX_NM).map((c) => c.ain).sort((a, b) => a - b); }
   // tides mode: where and when the next stop of 2 h or more would start if you keep rowing, and when it would end
   const nextStop = (s, theta, rowed, end) => {
-    let t = s.t, pos = s.pos, h = rowed;
+    let t = s.t, pos = s.pos, h = rowed, gi = s.gi ?? 0;
+    while (gi < gates.length && gates[gi].along < pos - 1e-6) gi++;
     while (t < end && pos < total - 1e-6) {
+      // a tidal gate with the stream against you: a wait there is a stop too
+      if (gi < gates.length && pos >= gates[gi].along - 1e-6) {
+        const g = gates[gi].st;
+        if (waits && foulAt(g, t) > FOUL_KN) { let u = t + STEP; while (u < t + 16 * H && foulAt(g, u) > 0.5) u += STEP; if (u - t >= 2 * H) return { pos, until: u }; }
+        gi++;
+      }
       if (h >= hours - 1e-9) return end - t >= 2 * H ? { pos, until: end } : null;
       const c = streamAt(ch, pos, t);
       if (isNight(pos, t)) { let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP; return u - t >= 2 * H ? { pos, until: u } : null; }
@@ -734,6 +746,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
         if (u - t >= MIN_FOUL_H * H) return u - t >= 2 * H ? { pos, until: u } : null;
       }
       pos += Math.max(0, v + c) * S; h += S; t += STEP;
+      if (gi < gates.length && pos > gates[gi].along) pos = gates[gi].along;
     }
     return null;
   };
@@ -809,8 +822,17 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       // at a campsite: don't set off if you would have to stop again soon where there is no campsite (wait for a longer fair spell)
       if (want && s.camp && !win && s.t - s.camp.arrive < 18 * H) {
         const c = s.camp.site, x = nextStop({ t: s.t + (c.dout / v) * H, pos: c.aout }, theta, rowed + c.dout / v, end);
-        if (x && x.pos - c.aout <= HOLD_MAX_NM) { const g = gates.find((g) => g.along >= x.pos), lim = g ? g.along : total;
-          if (!ch._near.some((a) => a > c.aout && a >= x.pos && a <= Math.min(lim, x.pos + 8))) want = false; }
+        // nor if the next long stop would come within MIN_LEG_NM: don't break camp to row a few miles and stop again.
+        // That stop is where the next stream or gate stop falls, or, with no campsite there, the last campsite before it
+        // (where the planner would pull in instead).
+        if (x) {
+          const g = gates.find((g) => g.along >= x.pos), lim = g ? g.along : total;
+          const campThere = ch._near.some((a) => a > c.aout && a >= x.pos && a <= Math.min(lim, x.pos + 8));
+          const before = ch._near.filter((a) => a > c.aout + 0.5 && a <= x.pos).pop();
+          const stopAt = campThere ? x.pos : before ?? x.pos;
+          if (stopAt - c.aout < Math.min(MIN_LEG_NM, 2.5 * v)) want = false;
+          else if (!campThere && before == null && x.pos - c.aout <= HOLD_MAX_NM) want = false;
+        }
       }
       if (want && s.camp) { const c = s.camp.site, leave = s.t, at = s.pos; s.t += (c.dout / v) * H; rowed += c.dout / v; s.pos = s.pos0 = c.aout; s.tp = s.t; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: at }); } s.left = c.a; s.camp = null; }
       s.rowing = step(s, want, rec);
