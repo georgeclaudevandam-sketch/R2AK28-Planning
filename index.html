@@ -978,7 +978,8 @@ function boatAt(t) {
   const { ch, r1, r2 } = P;
   const at = (c, along) => { const a = pointAt(c, along), b = pointAt(c, Math.min(c.total, along + 0.3)), a0 = along + 0.3 > c.total ? pointAt(c, along - 0.3) : a;
     const hd = Math.atan2((b[1] - a0[1]) * Math.cos(a[0] * Math.PI / 180), b[0] - a0[0]) * 180 / Math.PI; return { ll: a, hd }; };
-  if (t < P.s1 || t > r2.finish) return null;
+  if (t < P.s1) return null;
+  if (t > r2.finish) return { ...at(ch.stage2, ch.stage2.total), done: true };   // finished: tied up in Ketchikan
   if (t <= r1.finish) return detourAt(ch.stage1, r1, t) || at(ch.stage1, posAt(r1.track, t));
   if (t < P.s2) return at(ch.stage1, ch.stage1.total);
   return detourAt(ch.stage2, r2, t) || at(ch.stage2, posAt(r2.track, t));
@@ -1091,7 +1092,9 @@ function followZoom(lat, wpx) {
 }
 function followBoat() {
   const c = $("follow"); if (!map || !c || !c.checked) return;
-  const b = boatAt(state.t); if (!b) return;
+  let b = boatAt(state.t); if (!b) return;
+  // finished in Ketchikan while a pace boat is still going: follow that instead
+  if (b.done) { const p = PACE.find((p) => map.hasLayer(p.layer)), q = p && paceAt(p, state.t); if (q && !q.done) b = q; }
   // keep the boat clear of the inset and play box down the right-hand side
   const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40, z = followZoom(b.ll[0], map.getSize().x - rw);
   const ctr = map.unproject(map.project(b.ll, z).add([rw / 2, 0]), z);
@@ -1107,15 +1110,22 @@ function resetPlay() {
   playT = LAST_PLAN.s1; setTime(LAST_PLAN.s1);
   if ($("follow")) { $("follow").checked = true; setFollow(true); }
 }
-// the play bar's progress slider runs from the Stage 1 start to the planned finish
+// playback runs from the Stage 1 start to the later of the planned finish and a shown pace boat's finish
+function playEnd(P) {
+  let e = P.r2.finish;
+  PACE.forEach((p) => { if (map && map.hasLayer(p.layer)) e = Math.max(e, P.s2 + ((p.finished || p.track[p.track.length - 1][0]) - p.start) * 1000); });
+  return e;
+}
+// the play bar's progress slider runs from the Stage 1 start to the end of playback
 function syncProgress() {
   const P = LAST_PLAN, g = $("progress"); if (!P || !g) return;
-  g.min = P.s1; g.max = P.r2.finish; g.value = Math.max(P.s1, Math.min(P.r2.finish, state.t));
-  $("pb-pct").textContent = `${Math.round(100 * (g.value - P.s1) / ((P.r2.finish - P.s1) || 1))}%`;
+  const e = playEnd(P);
+  g.min = P.s1; g.max = e; g.value = Math.max(P.s1, Math.min(e, state.t));
+  $("pb-pct").textContent = `${Math.round(100 * (g.value - P.s1) / ((e - P.s1) || 1))}%`;
 }
 function startPlay() {
   const P = LAST_PLAN, r = $("time");
-  if (P && (state.t < P.s1 || state.t >= P.r2.finish)) setTime(P.s1);
+  if (P && (state.t < P.s1 || state.t >= playEnd(P))) setTime(P.s1);
   playT = state.t;
   $("play").innerHTML = "&#10074;&#10074;"; $("play").setAttribute("aria-label", "Pause");
   playTimer = setInterval(() => {
@@ -1124,7 +1134,7 @@ function startPlay() {
     // half speed while follow mode glides to a new zoom and the charts draw at it (see glide)
     playT += +$("play-speed").value * H / 10 * (inPort ? 5 : 1) * (FLYING ? 0.5 : 1);
     if (inPort && playT > P.s2) playT = P.s2;
-    const end = Math.min(+r.max, LAST_PLAN ? LAST_PLAN.r2.finish : +r.max);
+    const end = Math.min(+r.max, LAST_PLAN ? playEnd(LAST_PLAN) : +r.max);
     if (playT >= end) { playT = end; stopPlay(); }
     setTime(playT);
   }, 100);
@@ -1471,7 +1481,7 @@ async function loadPast() {
     L.polyline(p.track.map((q) => [q[1], q[2]]), { color: "#f59e0b", weight: 2, opacity: 0.55, dashArray: "2 5", interactive: false }).addTo(g);
     p.layer = g; p.marker = null; p.label = `${p.name} (${yr})`;
     layersCtl.addOverlay(g, `Pace boat: ${esc(p.label)}, ${esc(p.class || "")}${p.finished ? `, ${((p.finished - p.start) / 86400).toFixed(1)} days` : ""}`);
-    g.on("add", renderPace).on("remove", renderPace);
+    g.on("add", () => { renderPace(); syncProgress(); }).on("remove", () => { renderPace(); syncProgress(); });
     g.addTo(map); PACE.push(p);
   });
   $("past-hint").innerHTML = races.length
