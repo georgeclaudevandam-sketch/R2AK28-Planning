@@ -547,6 +547,7 @@ const STREAM = [
   { key: "south-haro", fav: "flood", core: 4, r: 12, k: 0.7 },
   { key: "turn-point", fav: "flood", core: 3, r: 10, k: 0.6 },
   { key: "porlier-pass", core: 0.5, r: 3, k: 0.8, near: 1 },
+  { key: "dodd-narrows", core: 0.3, r: 1.5, k: 1, near: 1 },
   { key: "seymour-narrows", fav: "ebb", core: 2, r: 14, k: 1 },
   { key: "johnstone-central", fav: "ebb", core: 20, r: 35, k: 0.8 },
   { key: "blackney-passage", fav: "ebb", core: 2, r: 8, k: 0.8, near: 2 },
@@ -678,7 +679,8 @@ function campPathsCalc(ch, c) {
 }
 function pickCamp(ch, s, lim) {
   if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]);
-    return { ...c, a: p.along, o: p.d, ...(campPaths(ch, c) || { ain: p.along, aout: p.along, din: p.d, dout: p.d, back: 0 }) }; }).filter((c) => c.back <= 0.3);
+    const w = campPaths(ch, c); if (!w && ch.north) return null;   // no water path built: not used (no straight dash in and out)
+    return { ...c, a: p.along, o: p.d, ...(w || { ain: p.along, aout: p.along, din: p.d, dout: p.d, back: 0 }) }; }).filter((c) => c && c.back <= 0.3);
   // prefer one near the route within a few miles; failing that, the cheapest past campsite anywhere short of the next gate
   const pick = (ok) => {
     let best = null;

@@ -35,6 +35,15 @@ for (la0, lo0), (la1, lo1) in [((52.080, -128.040), (52.092, -128.110)), ((52.09
         r, c = rc(la0 + (la1 - la0) * t, lo0 + (lo1 - lo0) * t)
         land[r - 1:r + 2, c - 1:c + 2] = False
 
+# Dodd Narrows (inside Gabriola Island, where 14 of the 15 past human-powered tracks went) is closed at 220 m as well: carve it
+# along the line the 2026 teams' trackers recorded, from Stuart Channel to Nanaimo Harbour
+DODD = [(49.1067, -123.8004), (49.1132, -123.8019), (49.1196, -123.8028), (49.1247, -123.8061), (49.1295, -123.8113), (49.1326, -123.8161),
+        (49.1369, -123.8227), (49.1389, -123.8317), (49.1407, -123.8394), (49.1417, -123.8469), (49.1439, -123.8545)]
+for (la0, lo0), (la1, lo1) in zip(DODD, DODD[1:]):
+    for t in np.linspace(0, 1, 200):
+        r, c = rc(la0 + (la1 - la0) * t, lo0 + (lo1 - lo0) * t)
+        land[r - 1:r + 2, c - 1:c + 2] = False
+
 # one boolean layer per track, widened to ~1 km, summed into a share of tracks per cell
 tracks = []
 for f in sorted((ROOT / "data" / "tracks").glob("r2ak*.json")):

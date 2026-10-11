@@ -355,6 +355,13 @@ def main():
             if st["key"] in prev:
                 result[st["key"]] = prev[st["key"]]
             continue
+        if st["source"] == "chs" and st.get("find"):   # station code looked up by its official name
+            try:
+                hits = [x for x in get_json(f"{IWLS}/stations") if st["find"].lower() in (x.get("officialName") or "").lower()]
+                log(f"  CHS stations named like {st['find']!r}: {[(x.get('code'), x.get('officialName')) for x in hits]}")
+                if hits: st["id"] = hits[0]["code"]; _chs_ids[st["id"]] = hits[0]
+            except Exception as e:
+                log(f"  name lookup failed: {e}")
         log(f"{st['source'].upper()} {st['kind']} {st['id']} {st['name']}")
         fn = {("noaa", "tide"): noaa_tide, ("noaa", "current"): noaa_current,
               ("chs", "tide"): chs_tide, ("chs", "current"): chs_current}[(st["source"], st["kind"])]

@@ -137,7 +137,20 @@
    "lon": -123.585,
    "leg": "stage2",
    "gate": false,
-   "note": "Alternative inside route exit to the Strait of Georgia."
+   "note": "Alternative exit to the Strait of Georgia (outside Gabriola Island). Past teams went through Dodd Narrows instead."
+  },
+  {
+   "key": "dodd-narrows",
+   "name": "Dodd Narrows",
+   "source": "chs",
+   "kind": "current",
+   "id": "07487",
+   "find": "Dodd",
+   "lat": 49.1365,
+   "lon": -123.8172,
+   "leg": "stage2",
+   "gate": true,
+   "note": "Inside Gabriola Island, the way 14 of the 15 past human-powered teams went. Narrow and fast: go through near slack."
   },
   {
    "key": "point-atkinson",
