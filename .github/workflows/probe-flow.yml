@@ -10,17 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          mkdir -p probe
+          mkdir -p probe; rm -f probe/*
+          W=https://www.bio.gc.ca/science/research-recherche/ocean/webtide
+          for p in download-telecharger-en.php data-donnees-en.php nepacific-nepacifique-en.php; do curl -sSL -m 60 "$W/$p" -o probe/wt_$p.html || true; done
           E=https://salishsea.eos.ubc.ca/erddap
-          curl -sS -m 120 "$E/griddap/index.csv?page=1&itemsPerPage=1000" -o probe/ssc_griddap.csv || echo fail > probe/ssc_griddap.csv
-          for id in ubcSSg3DuGridFields1hV21-11 ubcSSg3DvGridFields1hV21-11 ubcSSgSurfaceTracerFields1hV21-11; do
-            curl -sS -m 120 "$E/info/$id/index.csv" -o probe/ssc_info_$id.csv || true
-          done
-          curl -sSL -m 120 "https://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php" -o probe/webtide.html || true
-          curl -sSL -m 60 "https://dd.weather.gc.ca/model_ciops/west/" -o probe/ciops.html || true
-          curl -sSL -m 60 "https://salishsea.eos.ubc.ca/erddap/files/" -o probe/ssc_files.html || true
+          curl -sS -m 300 "$E/griddap/ubcSSnBathymetryV21-08.nc?longitude[0:1:897][0:1:397],latitude[0:1:897][0:1:397],bathymetry[0:1:897][0:1:397]" -o probe/ssc_bathy.nc || true
+          curl -sS -m 300 "$E/griddap/ubcSSg3DuGridFields1hV21-11.csv?uVelocity[(2024-06-01T00:30:00Z):1:(2024-06-01T05:30:00Z)][(0.5)][(500)][(200)]" -o probe/ssc_u_sample.csv || true
           ls -la probe
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
-          git add probe && git commit -m "Probe current model sources" && git pull --rebase && git push
+          git add -A probe && git commit -m "Probe current model sources 2" && git pull --rebase && git push
