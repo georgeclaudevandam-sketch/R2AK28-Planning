@@ -857,7 +857,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   }
   // stops: campsite visits, plus pauses of 3 h or more on the water where no campsite was within reach
   const tr = out.track; let i = 0;
-  out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v }));
+  out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v, t0: c.t0, tBack: c.back }));
   while (i < tr.length - 1) {
     let j = i; while (j + 1 < tr.length && tr[j + 1][1] - tr[i][1] < 0.05) j++;
     if (tr[j][0] - tr[i][0] >= MIN_STOP_H * H && tr[i][1] < total - 0.1 && !out.camps.some((c) => c.t0 < tr[j][0] && c.back > tr[i][0])) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
@@ -943,9 +943,32 @@ function boatAt(t) {
   const at = (c, along) => { const a = pointAt(c, along), b = pointAt(c, Math.min(c.total, along + 0.3)), a0 = along + 0.3 > c.total ? pointAt(c, along - 0.3) : a;
     const hd = Math.atan2((b[1] - a0[1]) * Math.cos(a[0] * Math.PI / 180), b[0] - a0[0]) * 180 / Math.PI; return { ll: a, hd }; };
   if (t < P.s1 || t > r2.finish) return null;
-  if (t <= r1.finish) return at(ch.stage1, posAt(r1.track, t));
+  if (t <= r1.finish) return detourAt(ch.stage1, r1, t) || at(ch.stage1, posAt(r1.track, t));
   if (t < P.s2) return at(ch.stage1, ch.stage1.total);
-  return at(ch.stage2, posAt(r2.track, t));
+  return detourAt(ch.stage2, r2, t) || at(ch.stage2, posAt(r2.track, t));
+}
+// On a campsite or coffee stop the boat leaves the route where the way in starts, rows in to the beach, waits there and rows
+// back out along the way out (the simulator counts those miles as rowing time; its track only holds positions along the route).
+function detourAt(c, r, t) {
+  const n = r.nights.find((x) => x.site && x.t0 != null && t >= x.t0 && t <= x.tBack); if (!n) return null;
+  const s = n.site, pin = (s.pin || [pointAt(c, s.ain)]).concat([s.ll]), pout = [s.ll].concat(s.pout || [pointAt(c, s.aout)]);
+  if (t >= n.t && t <= n.until) { const q = pin[pin.length - 1]; return { ll: q, hd: hdg(pin[pin.length - 2] || q, q) }; }
+  if (t > n.until) return alongLine(pout, (t - n.until) / ((n.tBack - n.until) || 1));
+  // on the way: along the route to where the way in leaves it, then in
+  const p0 = posAt(r.track, n.t0), along = Math.max(0, s.ain - p0), f = (t - n.t0) / ((n.t - n.t0) || 1), fr = along / ((along + s.din) || 1);
+  if (f < fr) { const x = p0 + (s.ain - p0) * (f / fr), a = pointAt(c, x), b = pointAt(c, Math.min(c.total, x + 0.3)); return { ll: a, hd: hdg(a, b) }; }
+  return alongLine(pin, (f - fr) / ((1 - fr) || 1));
+}
+const hdg = (a, b) => Math.atan2((b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180), b[0] - a[0]) * 180 / Math.PI;
+function alongLine(pts, f) {
+  const k = (a, b) => Math.hypot(b[0] - a[0], (b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180));
+  let L = 0; for (let i = 1; i < pts.length; i++) L += k(pts[i - 1], pts[i]);
+  let want = Math.min(1, Math.max(0, f)) * L;
+  for (let i = 1; i < pts.length; i++) { const d = k(pts[i - 1], pts[i]);
+    if (want <= d || i === pts.length - 1) { const u = d ? Math.min(1, want / d) : 1, a = pts[i - 1], b = pts[i];
+      return { ll: [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u], hd: hdg(a, b) }; }
+    want -= d; }
+  return { ll: pts[0], hd: 0 };
 }
 const BOAT_SVG = (hd) => `<svg width="36" height="36" viewBox="-14 -14 28 28" style="transform:rotate(${hd}deg)">
   <path d="M0,-9 C3.5,-4 3.5,4 2.5,8 L-2.5,8 C-3.5,4 -3.5,-4 0,-9Z" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
@@ -1115,7 +1138,7 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  let nc = 0, prev = 0;
+  let nc = 0, prev = 0, prevOut = 0;
   const stopRows = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
@@ -1126,12 +1149,12 @@ function renderPlanner() {
     if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
-    prev = x.pos;
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
   });
-  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Leg and total distances are along the route from the Victoria start, not counting the trips in and out of campsites. Click a row to set the map time.`;
-  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td>${(ch.stage2.total - prev).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
-  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th title="Along the route since the previous stop">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
+  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Coffee/snack: 1 to ${state.campH} hours. Stops of 2 hours or more go to the past campsite that costs the least extra rowing. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
+  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
