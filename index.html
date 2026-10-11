@@ -86,6 +86,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .boat { background: none; border: none; }
 .boat svg { overflow: visible; filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); }
 .boat .lt { display: none; }
+.pace-lbl { background: rgba(69,26,3,.85); color: #fde68a; border: none; box-shadow: none; font-size: 11px; padding: 1px 5px; }
+.pace-lbl::before { display: none; }
 .boat.lit .lt { display: inline; }
 .note { background: var(--chip); border-radius: 6px; padding: 9px 11px; font-size: 13px; }
 .gates { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
@@ -383,7 +385,7 @@ function initMap() {
       <select id="play-speed" aria-label="Playback speed"><option value="0.25">0.25 h/s</option><option value="0.5">0.5 h/s</option><option value="1" selected>1 h/s</option><option value="2">2 h/s</option><option value="4">4 h/s</option></select>
       <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
       <div class="prog" title="How much of the map the follow view shows, nautical miles across"><span>View</span><input id="follow-nm" type="range" min="5" max="50" step="1" value="25" aria-label="Follow view width in nautical miles"><span id="follow-nm-v">25 nm</span></div>
-      <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
+      <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Pace boat</span><b id="pb-pace">–</b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
     d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
     d.querySelector("#reset").addEventListener("click", resetPlay);
@@ -1002,6 +1004,40 @@ const BOAT_SVG = (hd) => `<svg width="36" height="36" viewBox="-14 -14 28 28" st
   <path d="M0,-9 C3.5,-4 3.5,4 2.5,8 L-2.5,8 C-3.5,4 -3.5,-4 0,-9Z" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
   <g class="lt"><circle cx="-3.6" cy="-2" r="1.6" fill="#ef4444"/><circle cx="3.6" cy="-2" r="1.6" fill="#22c55e"/><circle cx="0" cy="9.2" r="1.5" fill="#ffffff"/>
   <circle cx="-3.6" cy="-2" r="4" fill="#ef4444" opacity=".35"/><circle cx="3.6" cy="-2" r="4" fill="#22c55e" opacity=".35"/><circle cx="0" cy="9.2" r="3.6" fill="#ffffff" opacity=".35"/></g></svg>`;
+// ---------- pace boat: a past boat's tracker fixes, replayed with its Stage 2 start at ours (same elapsed time, same place)
+const PACE = [];
+const PEDAL_SVG = (hd) => `<svg width="34" height="34" viewBox="-14 -14 28 28" style="transform:rotate(${hd}deg)">
+  <path d="M0,-10 C4.5,-5 4.5,5 3.5,9 L-3.5,9 C-4.5,5 -4.5,-5 0,-10Z" fill="#f59e0b" stroke="#451a03" stroke-width="1"/>
+  <circle cx="0" cy="1" r="3.2" fill="none" stroke="#451a03" stroke-width="1.2"/><path d="M0,-2.2 L0,4.2 M-3.2,1 L3.2,1" stroke="#451a03" stroke-width="1.2"/></svg>`;
+function paceAt(p, t) {
+  const P = LAST_PLAN; if (!P || t < P.s2) return null;
+  const tt = p.start + (t - P.s2) / 1000, tr = p.track;
+  if (tt <= tr[0][0]) return { ll: [tr[0][1], tr[0][2]], hd: 0, done: false };
+  let i = tr.findIndex((q) => q[0] >= tt);
+  if (i < 0) return { ll: [tr[tr.length - 1][1], tr[tr.length - 1][2]], hd: 0, done: true };
+  const a = tr[i - 1], b = tr[i], f = (tt - a[0]) / ((b[0] - a[0]) || 1);
+  let k = i; while (k < tr.length - 1 && Math.abs(tr[k][1] - a[1]) + Math.abs(tr[k][2] - a[2]) < 0.002) k++;
+  return { ll: [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f], hd: hdg([a[1], a[2]], [tr[k][1], tr[k][2]]), done: false };
+}
+function renderPace() {
+  const t = state.t, P = LAST_PLAN; let txt = "–";
+  PACE.forEach((p) => {
+    const on = map && map.hasLayer(p.layer), q = on ? paceAt(p, t) : null;
+    if (!q) { if (p.marker) { p.marker.remove(); p.marker = null; } return; }
+    const hd = Math.round(q.hd / 5) * 5;
+    if (!p.marker) p.marker = L.marker(q.ll, { zIndexOffset: 900, interactive: false, keyboard: false })
+      .bindTooltip(esc(p.name), { permanent: true, direction: "right", offset: [12, 0], className: "pace-lbl" }).addTo(map);
+    p.marker.setLatLng(q.ll);
+    if (p.marker._hd !== hd) { p.marker.setIcon(L.divIcon({ className: "boat", html: PEDAL_SVG(hd), iconSize: [34, 34], iconAnchor: [17, 17] })); p.marker._hd = hd; }
+    // ahead or behind, along the route
+    if (P && t >= P.s2) {
+      const mine = t > P.r2.finish ? P.ch.stage2.total : posAt(P.r2.track, t), theirs = q.done ? P.ch.stage2.total : project(P.ch.stage2, q.ll[0], q.ll[1]).along;
+      const d = theirs - mine;
+      txt = `${esc(p.name)} ${Math.abs(d) < 0.5 ? "level" : `${Math.abs(d).toFixed(0)} nm ${d > 0 ? "ahead" : "behind"}`}${q.done ? " (finished)" : ""}`;
+    }
+  });
+  const el = $("pb-pace"); if (el) el.innerHTML = txt;
+}
 function renderSun() {
   if (!map) return;
   const t = state.t, b = boatAt(t), c = map.getCenter(), ll = b ? b.ll : [c.lat, c.lng];
@@ -1028,6 +1064,7 @@ function renderSun() {
     $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn` : "0";
   }
   if (mini) { if (b) miniBoat.setLatLng(b.ll).addTo(mini); else miniBoat.remove(); }
+  if (PACE.length) renderPace();
   followBoat();
   if (!b) { if (boatMarker) { boatMarker.remove(); boatMarker = null; } return; }
   const lit = navLights(t, b.ll), hd = Math.round(b.hd / 5) * 5, key = hd + (lit ? "L" : "");
@@ -1420,6 +1457,16 @@ async function loadPast() {
       .bindTooltip(`<b>${esc(t.name || "")}</b> (${yr} Stage 1)<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}`, { sticky: true }).addTo(g));
     layersCtl.addOverlay(g, `${yr} Stage 1 tracks, all boats (${r.teams.length}; ${r.teams.filter((t) => t.human).length} human-powered)`);
     g.addTo(map);
+  });
+  // pace boats (data/tracks/pace.json, from fetch_tracks.py): a past boat replayed with its Stage 2 start moved to ours
+  const pace = await get("data/tracks/pace.json").catch(() => null);
+  (pace?.boats || []).forEach((p) => {
+    const g = L.layerGroup(), yr = new Date(p.start * 1000).getUTCFullYear();
+    L.polyline(p.track.map((q) => [q[1], q[2]]), { color: "#f59e0b", weight: 2, opacity: 0.55, dashArray: "2 5", interactive: false }).addTo(g);
+    p.layer = g; p.marker = null; p.label = `${p.name} (${yr})`;
+    layersCtl.addOverlay(g, `Pace boat: ${esc(p.label)}, ${esc(p.class || "")}${p.finished ? `, ${((p.finished - p.start) / 86400).toFixed(1)} days` : ""}`);
+    g.on("add", renderPace).on("remove", renderPace);
+    g.addTo(map); PACE.push(p);
   });
   $("past-hint").innerHTML = races.length
     ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Green dots are places past teams stopped for 2 h or more (${PAST.stops.sites} sites); hover for who and when. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
