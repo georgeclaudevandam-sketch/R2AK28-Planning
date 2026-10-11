@@ -750,8 +750,8 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
     }
     return null;
   };
-  const runDay = (s0, end, theta, rec) => {
-    const s = { ...s0 }; let rowed = 0;
+  const runDay = (s0, end, theta, rec, rowed0 = 0) => {
+    const s = { ...s0 }; let rowed = rowed0;
     // the way in to a campsite that this last step rowed past
     const passed = () => ch._near.find((a) => a > s.pos0 && a <= s.pos);
     // deciding to stop at a campsite the last step rowed past: stop where its way in leaves the route, not beyond it
@@ -775,7 +775,8 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       if (!s.hold && !s.camp && state.campGapH) {
         const due = s.lastCamp + state.campGapH * H, campLen = state.campH * H;
         if (s.t >= due - 0.5 * H) s.hold = s.t + campLen;
-        else if (s.rowing && CAMPSITES.length && passed() != null) {
+        // (only once more than half the allowance has gone: stopping again soon after a camp gains nothing)
+        else if (s.rowing && CAMPSITES.length && s.t - s.lastCamp > state.campGapH * H / 2 && passed() != null) {
           const next = ch._near.find((a) => a > s.pos + 0.5);
           if (next == null || s.t + ((next - s.pos) / Math.max(0.5, v - 0.5) + 1) * H > due) { backTo(passed()); s.hold = s.t + campLen; s.holdPos = s.pos; }
         }
@@ -814,13 +815,22 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
           if (isNight(s.pos, s.t) || isNight(s.pos, s.t + H)) s.hold = Math.max(s.hold || 0, s.t + state.campH * H);
           s.stopFrom = s.t; s.wait = false;  // waiting at a gate when night falls: go ashore and come back to the gate in the morning
           s.camp = { site: c, d: c.din, extra: c.cost, t0, arrive: s.t };
+          if (s.probe) { s.probeStop = s.pos; return s; }
           if (rec) rec.track.push([s.t, s.pos]);
         }
       }
       // at a campsite more than halfway to the camp deadline: make this stop a full camp
       if (want && s.camp && state.campGapH && s.t - s.camp.arrive < state.campH * H && s.t - s.lastCamp > state.campGapH * H / 2) want = false;
       // at a campsite: don't set off if you would have to stop again soon where there is no campsite (wait for a longer fair spell)
-      if (want && s.camp && !win && s.t - s.camp.arrive < 18 * H) {
+      // at a campsite: try leaving (rowing on for up to 12 h without recording it); if that only gets a few miles before
+      // the planner pulls in to a campsite again, stay put and wait for a better spell
+      if (want && s.camp && !win && !s.probe && s.t - s.camp.arrive < 18 * H) {
+        const c = s.camp.site, dt = (c.dout / v) * H;
+        const q = runDay({ ...s, probe: true, camp: null, hold: 0, t: s.t + dt, pos: c.aout, pos0: c.aout, tp: s.t + dt, left: c.a, rowing: true, lastCamp: s.t + dt, stopFrom: null },
+          Math.min(end, s.t + dt + 12 * H), theta, null, rowed + dt / H);
+        if (q.probeStop != null && q.probeStop - c.aout < Math.min(MIN_LEG_NM, 2.5 * v)) want = false;
+      }
+      if (want && s.camp && !win && !s.probe && s.t - s.camp.arrive < 18 * H) {
         const c = s.camp.site, x = nextStop({ t: s.t + (c.dout / v) * H, pos: c.aout }, theta, rowed + c.dout / v, end);
         // nor if the next long stop would come within MIN_LEG_NM: don't break camp to row a few miles and stop again.
         // That stop is where the next stream or gate stop falls, or, with no campsite there, the last campsite before it
