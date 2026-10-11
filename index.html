@@ -62,7 +62,7 @@ input[type="number"], select { font: 14px var(--font-data); color: var(--ink); b
 select { width: auto; font-family: var(--font-ui); }
 input[type="range"] { width: 100%; accent-color: var(--accent); }
 .clock { font: 500 15px var(--font-data); font-variant-numeric: tabular-nums; }
-.playbar { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; background: rgba(15, 23, 42, .86); color: #f1f5f9; font: 13px var(--font-data); font-variant-numeric: tabular-nums; box-shadow: 0 1px 6px rgba(0,0,0,.4); }
+.playbar { display: flex; flex-wrap: wrap; max-width: min(560px, calc(100vw - 30px)); align-items: center; gap: 8px 10px; padding: 7px 10px; border-radius: 8px; background: rgba(15, 23, 42, .86); color: #f1f5f9; font: 13px var(--font-data); font-variant-numeric: tabular-nums; box-shadow: 0 1px 6px rgba(0,0,0,.4); }
 .playbar button { width: 36px; height: 32px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: #f8fafc; cursor: pointer; font-size: 14px; }
 .playbar select { font: 12px var(--font-data); background: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 5px; padding: 3px; }
 .playbar .pb { display: grid; grid-template-columns: auto auto; gap: 1px 12px; }
@@ -71,6 +71,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .leaflet-tile-pane { transition: filter .3s; }
 .mini { width: 230px; height: 270px; border-radius: 8px; overflow: hidden; border: 2px solid #f8fafc; box-shadow: 0 1px 6px rgba(0,0,0,.45); background: #0a2533; cursor: pointer; }
 .mini .leaflet-control-attribution { display: none; }
+.playbar .prog { flex: 1 0 100%; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; }
+.playbar .prog input { flex: 1; accent-color: #facc15; }
 .playbar label.follow { display: flex; align-items: center; gap: 4px; color: #e2e8f0; font-size: 12px; }
 @media (max-width: 760px) { .mini { width: 140px; height: 160px; } }
 .boat { background: none; border: none; }
@@ -356,12 +358,16 @@ function initMap() {
   // play bar over the map: play/pause, playback speed, and the planned boat's time, day, distance and speed
   const PlayBar = L.Control.extend({ onAdd() {
     const d = L.DomUtil.create("div", "playbar");
-    d.innerHTML = `<button type="button" id="play" aria-label="Play">&#9654;</button>
+    d.innerHTML = `<div class="prog"><span id="pb-from">Start</span><input id="progress" type="range" min="0" max="1" step="600000" value="0" aria-label="Progress through the simulation"><span id="pb-pct">0%</span></div>
+      <button type="button" id="play" aria-label="Play">&#9654;</button>
+      <button type="button" id="reset" aria-label="Reset to the start" title="Reset to the start">&#8634;</button>
       <select id="play-speed" aria-label="Playback speed"><option value="1">1 h/s</option><option value="3" selected>3 h/s</option><option value="6">6 h/s</option><option value="12">12 h/s</option></select>
       <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
       <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span>Through water</span><b id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Light</span><b id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
     d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
+    d.querySelector("#reset").addEventListener("click", resetPlay);
+    d.querySelector("#progress").addEventListener("input", (e) => { const v = +e.target.value; playT = v; setTime(v); });
     d.querySelector("#follow").addEventListener("change", (e) => { if (e.target.checked) { followKey = null; followBoat(); } });
     return d;
   } });
@@ -875,6 +881,18 @@ function followBoat() {
 // ---------- live play
 let playTimer = null, playT = 0;
 function stopPlay() { clearInterval(playTimer); playTimer = null; $("play").innerHTML = "&#9654;"; $("play").setAttribute("aria-label", "Play"); }
+function resetPlay() {
+  stopPlay();
+  if (!LAST_PLAN) return;
+  playT = LAST_PLAN.s1; setTime(LAST_PLAN.s1);
+  if ($("follow")) { $("follow").checked = true; setFollow(true); }
+}
+// the play bar's progress slider runs from the Stage 1 start to the planned finish
+function syncProgress() {
+  const P = LAST_PLAN, g = $("progress"); if (!P || !g) return;
+  g.min = P.s1; g.max = P.r2.finish; g.value = Math.max(P.s1, Math.min(P.r2.finish, state.t));
+  $("pb-pct").textContent = `${Math.round(100 * (g.value - P.s1) / ((P.r2.finish - P.s1) || 1))}%`;
+}
 function startPlay() {
   const P = LAST_PLAN, r = $("time");
   if (P && (state.t < P.s1 || state.t >= P.r2.finish)) setTime(P.s1);
@@ -891,7 +909,7 @@ function startPlay() {
 let nightLayer;
 function renderPlanner() {
   const P = plan(), { ch, r1, r2 } = P;
-  LAST_PLAN = P;
+  LAST_PLAN = P; syncProgress();
   $("days-out").textContent = `${state.days} days`;
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
@@ -1073,6 +1091,7 @@ function setTime(t) {
   $("clock").textContent = `${fmt.format(state.t)} PDT · ${moon[1]} ${Math.abs(dd) < 0.5 ? "today" : Math.abs(dd).toFixed(0) + " d " + (dd > 0 ? "ahead" : "ago")}`;
   styleMarkers();
   renderSun();
+  syncProgress();
   if (state.selected) renderDetail();
 }
 let layersCtl;
