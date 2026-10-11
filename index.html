@@ -88,6 +88,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .boat .lt { display: none; }
 .pace-lbl { background: rgba(69,26,3,.85); color: #fde68a; border: none; box-shadow: none; font-size: 11px; padding: 1px 5px; }
 .pace-lbl::before { display: none; }
+.pace-dir { background: none; border: none; }
+.pace-dir div { display: flex; align-items: center; gap: 4px; white-space: nowrap; background: rgba(15,23,42,.55); color: #fde68a; border-radius: 6px; padding: 2px 6px 2px 3px; font-size: 11px; line-height: 1.2; pointer-events: none; }
+.pace-dir svg { flex: none; }
 .boat.lit .lt { display: inline; }
 .note { background: var(--chip); border-radius: 6px; padding: 9px 11px; font-size: 13px; }
 .gates { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
@@ -1062,6 +1065,19 @@ function renderPace() {
     }
   });
   const el = $("pb-pace"); if (el) el.innerHTML = txt;
+  renderPaceDir();
+}
+// a faded box beside our boat: an arrow pointing at the pace boat and the straight-line distance to it
+let paceDir = null;
+function renderPaceDir() {
+  const t = state.t, P = LAST_PLAN, b = boatAt(t), p = PACE.find((p) => map.hasLayer(p.layer)), q = p && P && t >= P.s2 ? paceAt(p, t) : null;
+  if (!b || !q) { if (paceDir) { paceDir.remove(); paceDir = null; } return; }
+  const d = nmBetween(b.ll, q.ll), br = Math.round(((hdg(b.ll, q.ll) + 360) % 360) / 5) * 5;
+  const html = `<div><svg width="18" height="18" viewBox="-9 -9 18 18" style="transform:rotate(${br}deg)"><path d="M0,-8 L5,3 L1.2,1.5 L1.2,8 L-1.2,8 L-1.2,1.5 L-5,3Z" fill="#f59e0b" stroke="#451a03" stroke-width=".8"/></svg>`
+    + `${esc(p.name)} ${d < 0.1 ? "alongside" : `${d < 10 ? d.toFixed(1) : d.toFixed(0)} nm`}${q.done ? " (finished)" : ""}</div>`;
+  if (!paceDir) paceDir = L.marker(b.ll, { zIndexOffset: 950, interactive: false, keyboard: false }).addTo(map);
+  paceDir.setLatLng(b.ll);
+  if (paceDir._html !== html) { paceDir.setIcon(L.divIcon({ className: "pace-dir", html, iconSize: null, iconAnchor: [-20, -16] })); paceDir._html = html; }
 }
 function renderSun() {
   if (!map) return;
@@ -1102,6 +1118,7 @@ let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [
 function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
 // Follow mode: the map stays on the boat at a fixed scale, about FOLLOW_NM across the part of the map left of the inset and
 // play box (set with the View slider), and keeps the boat in the middle of it as it moves (no zooming in and out at stops).
+// With a pace boat shown it zooms out as far as about 120 nm across to keep both in view, centred between them.
 let FOLLOW_NM = 25;   // the View slider in the play box, 5 to 50 nm
 let FLYING = false;
 function followZoom(lat, wpx) {
@@ -1114,8 +1131,19 @@ function followBoat() {
   // finished in Ketchikan while a pace boat is still going: follow that instead
   if (b.done) { const p = PACE.find((p) => map.hasLayer(p.layer)), q = p && paceAt(p, state.t); if (q && !q.done) b = q; }
   // keep the boat clear of the inset and play box down the right-hand side
-  const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40, z = followZoom(b.ll[0], map.getSize().x - rw);
-  const ctr = map.unproject(map.project(b.ll, z).add([rw / 2, 0]), z);
+  const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40, sz = map.getSize();
+  let z = followZoom(b.ll[0], sz.x - rw), mid = b.ll;
+  // with a pace boat out, zoom out (up to about 120 nm across) to keep both boats in view, centred between them
+  const p = !b.done && PACE.find((p) => map.hasLayer(p.layer)), q = p && paceAt(p, state.t);
+  if (q) {
+    const pad = 80, w = Math.max(200, sz.x - rw - 2 * pad), h = Math.max(150, sz.y - 2 * pad);
+    const ZMIN = Math.log2((156543.034 * Math.cos(b.ll[0] * Math.PI / 180)) / (120 * 1852 / Math.max(200, sz.x - rw)));
+    const fit = (zz) => { const a = map.project(b.ll, zz), c = map.project(q.ll, zz); return Math.abs(a.x - c.x) <= w && Math.abs(a.y - c.y) <= h; };
+    let zz = z; while (zz > ZMIN && !fit(zz)) zz -= 0.25;
+    // too far apart to show both: stay on our boat at the usual scale (the arrow box points the way)
+    if (fit(zz)) { z = zz; const a = map.project(b.ll, z), c = map.project(q.ll, z); mid = map.unproject(a.add(c).divideBy(2), z); }
+  }
+  const ctr = map.unproject(map.project(mid, z).add([rw / 2, 0]), z);
   // only when it moves (setView fires moveend, which redraws and would call this again)
   if (z !== map.getZoom() || map.latLngToContainerPoint(ctr).distanceTo(map.getSize().divideBy(2)) > 1) map.setView(ctr, z, { animate: false });
 }
