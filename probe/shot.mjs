@@ -12,3 +12,4 @@ for (const [n, la, lo, z] of views) {
   await p.reload(); await p.waitForTimeout(6000);
 }
 await b.close();
+// rerun
