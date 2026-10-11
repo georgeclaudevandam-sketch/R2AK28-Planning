@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "scripts/fetch_landings.py"
+      - "data/landings/scan_points.json"
       - ".github/workflows/landings.yml"
 
 permissions:
@@ -24,7 +25,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pillow
-      - run: python scripts/fetch_landings.py
+      - run: python scripts/fetch_landings.py && python scripts/fetch_landings.py --scan
       - name: Commit landings
         run: |
           git config user.name "github-actions[bot]"

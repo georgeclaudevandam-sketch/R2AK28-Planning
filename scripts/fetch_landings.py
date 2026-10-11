@@ -66,15 +66,15 @@ def tile_xy(lat, lon, z):
     return x, y
 
 
-def chip(lat, lon, size=256):
-    """~400 m of imagery centred on lat, lon at zoom Z, scaled to size px, with a crosshair."""
-    fx, fy = tile_xy(lat, lon, Z)
+def chip(lat, lon, size=256, z=Z):
+    """~400 m (zoom 17) or ~750 m (zoom 16) of imagery centred on lat, lon, scaled to size px, with a crosshair."""
+    fx, fy = tile_xy(lat, lon, z)
     x0, y0 = int(fx) - 1, int(fy) - 1
     im = Image.new("RGB", (768, 768), (20, 30, 40))
     for dx in range(3):
         for dy in range(3):
             try:
-                im.paste(Image.open(io.BytesIO(get(IMG.format(z=Z, x=x0 + dx, y=y0 + dy)))).convert("RGB"), (dx * 256, dy * 256))
+                im.paste(Image.open(io.BytesIO(get(IMG.format(z=z, x=x0 + dx, y=y0 + dy)))).convert("RGB"), (dx * 256, dy * 256))
             except Exception as e:
                 log(f"  tile {e}")
     cx, cy = (fx - x0) * 256, (fy - y0) * 256
@@ -131,5 +131,36 @@ def main():
         log(f"  sheet {s // 16 + 1}")
 
 
+def scan():
+    """Shoreline scan of the stretches with no past campsite in reach: data/landings/scan_points.json lists shore points every
+    ~0.4 nm within 1 nm of the route there; each becomes a ~750 m chip on 5 x 5 contact sheets in data/landings/scan/."""
+    f = ROOT / "data" / "landings" / "scan_points.json"
+    if not f.exists():
+        return
+    gaps = json.loads(f.read_text())
+    sd = ROOT / "data" / "landings" / "scan"
+    sd.mkdir(parents=True, exist_ok=True)
+    for old in sd.glob("*.jpg"):
+        old.unlink()
+    idx, n = [], 0
+    for g in gaps:
+        for la, lo in g["pts"]:
+            n += 1
+            idx.append({"n": n, "gap": f"{g['a']}-{g['b']}", "lat": la, "lon": lo})
+    (sd / "index.json").write_text(json.dumps(idx, indent=0))
+    for s in range(0, len(idx), 25):
+        sheet = Image.new("RGB", (5 * 244, 5 * 258), (255, 255, 255))
+        d = ImageDraw.Draw(sheet)
+        for k, o in enumerate(idx[s:s + 25]):
+            x, y = (k % 5) * 244, (k // 5) * 258
+            sheet.paste(chip(o["lat"], o["lon"], 240, 16), (x + 2, y + 2))
+            d.text((x + 4, y + 243), f"#{o['n']} {o['lat']:.4f},{o['lon']:.4f}", fill=(0, 0, 0))
+        sheet.save(sd / f"scan{s // 25 + 1:02d}.jpg", quality=75)
+        log(f"  scan sheet {s // 25 + 1}")
+
+
 if __name__ == "__main__":
-    main()
+    if "--scan" in sys.argv:
+        scan()
+    else:
+        main()
