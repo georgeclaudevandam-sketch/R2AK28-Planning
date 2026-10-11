@@ -466,11 +466,23 @@ function initMap() {
     return d;
   } });
   new Opacity({ position: "bottomleft" }).addTo(map);
-  L.control.scale({ imperial: true, metric: false, position: "bottomright" }).addTo(map);
+  L.control.scale({ imperial: true, metric: false, position: "bottomleft" }).addTo(map);
   // overview inset: the whole route, your stops, the boat and the area the big map shows. Click it to look there.
   const Mini = L.Control.extend({ onAdd() { const d = L.DomUtil.create("div", "mini"); d.id = "mini"; L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d); return d; } });
   new Mini({ position: "topright" }).addTo(map);
   new PlayBar({ position: "topright" }).addTo(map);   // just under the inset, out of the way of the route
+  // fit the inset and play box in the map's height: shrink the inset first, then let the play box scroll
+  const fitRight = () => {
+    const mh = map.getSize().y, pb = document.querySelector(".playbar"), mi = document.querySelector(".mini"); if (!pb || !mi) return;
+    pb.style.maxHeight = ""; mi.style.height = "";
+    const limit = map.getContainer().getBoundingClientRect().top + mh - 22;   // clear of the attribution line
+    let over = pb.getBoundingClientRect().bottom - limit;
+    if (over > 0) mi.style.height = `${Math.max(110, mi.offsetHeight - over - 30)}px`;   // and a line spare
+    // whatever the play box later shows (a wrapped line, say), it scrolls rather than runs off the map
+    pb.style.maxHeight = `${Math.max(120, limit - pb.getBoundingClientRect().top)}px`; pb.style.overflowY = "auto";
+    if (mini) mini.invalidateSize();
+  };
+  map.on("resize", fitRight); setTimeout(fitRight, 0);
   mini = L.map("mini", { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false });
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16 }).addTo(mini);
   ROUTE.legs.forEach((leg) => L.polyline(leg.points, { color: leg.key === "stage1" ? "#f97316" : "#ca8a04", weight: 2, opacity: 0.9 }).addTo(mini));
