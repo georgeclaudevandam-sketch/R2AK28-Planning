@@ -6,7 +6,7 @@
                                         eight constituents (M2 S2 N2 K2 K1 O1 P1 Q1) on a mesh fitted to the charted depths. Its
                                         mesh leaves out the Strait of Georgia and the Discovery Islands, and some narrow inlets.
   SalishSeaCast (UBC)                   3-D NEMO model of the Salish Sea run daily by UBC EOAS, on a 500 m grid. Hourly surface
-                                        (0.5 m) velocities from its hindcast are fitted with UTide here (ten constituents and the
+                                        (0.5 m) velocities from its hindcast for June and July are fitted with UTide here (eight constituents and the
                                         mean, which carries the Fraser outflow and the estuarine surface flow). Covers Juan de Fuca,
                                         Haro Strait, the Strait of Georgia, Discovery Passage and the east end of Johnstone Strait.
 
@@ -42,7 +42,10 @@ CONST = ["M2", "S2", "N2", "K2", "K1", "O1", "P1", "Q1", "M4", "MS4"]
 WT_CONST = ["M2", "S2", "N2", "K2", "K1", "O1", "P1", "Q1"]
 ERDDAP = "https://salishsea.eos.ubc.ca/erddap/griddap"
 SSC_U, SSC_V, SSC_GRID = "ubcSSg3DuGridFields1hV21-11", "ubcSSg3DvGridFields1hV21-11", "ubcSSnBathymetryV21-08"
-FIT = ("2024-04-01T00:30:00Z", "2024-09-30T23:30:00Z")   # six months: separates K1/P1 and S2/K2
+FIT = ("2024-06-01T00:30:00Z", "2024-07-31T23:30:00Z")   # two months, June and July as in the race (Fraser freshet included)
+SSC_CONST = ["M2", "S2", "N2", "K1", "O1", "Q1", "M4", "MS4"]   # two months can't separate K1/P1 or S2/K2: those ride in K1 and S2
+SSC_STEP_NM = 2.0        # SalishSeaCast cells every 2 nm along the route; samples in between use the nearest one
+BUDGET_MIN = float(os.environ.get("SSC_BUDGET_MIN", "150"))   # stop downloading after this; a re-run carries on from the cache
 SSC_EDGE = 12            # skip grid cells this close to the model's open boundaries
 CACHE = Path(os.environ.get("SSC_CACHE", ROOT / "dl" / "ssc"))
 
@@ -158,6 +161,8 @@ class SalishSea:
         if d * 60 > max_nm: return None
         return tuple(int(v) for v in s.cells[i])
 
+    def cached(s, y, x): return (CACHE / f"{y}_{x}.npz").exists()
+
     def series(s, y, x):
         f = CACHE / f"{y}_{x}.npz"
         if f.exists():
@@ -177,17 +182,17 @@ class SalishSea:
 
     def uv(s, lat, lon):
         c = s.cell(lat, lon)
-        if c is None: return None
+        if c is None or not s.cached(*c): return None
         y, x = c
         t, ug, vg = s.series(y, x)
         ok = np.isfinite(ug) & np.isfinite(vg)
-        if ok.sum() < 24 * 120 or np.nanmax(np.abs(ug[ok])) == 0 and np.nanmax(np.abs(vg[ok])) == 0: return None
+        if ok.sum() < 24 * 45 or np.nanmax(np.abs(ug[ok])) == 0 and np.nanmax(np.abs(vg[ok])) == 0: return None
         a = s.ang[y, x]
         ue = (ug * math.cos(a) - vg * math.sin(a))[ok] * KN; vn = (ug * math.sin(a) + vg * math.cos(a))[ok] * KN
         tt = (t[ok] * 1e9).astype("int64").astype("datetime64[ns]")
         out = {}
         for name, comp in (("u", ue), ("v", vn)):
-            co = utide.solve(tt, comp, lat=lat, method="ols", conf_int="none", trend=False, nodal=True, constit=CONST, verbose=False)
+            co = utide.solve(tt, comp, lat=lat, method="ols", conf_int="none", trend=False, nodal=True, constit=SSC_CONST, verbose=False)
             out[name] = ({n: co["A"][i] * np.exp(-1j * np.radians(co["g"][i])) for i, n in enumerate(co["name"])}, co["mean"])
         res = {"mean": (complex(out["u"][1]), complex(out["v"][1]))}
         for c in CONST: res[c] = (out["u"][0].get(c, 0j), out["v"][0].get(c, 0j))
@@ -235,21 +240,27 @@ def main():
 
     # every sample point, then the SalishSeaCast cells they need (fetched in parallel)
     samples = {k: [(a, ch.at(a), ch.heading(a)) for a in np.arange(0, ch.total + 1e-9, STEP_NM)] for k, ch in chains.items()}
-    cells = sorted({c for ss in samples.values() for _, p, _ in ss for c in [ssc.cell(*p)] if c})
-    log(f"{len(cells)} SalishSeaCast cells to fetch")
+    ssc_p = lambda ch, a: ch.at(math.floor(a / SSC_STEP_NM + 0.5) * SSC_STEP_NM)
+    cells = sorted({c for k, ss in samples.items() for a, _, _ in ss for c in [ssc.cell(*ssc_p(chains[k], a))] if c})
+    todo = [c for c in cells if not ssc.cached(*c)]
+    log(f"{len(cells)} SalishSeaCast cells, {len(todo)} to fetch")
+    deadline = time.time() + BUDGET_MIN * 60
     def get(c):
-        try: ssc.series(*c)
+        if time.time() > deadline: return
+        t = time.time()
+        try: ssc.series(*c); log(f"  cell {c}: {time.time() - t:.0f} s")
         except Exception as e: log(f"  cell {c} failed: {e}")
-    with ThreadPoolExecutor(4) as ex:
+    with ThreadPoolExecutor(8) as ex:
         for i, _ in enumerate(ex.map(get, cells)):
-            if i % 20 == 0: log(f"  {i}/{len(cells)}")
+            if i % 20 == 0: log(f"  {i}/{len(todo)}")
+    log(f"{sum(ssc.cached(*c) for c in cells)} of {len(cells)} SalishSeaCast cells downloaded")
 
     memo = {}
-    def model_at(p):
-        c = ssc.cell(*p)
+    def model_at(ch, a, p):
+        c = ssc.cell(*ssc_p(ch, a))
         if c is not None:
             if c not in memo:
-                try: memo[c] = ssc.uv(*p)
+                try: memo[c] = ssc.uv(*ssc_p(ch, a))
                 except Exception as e: log(f"  fit {c} failed: {e}"); memo[c] = None
             if memo[c] is not None: return 2, memo[c]
         m = wt.uv(*p)
@@ -259,7 +270,7 @@ def main():
     for k, ss in samples.items():
         rows = []
         for a, p, hd in ss:
-            src, m = model_at(p)
+            src, m = model_at(chains[k], a, p)
             if not m: rows.append([0]); continue
             row = [src, round(along(m["mean"], hd).real, 3)]
             for c in CONST:
@@ -281,10 +292,11 @@ def main():
         fl = np.percentile([e["kn"] for e in ev if e["type"] == "flood"], 90); eb = np.percentile([e["kn"] for e in ev if e["type"] == "ebb"], 90)
         row = {"key": st["key"], "table_flood": round(fl, 2), "table_ebb": round(eb, 2)}
         for name, src in (("ssc", 2), ("webtide", 1)):
-            m = (ssc.uv(st["lat"], st["lon"]) if src == 2 and ssc.cell(st["lat"], st["lon"]) else None) if src == 2 else wt.uv(st["lat"], st["lon"])
+            m = ssc.uv(st["lat"], st["lon"]) if src == 2 else wt.uv(st["lat"], st["lon"])
             if not m: continue
             x = predict(m, math.radians(sd["flood_dir"]), hrs, ast)
             row[name + "_flood"] = round(float(np.percentile(x, 99.5)), 2); row[name + "_ebb"] = round(float(-np.percentile(x, 0.5)), 2)
+        row["table_flood"], row["table_ebb"] = float(row["table_flood"]), float(row["table_ebb"])
         check.append(row); log(row)
 
     (ROOT / "data" / "stream_field.json").write_text(json.dumps({
