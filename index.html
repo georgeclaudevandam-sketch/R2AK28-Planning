@@ -391,6 +391,7 @@ function initMap() {
   const NOAA_SVC = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer";
   const noaaOpts = { zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
   const noaa = L.layerGroup([new ChartLayer("", { ...noaaOpts, bounds: [[46.5, -126.5], [49.0, -122.0]] }), new ChartLayer("", { ...noaaOpts, bounds: [[54.65, -136.5], [60.0, -129.95]] })]).addTo(map);
+  noaa.eachLayer((l) => { l._noaaTag = true; });
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
     show: "show:0,1,2,3,4,5,6,7,9,12", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, zIndex: 2, bounds: [[48.2, -140], [54.72, -122.0]], attribution: "Charts: CHS (Open Government Licence - Canada)" }).addTo(map);
 
