@@ -4,7 +4,7 @@
 Reads OpenStreetMap (Overpass) for beaches, shingle shores, campsites and slipways within NEAR_NM of the Stage 2 route, keeps
 those more than FAR_NM from every past campsite (data/campsites.json, the stops past teams made), and writes
 data/landings.json. For checking them by eye it also writes contact sheets of Esri satellite imagery around each candidate
-(data/landings/sheets/*.jpg, 16 per sheet, ~600 m across each, numbered as in landings.json).
+(data/landings/sheets/*.jpg, 16 per sheet, ~400 m across each, numbered as in landings.json).
 """
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ def tile_xy(lat, lon, z):
 
 
 def chip(lat, lon, size=256):
-    """~600 m of imagery centred on lat, lon at zoom Z, scaled to size px, with a crosshair."""
+    """~400 m of imagery centred on lat, lon at zoom Z, scaled to size px, with a crosshair."""
     fx, fy = tile_xy(lat, lon, Z)
     x0, y0 = int(fx) - 1, int(fy) - 1
     im = Image.new("RGB", (768, 768), (20, 30, 40))
@@ -78,8 +78,7 @@ def chip(lat, lon, size=256):
             except Exception as e:
                 log(f"  tile {e}")
     cx, cy = (fx - x0) * 256, (fy - y0) * 256
-    half = 384
-    im = im.crop((int(cx - half), int(cy - half), int(cx + half), int(cy + half))) if 0 <= cx - half and cx + half <= 768 else im
+    im = im.crop((int(cx - 256), int(cy - 256), int(cx + 256), int(cy + 256)))   # the point is in the middle tile, so this fits
     im = im.resize((size, size))
     d = ImageDraw.Draw(im)
     c = size // 2
