@@ -1393,6 +1393,16 @@ async function loadPast() {
     g.addTo(map);   // all past years shown when the map opens
   });
   buildStops(races);
+  // Stage 1 (Port Townsend to Victoria): YB has every boat's track for it (data/tracks/stage1, from fetch_tracks.py); the
+  // human-powered teams' trackers mostly start in Victoria, so the sail and other boats show the lines taken
+  const s1 = (await Promise.all(races.map((r) => get(`data/tracks/stage1/${r.key}.json`)))).filter((r) => r && r.teams && r.teams.length);
+  s1.forEach((r) => {
+    const g = L.layerGroup(), yr = new Date((r.stage2_start || 0) * 1000).getUTCFullYear();
+    r.teams.forEach((t) => L.polyline(t.track.map((p) => [p[1], p[2]]), t.human ? { color: classColor(t.class), weight: 2.5, opacity: 0.9 } : { color: "#cbd5e1", weight: 1.2, opacity: 0.55 })
+      .bindTooltip(`<b>${esc(t.name || "")}</b> (${yr} Stage 1)<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}`, { sticky: true }).addTo(g));
+    layersCtl.addOverlay(g, `${yr} Stage 1 tracks, all boats (${r.teams.length}; ${r.teams.filter((t) => t.human).length} human-powered)`);
+    g.addTo(map);
+  });
   $("past-hint").innerHTML = races.length
     ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Green dots are places past teams stopped for 2 h or more (${PAST.stops.sites} sites); hover for who and when. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
     : "No past tracks loaded yet.";

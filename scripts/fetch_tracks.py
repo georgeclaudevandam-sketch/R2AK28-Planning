@@ -27,9 +27,7 @@ UA = {"User-Agent": "r2ak28-planning (github.com/georgeclaudevandam-sketch/R2AK2
 HUMAN_TAGS = {"kayak", "rowboat", "row boat", "rowing", "sup", "paddleboard", "stand up paddle", "canoe"}
 NOT_HUMAN = ("sail", "kite", "wing", "pedal", "foil")
 YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026]
-SUFFIXES = ["", "s1", "stage1", "-stage1", "stageone", "proving", "provingground", "pg", "leg1"]
-# Stage 1 (the Proving Ground, Port Townsend to Victoria) is a separate YB race; its key is not documented, so try the likely forms
-STAGE1_KEYS = [f"{p}{y}" for y in YEARS for p in ("r2akstage1", "r2akprovingground", "r2akproving", "provingground", "r2akpg", "r2aks1")]
+SUFFIXES = ["", "s1", "stage1"]
 
 
 def log(*a):
@@ -95,7 +93,7 @@ def decode_positions(buf: bytes) -> dict[int, list[tuple[int, float, float]]]:
 
 
 def thin(pts, min_gap_s=900, min_nm=0.3):
-    """Keep a fix when 15 min or 0.3 nm has passed since the last kept one."""
+    """Keep a fix when min_gap_s seconds or min_nm nm have passed since the last kept one."""
     out = []
     for p in pts:
         if not (40 < p[1] < 60 and -140 < p[2] < -115):
@@ -125,8 +123,6 @@ def race(key: str):
     if not isinstance(setup, dict) or not setup.get("teams"):
         log(f"  no teams; keys {list(setup)[:20] if isinstance(setup, dict) else type(setup).__name__}")
         return None
-    hints = sorted({w for w in __import__("re").findall(r"[a-z0-9]*(?:r2ak|proving|stage)[a-z0-9]*", json.dumps(setup).lower()) if w != key})
-    if hints: log(f"  mentions: {hints[:40]}")
     tags = {t["id"]: t["name"] for t in setup.get("tags", [])}
     human_ids = {i for i, n in tags.items() if n.strip().lower() in HUMAN_TAGS}
     log(f"{key}: '{setup.get('title')}' {len(setup['teams'])} teams, tags {sorted(tags.values())}")
@@ -144,6 +140,21 @@ def race(key: str):
     if allpts:
         log(f"  decoded {len(pos)} tracks, {len(allpts)} fixes, lat {min(p[1] for p in allpts):.2f}..{max(p[1] for p in allpts):.2f}, "
             f"lon {min(p[2] for p in allpts):.2f}..{max(p[2] for p in allpts):.2f}")
+    # Stage 1 (Port Townsend to Victoria, before the Stage 2 start): every boat's track there, as a reference, written to
+    # data/tracks/stage1/<key>.json. YB keeps both stages in the one race.
+    s2 = setup.get("start") or 0
+    s1 = []
+    for t in setup["teams"]:
+        fx = [p for p in pos.get(t["id"], []) if p[0] < s2 - 1800 and 47.9 < p[1] < 48.6 and -123.7 < p[2] < -122.5]
+        pts = thin(fx, min_gap_s=300, min_nm=0.15)
+        if len(pts) < 5: continue
+        tg = [tags[i] for i in t.get("tags") or [] if i in tags and tags[i] != "All Teams"]
+        human = bool(human_ids & set(t.get("tags") or [])) and not banned & set(t.get("tags") or [])
+        s1.append({"id": t["id"], "name": t.get("name"), "boat": t.get("model"), "class": ", ".join(tg) or "", "human": human, "track": pts})
+    log(f"  Stage 1: {len(s1)} boats with fixes before the Stage 2 start, {sum(x['human'] for x in s1)} human-powered")
+    if s1:
+        (OUT / "stage1").mkdir(exist_ok=True)
+        (OUT / "stage1" / f"{key}.json").write_text(json.dumps({"key": key, "title": setup.get("title"), "stage2_start": s2, "teams": s1}, separators=(",", ":")))
     out = []
     for t in teams:
         pts = thin(pos.get(t["id"], []))
@@ -167,7 +178,7 @@ def race(key: str):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    keys = sys.argv[1:] or [f"r2ak{y}{s}" for s in SUFFIXES for y in reversed(YEARS)] + [f"r2ak{str(y)[2:]}" for y in YEARS] + STAGE1_KEYS
+    keys = sys.argv[1:] or [f"r2ak{y}{s}" for s in SUFFIXES for y in reversed(YEARS)] + [f"r2ak{str(y)[2:]}" for y in YEARS]
     index = []
     for key in dict.fromkeys(keys):
         try:
