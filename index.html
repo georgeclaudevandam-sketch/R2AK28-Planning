@@ -139,6 +139,8 @@ td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
 input[type="date"], input[type="time"] { font: 14px var(--font-data); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 5px; padding: 4px 6px; }
 label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); }
 #days-tbl td:first-child, #days-tbl th:first-child { white-space: nowrap; }
+#days-tbl .num { text-align: right; padding-right: 8px; white-space: nowrap; }
+#days-tbl .sub { font-size: 10px; }
 .summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; font-size: 13px; color: var(--ink); }
 .summary dt { color: var(--muted); }
 .summary dd { margin: 0; font-family: var(--font-data); font-size: 12.5px; }
@@ -1304,10 +1306,10 @@ function renderPlanner() {
     const pa = cpos(Math.max(a, P.s1)), pb = cpos(b);
     const gd = gates.filter((g) => g.arr >= a && g.arr < b + 1).map((g) => `${esc(g.st.name.replace(/ \(.*\)/, ""))} ${fmtT.format(g.dep)}`);
     const label = b >= r2.finish ? "Ketchikan finish " + fmtT.format(r2.finish) : where(pb);
-    out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td>${(pb - pa).toFixed(0)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
+    out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td class="num">${(pb - pa).toFixed(0)}</td><td class="num">${((pb - pa) * 1.852).toFixed(0)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
     d = addDays(d, 1);
   }
-  $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th>nm</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>`;
+  $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th class="num">nm</th><th class="num">km</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>`;
 
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
