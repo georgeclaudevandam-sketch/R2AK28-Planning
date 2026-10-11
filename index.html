@@ -353,7 +353,10 @@ function valueAt(st, t) {
 // HonorScamin off), with text and symbols at full size (text plus 30%) when zoomed out past a chart's own scale.
 // Tiles are drawn at twice the resolution (512 px at 192 dpi for each 256 px tile) so lines and text stay sharp.
 const URLQ = new URLSearchParams(location.search);
-const CHART_DPI = +(URLQ.get("chartdpi") || 192), CHART_TEXT = +(URLQ.get("charttext") || 1.3);
+// CHS picks which of its charts to draw from the scale it is asked for. Asking at 96 dpi for a 512 px tile makes it draw the
+// next more detailed chart (harbour and approach charts with full soundings and contours when zoomed out), with text and
+// symbols scaled up to stay readable. ?chartdpi= and ?charttext= override for testing.
+const CHART_DPI = +(URLQ.get("chartdpi") || 96), CHART_TEXT = +(URLQ.get("charttext") || 2);
 const CHART_DISPLAY = JSON.stringify({ ECDISParameters: { version: "10.9.1", DynamicParameters: { Parameter: [{ name: "HonorScamin", value: 1 }], ParameterGroup: [
   { name: "TextSize", Parameter: [{ name: "scaleFactor", value: CHART_TEXT }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] },
   { name: "PointSymbolSize", Parameter: [{ name: "scaleFactor", value: 1.2 }, { name: "minZoom", value: 1 }, { name: "maxZoom", value: 1.2 }] }] } } });
@@ -956,8 +959,11 @@ function followBoat() {
   const c = $("follow"); if (!map || !c || !c.checked) return;
   const b = boatAt(state.t); if (!b) return;
   // Stage 2: the stop before the boat and the next two; Stage 1: just the boat
-  let pts = [b.ll], key = "s1";
-  if (LAST_PLAN && state.t >= LAST_PLAN.s2 && STOP_LL.length) {
+  let pts = [b.ll], key = "s1", maxZoom = 13;
+  const atStop = LAST_PLAN && state.t >= LAST_PLAN.s2 ? STOP_LL.findIndex((x) => state.t >= x.t && state.t < x.until) : -1;
+  if (atStop >= 0) {   // stopped: close in on the landing (about 3 times closer) to show exactly where it is
+    key = "at" + atStop; pts = [b.ll, STOP_LL[atStop].ll]; maxZoom = 15;
+  } else if (LAST_PLAN && state.t >= LAST_PLAN.s2 && STOP_LL.length) {
     const k = STOP_LL.findIndex((x) => x.until > state.t), i = k < 0 ? STOP_LL.length : k;
     key = i;
     pts = pts.concat(STOP_LL.slice(Math.max(0, i - 1), i + 2).map((x) => x.ll));
@@ -967,7 +973,10 @@ function followBoat() {
     followKey = key;
     // keep the boat and stops clear of the inset and play box down the right-hand side
     const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40;
-    if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [60, 60], paddingBottomRight: [rw + 20, 60], maxZoom: 13, animate: !!playTimer });
+    if (atStop >= 0) {
+      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.8)), 15);
+      const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer });
+    } else if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [60, 60], paddingBottomRight: [rw + 20, 60], maxZoom, animate: !!playTimer });
     else { const z = Math.max(map.getZoom(), 11), c = map.project(b.ll, z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer }); }
   }
 }
@@ -1221,13 +1230,13 @@ async function loadPast() {
   });
   buildStops(races);
   $("past-hint").innerHTML = races.length
-    ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Green dots are places past teams stopped for 3 h or more (${PAST.stops.sites} sites); hover for who and when. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
+    ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Green dots are places past teams stopped for 2 h or more (${PAST.stops.sites} sites); hover for who and when. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
     : "No past tracks loaded yet.";
   $("past-years").innerHTML = races.map((r) => `<button type="button" data-k="${esc(r.key)}" aria-pressed="false">${yearOf(r)}</button>`).join("");
   document.querySelectorAll("#past-years button").forEach((b) => b.onclick = () => { const g = PAST.groups[b.dataset.k]; map.hasLayer(g) ? map.removeLayer(g) : g.addTo(map); });
   renderPast();
 }
-// Stops: places a past team stayed within 0.3 nm for 3 h or more (camps, anchorages, waiting out weather or tide).
+// Stops: places a past team stayed within 0.3 nm for 2 h or more (camps, anchorages, waiting out weather or tide).
 // Stops within a mile of each other are grouped into one site.
 function buildStops(races) {
   const stops = [];
@@ -1236,7 +1245,7 @@ function buildStops(races) {
     while (i < tr.length - 1) {
       let j = i; while (j + 1 < tr.length && nmBetween([tr[i][1], tr[i][2]], [tr[j + 1][1], tr[j + 1][2]]) < 0.3) j++;
       const hrs = (tr[j][0] - tr[i][0]) / 3600, ll = [tr[i][1], tr[i][2]];
-      if (hrs >= 3 && nmBetween(ll, [48.4225, -123.372]) > 2 && nmBetween(ll, [55.339, -131.637]) > 2 && j < tr.length - 1)
+      if (hrs >= 2 && nmBetween(ll, [48.4225, -123.372]) > 2 && nmBetween(ll, [55.339, -131.637]) > 2 && j < tr.length - 1)
         stops.push({ ll, t: tr[i][0] * 1000, hrs, team: t.name, cls: t.class, year: yearOf(r) });
       i = Math.max(j, i + 1);
     }
