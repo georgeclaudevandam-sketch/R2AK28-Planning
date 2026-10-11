@@ -1443,6 +1443,7 @@ async function loadPast() {
     g.on("add", () => { PAST.shown.add(r.key); renderPast(); }).on("remove", () => { PAST.shown.delete(r.key); renderPast(); });
     PAST.groups[r.key] = g;
     layersCtl.addOverlay(g, `${yearOf(r)} human-powered tracks (${r.teams.length})`);
+    g.addTo(map);   // all past years shown when the map opens
   });
   buildStops(races);
   $("past-hint").innerHTML = races.length
