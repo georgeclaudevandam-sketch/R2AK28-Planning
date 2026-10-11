@@ -169,7 +169,7 @@ def peel(ch, tree, site, a_join, sign):
     A = at(ch, a_join)
     th = hd(at(ch, a_join - 0.15), at(ch, a_join + 0.15)) + (0 if sign < 0 else 180)   # heading away from the route end
     cells = tree.to(water(*rc(*A)))
-    if not cells: return None
+    if not cells or len(cells) < 2: return None
     g = rough(cells)                 # route end -> campsite (its nearest water)
     A = g[0]
     best, n = None, length(g)

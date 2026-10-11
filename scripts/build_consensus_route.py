@@ -44,6 +44,15 @@ for (la0, lo0), (la1, lo1) in zip(DODD, DODD[1:]):
         r, c = rc(la0 + (la1 - la0) * t, lo0 + (lo1 - lo0) * t)
         land[r - 1:r + 2, c - 1:c + 2] = False
 
+# Enterprise Channel (inside Trial Islands, just out of Victoria), where every past human-powered track went, is closed at 220 m
+# too: carve it along their common line
+TRIAL = [(48.4030, -123.3290), (48.4045, -123.3185), (48.4070, -123.3100), (48.4082, -123.3020), (48.4095, -123.2955), (48.4140, -123.2915),
+         (48.4185, -123.2885)]
+for (la0, lo0), (la1, lo1) in zip(TRIAL, TRIAL[1:]):
+    for t in np.linspace(0, 1, 200):
+        r, c = rc(la0 + (la1 - la0) * t, lo0 + (lo1 - lo0) * t)
+        land[r - 1:r + 2, c - 1:c + 2] = False
+
 # one boolean layer per track, widened to ~1 km, summed into a share of tracks per cell
 tracks = []
 for f in sorted((ROOT / "data" / "tracks").glob("r2ak*.json")):
@@ -108,8 +117,82 @@ south = route([VIC, SEYMOUR, BELLA])
 # Victoria Inner Harbour, in front of the Empress, out through the harbour entrance (too narrow for the 220 m grid; hand-drawn
 # against the coastline). Stage 1 in build_route.py ends with the same path in reverse.
 HARBOUR = [[48.4222, -123.3712], [48.4240, -123.3745], [48.4253, -123.3780], [48.4256, -123.3830], [48.4250, -123.3890], [48.4225, -123.3935], [48.4185, -123.3955]]
-south = HARBOUR + south[next(k for k, q in enumerate(south) if q[0] <= 48.4165):]
+# then along the shore to Clover Point and through Enterprise Channel, on the common line of past human-powered tracks (a
+# grid path wanders off it here: the shore is close and the channel is only open where carved)
+OUT = [[48.4150, -123.3935], [48.4115, -123.3885], [48.4090, -123.3815], [48.4062, -123.3742], [48.4044, -123.3664], [48.4026, -123.3584],
+       [48.4013, -123.3500], [48.4012, -123.3415], [48.4020, -123.3335]] + [list(p) for p in TRIAL]
+k = next(k for k, q in enumerate(south) if q[1] > TRIAL[-1][1] + 0.002 and q[0] > TRIAL[-1][0])
+south = HARBOUR + OUT + south[k:]
 inside = route([BELLA, KTN])
+
+
+# The grid path above keeps to water and to the common corridor, but where past tracks spread out (or hug a shore the 220 m grid
+# closes) it can sit a mile or more off their middle. So pull it onto the tracks: every 0.2 nm along it, take each past track's
+# nearest point (within 3 nm), keep the channel most of them used (the points within 0.5 nm of the medoid, the point closest to
+# all the others), and move the route to their mean. Then smooth over about 1 nm.
+from scipy.spatial import cKDTree
+KX = 60 * math.cos(math.radians(51.5))
+def xy(p): return (p[0] * 60, p[1] * KX)
+trees = []
+for name, pts in tracks:
+    dense = []
+    for a, b in zip(pts, pts[1:]):
+        n = int(max(1, math.hypot((b[0] - a[0]) * 60, (b[1] - a[1]) * KX) / 0.05))
+        if n > 600:   # tracker gap
+            continue
+        dense += [(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n) for k in range(n)]
+    if dense:
+        trees.append((np.array(dense), cKDTree(np.array([xy(p) for p in dense]))))
+
+
+def resample(p, step=0.2):
+    out, carry = [p[0]], 0.0
+    for a, b in zip(p, p[1:]):
+        d = math.hypot((b[0] - a[0]) * 60, (b[1] - a[1]) * KX)
+        x = step - carry
+        while x <= d:
+            out.append((a[0] + (b[0] - a[0]) * x / d, a[1] + (b[1] - a[1]) * x / d)); x += step
+        carry = d - (x - step)
+    out.append(p[-1])
+    return out
+
+
+def wet(p): r, c = rc(*p); return not land[r, c]
+
+
+def follow(p, keep=()):
+    """keep: (lat, lon) boxes [la0, la1, lo0, lo1] left as they are (hand-drawn harbour)."""
+    q = resample(p)
+    out = []
+    for s in q:
+        if any(b[0] <= s[0] <= b[1] and b[2] <= s[1] <= b[3] for b in keep):
+            out.append(s); continue
+        near = []
+        for dense, tree in trees:
+            d, i = tree.query(xy(s), distance_upper_bound=3)
+            if np.isfinite(d):
+                near.append(dense[i])
+        if len(near) < 3:
+            out.append(s); continue
+        P = np.array([xy(x) for x in near])
+        D = np.hypot(P[:, None, 0] - P[None, :, 0], P[:, None, 1] - P[None, :, 1])
+        m = int(D.sum(1).argmin())
+        grp = np.array(near)[D[m] < 0.5]
+        mean = tuple(grp.mean(0))
+        out.append(mean if wet(mean) or not wet(tuple(near[m])) else tuple(near[m]))
+    # smooth over ~1 nm, but never onto land the unsmoothed point was off
+    sm = []
+    for i, s in enumerate(out):
+        w = np.array(out[max(0, i - 2): i + 3]).mean(0)
+        sm.append(tuple(w) if wet(tuple(w)) or not wet(s) else s)
+    sm[0], sm[-1] = out[0], out[-1]
+    ls = LineString([(lo, la) for la, lo in sm]).simplify(0.0003, preserve_topology=False)
+    return [[round(y, 4), round(x, 4)] for x, y in ls.coords]
+
+
+nh = len(HARBOUR)
+south = HARBOUR + follow(south[nh - 1:], keep=[(48.40, 48.43, -123.40, -123.36)])[1:]
+inside = follow(inside)
 data = json.loads((ROOT / "data" / "route.json").read_text())
 for leg in data["legs"]:
     if leg["key"] == "south":

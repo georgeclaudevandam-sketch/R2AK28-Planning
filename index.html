@@ -679,7 +679,7 @@ function campPathsCalc(ch, c) {
   for (const q of p.in) { const x = projectSeg(ch, q).along; top = Math.max(top, x); back = Math.max(back, top - x); }
   return { ain: i.along, aout: o.along, din: p.nm_in, dout: p.nm_out, pin: p.in, pout: p.out, back };
 }
-function pickCamp(ch, s, lim) {
+function pickCamp(ch, s, lim, over = 2.5, back = 0) {
   if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]);
     const w = campPaths(ch, c); if (!w && ch.north) return null;   // no water path built: not used (no straight dash in and out)
     return { ...c, a: p.along, o: p.d, ...(w || { ain: p.along, aout: p.along, din: p.d, dout: p.d, back: 0 }) }; }).filter((c) => c && c.back <= 0.3);
@@ -687,17 +687,27 @@ function pickCamp(ch, s, lim) {
   const pick = (ok) => {
     let best = null;
     ch._camps.forEach((c) => {
-      if (c.aout > lim || c.ain < s.pos - 0.05 || c.a <= (s.left ?? -1) + 0.5 || !ok(c)) return;
+      if (c.ain > lim || c.aout > lim + over || c.ain < s.pos - 0.5 || (c.a <= (s.left ?? -1) + 0.5 && c.aout < s.pos - 1) || !ok(c)) return;
       const cost = c.din + c.dout - (c.aout - c.ain);
       if (!best || cost < best.cost - 0.05 || (Math.abs(cost - best.cost) <= 0.05 && c.teams > best.teams)) best = { ...c, cost };
     });
     return best;
   };
-  return pick((c) => c.o <= CAMP_MAX_NM && c.ain <= s.pos + 8) || pick((c) => c.ain <= s.pos + 12 && c.din + c.dout - (c.aout - c.ain) <= CAMP_MAX_EXTRA_NM);
+  const fwd = pick((c) => c.o <= CAMP_MAX_NM && c.ain <= s.pos + 8) || pick((c) => c.ain <= s.pos + 12 && c.din + c.dout - (c.aout - c.ain) <= CAMP_MAX_EXTRA_NM);
+  if (fwd || !back) return fwd;
+  // none ahead: row back to one you passed, up to `back` nm (no stopping out in the stream)
+  let best = null;
+  ch._camps.forEach((c) => {
+    if (c.ain >= s.pos - 0.5 || c.ain < s.pos - back || c.o > CAMP_MAX_NM || c.aout > lim + over) return;
+    const cost = 2 * (s.pos - c.ain) + c.din + c.dout - (c.aout - c.ain);
+    if (!best || cost < best.cost) best = { ...c, cost };
+  });
+  return best;
 }
 const CAMP_MAX_NM = 10;
 const CAMP_MAX_EXTRA_NM = 30;
-const HOLD_MAX_NM = 10;        // stop early at a campsite rather than on the water only when the planned stop is at most this much further on   // furthest extra rowing (in and out, and back) to reach a campsite when none is near the route
+const HOLD_MAX_NM = 40; const BACK_NM = 4;   // with no campsite ahead in reach, row back up to this far to one rather than stop on the water
+       // stop early at a campsite rather than on the water only when the planned stop is at most this much further on   // furthest extra rowing (in and out, and back) to reach a campsite when none is near the route
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 const MIN_FOUL_H = 1;      // tides mode: row through head-current spells shorter than this rather than stopping
 const MIN_LEG_NM = 10;     // tides mode: after a stop, set off only if the fair stream and rowing hours left carry you this far (less for slow boats)
@@ -709,12 +719,15 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
     const k = Math.round(pos / 2); let ll = llCache.get(k); if (!ll) { ll = pointAt(ch, k * 2); llCache.set(k, ll); }
     return isDark(t - night * H, ll) && isDark(t + night * H, ll);
   };
-  const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= theta;
+  // rowing only pays while it makes headway: a head stream within 0.5 kn of the rowing speed counts as foul whatever the cutoff
+  const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= (win ? theta : Math.max(theta, 0.5 - v));
   let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null, lastCamp: start, stopFrom: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
   const restLength = (s, theta, rowed, end) => {
     if (win) { let t = s.t; while (t < s.t + 24 * H && !(inWin(t, win) && !isNight(s.pos, t))) t += STEP; return t - s.t; }
     if (rowed >= hours - 1e-9) { let t = Math.max(s.t, end); while (t < end + 16 * H && !ok(s.pos, t, theta)) t += STEP; return t - s.t; }
+    const g = s.wait && s.gi < gates.length ? gates[s.gi] : null;   // waiting at a gate: until its stream eases
+    if (g) { let t = s.t; while (t < s.t + 16 * H && foulAt(g.st, t) > 0.5) t += STEP; return t - s.t; }
     let t = s.t; while (t < s.t + 16 * H && !ok(s.pos, t, theta)) t += STEP;
     return t - s.t;
   };
@@ -750,10 +763,10 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       }
       if (h >= hours - 1e-9) return end - t >= 2 * H ? { pos, until: end } : null;
       const c = streamAt(ch, pos, t);
-      if (isNight(pos, t)) { let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP; return u - t >= 2 * H ? { pos, until: u } : null; }
+      if (isNight(pos, t)) { let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP; return u - t >= MIN_STOP_H * H ? { pos, until: u } : null; }
       if (c < theta) {   // same test as the simulator: stop if the head current here lasts MIN_FOUL_H
         let u = t + STEP; while (u < t + 16 * H && !ok(pos, u, theta)) u += STEP;
-        if (u - t >= MIN_FOUL_H * H) return u - t >= 2 * H ? { pos, until: u } : null;
+        if (u - t >= MIN_FOUL_H * H) return u - t >= MIN_STOP_H * H ? { pos, until: u } : null;
       }
       pos += Math.max(0, v + c) * S; h += S; t += STEP;
       if (gi < gates.length && pos > gates[gi].along) pos = gates[gi].along;
@@ -816,12 +829,15 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
           if (t < s.t + MIN_FOUL_H * H && !isNight(s.pos, s.t)) want = true;
         }
       }
-      // stopping for 2 h or more: row to the nearest past campsite (counts as rowing time), and back when you set off
-      if (!want && (s.rowing || (s.wait && isNight(s.pos, s.t))) && !s.camp && CAMPSITES.length && (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) >= 2 * H && (!s.wait || isNight(s.pos, s.t))) {
-        const c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity));
+      // stopping for MIN_STOP_H or more (also waiting at a gate): row to the nearest past campsite (counts as rowing time), and back when you set off
+      const rest = (!want || s.wait) && (s.rowing || s.wait) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
+      if (rest >= MIN_STOP_H * H) {
+        let c = pickCamp(ch, s, Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity), 2.5, BACK_NM);
+        // not worth it if the stop would be mostly over by the time you are on the beach
+        if (c && rest - ((Math.abs(c.ain - s.pos) + c.din) / v) * H < (MIN_STOP_H / 2) * H) c = null;
         if (c) {
           // row on along the route to where the way in leaves it, then in to the campsite
-          const t0 = s.t, along = Math.max(0, c.ain - s.pos), hrs = (along + c.din) / v;
+          const t0 = s.t, along = Math.abs(c.ain - s.pos), hrs = (along + c.din) / v;   // (back, if the campsite is behind)
           s.t += hrs * H; rowed += hrs; s.pos = c.ain; if (s.hold) s.hold = Math.max(s.hold, s.t + (s.hold - t0));
           // ashore for the night: make it a full camp (state.campH hours or more)
           if (isNight(s.pos, s.t) || isNight(s.pos, s.t + H)) s.hold = Math.max(s.hold || 0, s.t + state.campH * H);
@@ -967,8 +983,8 @@ function detourAt(c, r, t) {
   if (t >= n.t && t <= n.until) { const q = pin[pin.length - 1]; return { ll: q, hd: hdg(pin[pin.length - 2] || q, q) }; }
   if (t > n.until) return alongLine(pout, (t - n.until) / ((n.tBack - n.until) || 1));
   // on the way: along the route to where the way in leaves it, then in
-  const p0 = posAt(r.track, n.t0), along = Math.max(0, s.ain - p0), f = (t - n.t0) / ((n.t - n.t0) || 1), fr = along / ((along + s.din) || 1);
-  if (f < fr) { const x = p0 + (s.ain - p0) * (f / fr), a = pointAt(c, x), b = pointAt(c, Math.min(c.total, x + 0.3)); return { ll: a, hd: hdg(a, b) }; }
+  const p0 = posAt(r.track, n.t0), along = Math.abs(s.ain - p0), f = (t - n.t0) / ((n.t - n.t0) || 1), fr = along / ((along + s.din) || 1);
+  if (f < fr) { const x = p0 + (s.ain - p0) * (f / fr), a = pointAt(c, x), b = pointAt(c, Math.max(0, Math.min(c.total, x + (s.ain < p0 ? -0.3 : 0.3)))); return { ll: a, hd: hdg(a, b) }; }
   return alongLine(pin, (f - fr) / ((1 - fr) || 1));
 }
 const hdg = (a, b) => Math.atan2((b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180), b[0] - a[0]) * 180 / Math.PI;
