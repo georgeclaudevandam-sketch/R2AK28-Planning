@@ -1030,7 +1030,7 @@ function followBoat() {
     // keep the boat and stops clear of the inset and play box down the right-hand side
     const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40;
     if (atStop >= 0) {
-      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.8)), 15);
+      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.8)), 15) - 1;   // one level out: twice the area
       const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer });
     } else if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [60, 60], paddingBottomRight: [rw + 20, 60], maxZoom, animate: !!playTimer });
     else { const z = Math.max(map.getZoom(), 11), c = map.project(b.ll, z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer }); }
