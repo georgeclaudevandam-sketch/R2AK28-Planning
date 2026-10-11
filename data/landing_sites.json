@@ -1,0 +1,869 @@
+{
+"note": "Landing beaches where no past team stopped: mapped campsites and beaches (OpenStreetMap, incl. BC Marine Trail sites) checked on Esri satellite imagery, and beaches picked from a satellite scan of the shore in stretches with no past campsite in reach (data/landings/scan). Positions are approximate (about 200 m). For planning, not navigation.",
+"sites": [
+{
+"lat": 48.41095,
+"lon": -123.32819,
+"kind": "beach",
+"name": "Gonzales Beach",
+"bcmt": false,
+"src": "osm",
+"osm": "way/1248895243"
+},
+{
+"lat": 48.41277,
+"lon": -123.37984,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "relation/1502633"
+},
+{
+"lat": 48.41304,
+"lon": -123.31358,
+"kind": "slipway",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "node/2643173947"
+},
+{
+"lat": 48.43091,
+"lon": -123.45345,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "relation/19376715"
+},
+{
+"lat": 48.43458,
+"lon": -123.30158,
+"kind": "beach",
+"name": "Willows Beach",
+"bcmt": false,
+"src": "osm",
+"osm": "relation/7884293"
+},
+{
+"lat": 48.45844,
+"lon": -123.29529,
+"kind": "slipway",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/259008074"
+},
+{
+"lat": 48.47334,
+"lon": -123.29823,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/875848918"
+},
+{
+"lat": 48.56763,
+"lon": -123.27355,
+"kind": "campsite",
+"name": "D'Arcy Island Campground / BC Marine Trail",
+"bcmt": false,
+"src": "osm",
+"osm": "node/8934715499"
+},
+{
+"lat": 48.57531,
+"lon": -123.36863,
+"kind": "campsite",
+"name": "Island View Beach Regional Park Campground",
+"bcmt": false,
+"src": "osm",
+"osm": "way/139815716"
+},
+{
+"lat": 48.60338,
+"lon": -123.3562,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "relation/1501136"
+},
+{
+"lat": 48.63592,
+"lon": -123.33007,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/184735236"
+},
+{
+"lat": 48.66223,
+"lon": -123.27894,
+"kind": "campsite",
+"name": "Rum Island",
+"bcmt": false,
+"src": "osm",
+"osm": "node/3638119188"
+},
+{
+"lat": 48.6697,
+"lon": -123.3724,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/1214692168"
+},
+{
+"lat": 48.7941,
+"lon": -123.30976,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/300412281"
+},
+{
+"lat": 48.89772,
+"lon": -123.40445,
+"kind": "campsite",
+"name": "Montague Harbour Campground - Walk-in",
+"bcmt": false,
+"src": "osm",
+"osm": "way/291402695"
+},
+{
+"lat": 49.01231,
+"lon": -123.57381,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/288735760"
+},
+{
+"lat": 49.3382,
+"lon": -124.14907,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/235372588"
+},
+{
+"lat": 49.54226,
+"lon": -124.75741,
+"kind": "campsite",
+"name": "Fillongley Provincial Campground",
+"bcmt": false,
+"src": "osm",
+"osm": "way/592147060"
+},
+{
+"lat": 49.59962,
+"lon": -124.82595,
+"kind": "beach",
+"name": "Morning beach",
+"bcmt": false,
+"src": "osm",
+"osm": "way/1033660592"
+},
+{
+"lat": 50.42089,
+"lon": -126.0975,
+"kind": "shingle",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "relation/17472122"
+},
+{
+"lat": 50.51344,
+"lon": -126.29304,
+"kind": "campsite",
+"name": "Broken Islands Havannah Channel",
+"bcmt": true,
+"src": "osm",
+"osm": "node/11009382203"
+},
+{
+"lat": 50.62005,
+"lon": -126.64466,
+"kind": "campsite",
+"name": "Crease Island South",
+"bcmt": true,
+"src": "osm",
+"osm": "node/10960911408"
+},
+{
+"lat": 50.62654,
+"lon": -126.65215,
+"kind": "campsite",
+"name": "Crease Island north",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871498532"
+},
+{
+"lat": 50.81873,
+"lon": -127.01533,
+"kind": "campsite",
+"name": "Boyles Point",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871498522"
+},
+{
+"lat": 50.84021,
+"lon": -127.07342,
+"kind": "campsite",
+"name": "Howcraft Bay",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871498521"
+},
+{
+"lat": 51.48558,
+"lon": -127.76156,
+"kind": "campsite",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "node/12057454880"
+},
+{
+"lat": 52.22063,
+"lon": -128.4357,
+"kind": "campsite",
+"name": "Yaaklele Entrance",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481483"
+},
+{
+"lat": 52.23197,
+"lon": -128.30025,
+"kind": "campsite",
+"name": "Denniston Point east",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481488"
+},
+{
+"lat": 52.23364,
+"lon": -128.32592,
+"kind": "campsite",
+"name": "Denniston Point west",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481487"
+},
+{
+"lat": 52.23436,
+"lon": -128.4115,
+"kind": "campsite",
+"name": "Cape Swain east",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481484"
+},
+{
+"lat": 52.23732,
+"lon": -128.3458,
+"kind": "campsite",
+"name": "Seaforth Channel west",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481485"
+},
+{
+"lat": 52.28171,
+"lon": -128.3684,
+"kind": "campsite",
+"name": "Watch Island north",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481489"
+},
+{
+"lat": 52.28635,
+"lon": -128.38449,
+"kind": "campsite",
+"name": "Roar Islets",
+"bcmt": false,
+"src": "osm",
+"osm": "node/9871481490"
+},
+{
+"lat": 52.36769,
+"lon": -128.47133,
+"kind": "campsite",
+"name": "Dallas Island",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871481492"
+},
+{
+"lat": 52.48623,
+"lon": -129.00815,
+"kind": "campsite",
+"name": "Rays Island west",
+"bcmt": false,
+"src": "osm",
+"osm": "node/9871497929"
+},
+{
+"lat": 52.58443,
+"lon": -129.15518,
+"kind": "campsite",
+"name": "Normansell Islands",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871497930"
+},
+{
+"lat": 53.0545,
+"lon": -129.11825,
+"kind": "campsite",
+"name": "Cameron Cove",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871497932"
+},
+{
+"lat": 53.55897,
+"lon": -130.54461,
+"kind": "campsite",
+"name": "Solander Point north",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871497937"
+},
+{
+"lat": 54.11997,
+"lon": -130.2473,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/580878653"
+},
+{
+"lat": 54.12661,
+"lon": -130.25976,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/580878654"
+},
+{
+"lat": 54.17851,
+"lon": -130.31341,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/1317701580"
+},
+{
+"lat": 54.20143,
+"lon": -130.55892,
+"kind": "campsite",
+"name": "Rachel Islands",
+"bcmt": true,
+"src": "osm",
+"osm": "node/9871332996"
+},
+{
+"lat": 54.26753,
+"lon": -130.43422,
+"kind": "beach",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "way/1341143189"
+},
+{
+"lat": 55.04913,
+"lon": -131.21299,
+"kind": "campsite",
+"name": "Mary SW (reported)",
+"bcmt": false,
+"src": "osm",
+"osm": "node/11009521472"
+},
+{
+"lat": 55.28382,
+"lon": -131.63639,
+"kind": "campsite",
+"name": "",
+"bcmt": false,
+"src": "osm",
+"osm": "node/12054358698"
+},
+{
+"lat": 50.87407,
+"lon": -127.21256,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 29
+},
+{
+"lat": 51.118,
+"lon": -127.67511,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 87
+},
+{
+"lat": 51.12807,
+"lon": -127.68154,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 88
+},
+{
+"lat": 51.36793,
+"lon": -127.7749,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 94
+},
+{
+"lat": 52.26607,
+"lon": -128.34972,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 131
+},
+{
+"lat": 52.26993,
+"lon": -128.37575,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 136
+},
+{
+"lat": 52.31407,
+"lon": -128.43663,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 148
+},
+{
+"lat": 52.34993,
+"lon": -128.46572,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 156
+},
+{
+"lat": 52.362,
+"lon": -128.44609,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 160
+},
+{
+"lat": 52.38,
+"lon": -128.46251,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 165
+},
+{
+"lat": 52.55607,
+"lon": -128.50428,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 193
+},
+{
+"lat": 52.88593,
+"lon": -128.53002,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 273
+},
+{
+"lat": 52.914,
+"lon": -128.5268,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 279
+},
+{
+"lat": 52.98,
+"lon": -128.51351,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 294
+},
+{
+"lat": 53.16807,
+"lon": -128.62273,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 337
+},
+{
+"lat": 53.17007,
+"lon": -128.64867,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 338
+},
+{
+"lat": 53.312,
+"lon": -129.224,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 412
+},
+{
+"lat": 53.44993,
+"lon": -129.47141,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 423
+},
+{
+"lat": 53.45793,
+"lon": -129.48373,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 425
+},
+{
+"lat": 53.46393,
+"lon": -129.49711,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 427
+},
+{
+"lat": 53.47207,
+"lon": -129.50675,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 429
+},
+{
+"lat": 53.47407,
+"lon": -129.48721,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 430
+},
+{
+"lat": 53.47593,
+"lon": -129.51639,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 432
+},
+{
+"lat": 53.49793,
+"lon": -129.55173,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 436
+},
+{
+"lat": 53.54993,
+"lon": -129.63205,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 457
+},
+{
+"lat": 53.58793,
+"lon": -129.67704,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 475
+},
+{
+"lat": 53.60393,
+"lon": -129.71238,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 480
+},
+{
+"lat": 53.61407,
+"lon": -129.71531,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 483
+},
+{
+"lat": 53.702,
+"lon": -129.81491,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 518
+},
+{
+"lat": 53.76207,
+"lon": -129.88238,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 539
+},
+{
+"lat": 54.79007,
+"lon": -130.91047,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 542
+},
+{
+"lat": 54.82607,
+"lon": -130.94543,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 548
+},
+{
+"lat": 54.854,
+"lon": -130.94221,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 552
+},
+{
+"lat": 54.88593,
+"lon": -130.95184,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 557
+},
+{
+"lat": 55.096,
+"lon": -131.18396,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 570
+},
+{
+"lat": 55.102,
+"lon": -131.18676,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 571
+},
+{
+"lat": 55.16393,
+"lon": -131.33175,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 576
+},
+{
+"lat": 55.17193,
+"lon": -131.33817,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 577
+},
+{
+"lat": 55.178,
+"lon": -131.34781,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 578
+},
+{
+"lat": 55.192,
+"lon": -131.37995,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 581
+},
+{
+"lat": 55.19593,
+"lon": -131.38637,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 582
+},
+{
+"lat": 55.20193,
+"lon": -131.38917,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 583
+},
+{
+"lat": 55.22007,
+"lon": -131.43135,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 586
+},
+{
+"lat": 55.23393,
+"lon": -131.47312,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 589
+},
+{
+"lat": 55.23807,
+"lon": -131.41487,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 590
+},
+{
+"lat": 55.23793,
+"lon": -131.39839,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 593
+},
+{
+"lat": 55.24807,
+"lon": -131.49239,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 595
+},
+{
+"lat": 55.24993,
+"lon": -131.48276,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 596
+},
+{
+"lat": 55.26207,
+"lon": -131.45622,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 600
+},
+{
+"lat": 55.262,
+"lon": -131.4442,
+"kind": "beach",
+"name": "",
+"rating": "good",
+"src": "satellite",
+"chip": 601
+},
+{
+"lat": 55.30393,
+"lon": -131.60121,
+"kind": "beach",
+"name": "",
+"rating": "fair",
+"src": "satellite",
+"chip": 618
+}
+]
+}

@@ -696,6 +696,9 @@ const ICON = {
 // passes instead, see runDay). Rowing on to one ahead is progress you would make anyway.
 // With a water path from data/camp_paths.json you leave the route at ain and rejoin it further on at aout; otherwise it is a straight line in and back.
 let CAMP_PATHS = {};
+// landing beaches where no past team stopped: BC Marine Trail and other mapped campsites, and beaches picked off satellite imagery
+// (data/landing_sites.json); the planner uses them like past campsites
+let LANDINGS = [];
 const CAMP_PATH_MEMO = new Map();   // the route is fixed per chain, so each campsite's way in and out only needs working out once
 function campPaths(ch, c) {
   const mk = `${ch.north || "s1"}|${c.ll[0]},${c.ll[1]}`;
@@ -1290,7 +1293,7 @@ function renderPlanner() {
     STOP_LL.push({ t: x.t, until: x.until, ll });
     if (miniStops) L.circleMarker(ll, { radius: x.camp ? 3 : 2, color: x.camp ? "#7c2d12" : "#0f172a", weight: 1, fillColor: x.camp ? "#f59e0b" : "#fff", fillOpacity: 1, interactive: false }).addTo(miniStops);
     const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "snack/rest"}`;
-    const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite within reach, find a beach` : `${esc(nearPlace(on))}, on the water`;
+    const where = x.site && x.site.landing ? `${esc(landingKind(x.site.landing))}${x.site.landing.name ? " " + esc(x.site.landing.name) : ""}, ${esc(x.site.place)}` : x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite or beach within reach (satellite shows steep shore)` : `${esc(nearPlace(on))}, on the water`;
     if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
@@ -1725,6 +1728,7 @@ async function loadPast() {
 }
 // Stops: places a past team stayed within 0.3 nm for 2 h or more (camps, anchorages, waiting out weather or tide).
 // Stops within a mile of each other are grouped into one site.
+const landingKind = (l) => l.src === "satellite" ? "beach seen on satellite imagery" : l.bcmt ? "BC Marine Trail campsite" : l.kind === "campsite" ? "mapped campsite" : `mapped ${l.kind}`;
 function buildStops(races) {
   const stops = [];
   races.forEach((r) => r.teams.forEach((t) => {
@@ -1739,7 +1743,9 @@ function buildStops(races) {
   }));
   const sites = [];
   stops.forEach((s) => { const site = sites.find((x) => nmBetween(x.ll, s.ll) < 1); if (site) site.stops.push(s); else sites.push({ ll: s.ll, stops: [s] }); });
-  CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, "") }));
+  CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, "") }))
+    .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1))
+      .map((l) => ({ ll: [l.lat, l.lon], teams: 0, place: nearPlace([l.lat, l.lon]).replace(/^at /, ""), landing: l })));
   const g = L.layerGroup();
   sites.forEach((site) => {
     const teams = new Set(site.stops.map((s) => s.team + s.year)).size;
@@ -1748,8 +1754,10 @@ function buildStops(races) {
       .bindTooltip(`<b>${esc(nearPlace(site.ll).replace(/^at /, ""))}</b>: ${teams} team${teams > 1 ? "s" : ""} stopped here<br>${rows.slice(0, 8).join("<br>")}${rows.length > 8 ? `<br>and ${rows.length - 8} more` : ""}`, { sticky: true })
       .addTo(g);
   });
+  CAMPSITES.filter((c) => c.landing).forEach((c) => L.circleMarker(c.ll, { radius: 5, color: "#1e3a8a", weight: 1.5, fillColor: "#93c5fd", fillOpacity: 0.95 })
+    .bindTooltip(`<b>${esc(c.landing.name || c.place)}</b><br>${esc(landingKind(c.landing))}`, { sticky: true }).addTo(g));
   g.addTo(map);
-  layersCtl.addOverlay(g, `Past stops and campsites (${sites.length})`);
+  layersCtl.addOverlay(g, `Past stops and campsites (${sites.length}), and other landings (blue)`);
   PAST.stops = { sites: sites.length, stops: stops.length };
 }
 function selectPast(key, id, zoom) {
@@ -1780,6 +1788,7 @@ async function main() {
   [ROUTE, cfg] = await Promise.all([get("data/route.json"), get("data/stations.json")]);
   STATIONS = cfg.stations;
   try { CAMP_PATHS = (await get("data/camp_paths.json")).sites; } catch (e) { console.warn("camp paths", e); }
+  try { LANDINGS = (await get("data/landing_sites.json")).sites || []; } catch (e) { LANDINGS = []; }
   try { FIELD = await get("data/stream_field.json"); } catch (e) { console.warn("stream field", e); }
   try { PRED = await get("data/predictions.json"); } catch (e) { PRED = { stations: {}, failures: ["predictions.json not found: run the Fetch predictions workflow"] }; }
   const r = $("time");
