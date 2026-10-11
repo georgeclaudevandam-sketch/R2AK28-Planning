@@ -1300,7 +1300,7 @@ function svgCurve(st, sd, d0, d1) {
 // ---------- time + controls
 function setTime(t) {
   const r = $("time");
-  state.t = Math.max(+r.min, Math.min(+r.max, Math.round(t / 600e3) * 600e3));
+  state.t = Math.max(+r.min, Math.min(+r.max, Math.round(t / 60e3) * 60e3));   // to the minute, so slow play moves smoothly
   r.value = state.t;
   const moon = MOON.map(([d, n]) => [Date.parse(d), n]).sort((a, b) => Math.abs(a[0] - state.t) - Math.abs(b[0] - state.t))[0];
   const dd = (moon[0] - state.t) / (24 * H);
