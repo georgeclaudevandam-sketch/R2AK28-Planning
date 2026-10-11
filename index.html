@@ -562,15 +562,50 @@ function zoneStream(ch, z, pos, t) {
   const fav = z.split && pos < z.splitAlong ? z.favBefore : z.fav;
   return fav === "flood" ? v : -v;
 }
-// stream along the track at a position and time, + = with you: the nearby zones blended by weight, at the strongest zone's weight
-function streamAt(ch, pos, t) {
-  let sw = 0, sv = 0, bw = 0;
-  for (const z of zonesFor(ch)) {
-    const d = Math.abs(pos - z.along), w = d <= z.core ? z.k : d >= z.r ? 0 : z.k * (z.r - d) / (z.r - z.core);
-    if (w <= 0) continue;
-    sw += w; sv += w * zoneStream(ch, z, pos, t); if (w > bw) bw = w;
+// Tidal stream from the ocean models along the whole route (data/stream_field.json, built by scripts/build_stream_field.py):
+// UBC's SalishSeaCast in the Salish Sea and DFO's WebTide Northeast Pacific model north of it, both driven by the charted depths,
+// already resolved onto the route's heading every mile. null where neither model has water (some narrow inlets).
+let FIELD = null;
+function fieldAt(ch, pos, t) {
+  const F = FIELD, key = ch.north || "stage1"; if (!F || !F.chains[key]) return null;
+  if (!F._k) {
+    F._k = F.const.map((c) => F.astro[c]); F._t0 = Date.parse(F.t0); F._ph = new Map(); F._rows = {};
+    const r = Math.PI / 180;
+    // per sample: mean, then f*A*cos(g) and f*A*sin(g) for each constituent
+    for (const [k, rows] of Object.entries(F.chains)) F._rows[k] = rows.map((row) => {
+      if (!row[0]) return null;
+      const c = new Float32Array(1 + 2 * F._k.length); c[0] = row[1];
+      F._k.forEach((q, i) => { const A = q.f * row[2 + 2 * i], g = row[3 + 2 * i] * r; c[1 + 2 * i] = A * Math.cos(g); c[2 + 2 * i] = A * Math.sin(g); });
+      return c;
+    });
   }
-  return sw ? (sv / sw) * bw : 0;
+  const rows = F._rows[key], c = rows[Math.max(0, Math.min(rows.length - 1, Math.round(pos / F.step_nm)))];
+  if (!c) return null;
+  // the astronomical phase of each constituent at time t is the same everywhere: work it out once per time
+  let ph = F._ph.get(t);
+  if (!ph) {
+    if (F._ph.size > 50000) F._ph.clear();
+    const h = (t - F._t0) / H, r = Math.PI / 180;
+    ph = new Float64Array(2 * F._k.length);
+    F._k.forEach((q, i) => { const a = (q.ph0 + q.w * h) * r; ph[2 * i] = Math.cos(a); ph[2 * i + 1] = Math.sin(a); });
+    F._ph.set(t, ph);
+  }
+  let x = c[0];
+  for (let i = 0; i < F._k.length; i++) x += c[1 + 2 * i] * ph[2 * i] + c[2 + 2 * i] * ph[2 * i + 1];
+  return x;
+}
+// stream along the track at a position and time, + = with you. Close to a current station its tables rule; moving away they
+// hand over to the ocean model, which covers the open water between stations. Where neither model has water, the station's
+// stream fades out as before.
+function streamAt(ch, pos, t) {
+  let sw = 0, sv = 0, bw = 0, trust = 0;
+  for (const z of zonesFor(ch)) {
+    const d = Math.abs(pos - z.along), f = d <= z.core ? 1 : d >= z.r ? 0 : (z.r - d) / (z.r - z.core), w = z.k * f;
+    if (w <= 0) continue;
+    sw += w; sv += w * zoneStream(ch, z, pos, t); if (w > bw) bw = w; if (f > trust) trust = f;
+  }
+  const st = sw ? (sv / sw) * bw : 0, fld = fieldAt(ch, pos, t);
+  return fld == null ? st : trust * st + (1 - trust) * fld;
 }
 // Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise it rows, up to `hours` in each
 // 24 h from the start, unless the head current is stronger than `head` kn (see MIN_FOUL_H and MIN_LEG_NM).
@@ -585,7 +620,13 @@ const ICON = {
 // passes instead, see runDay). Rowing on to one ahead is progress you would make anyway.
 // With a water path from data/camp_paths.json you leave the route at ain and rejoin it further on at aout; otherwise it is a straight line in and back.
 let CAMP_PATHS = {};
+const CAMP_PATH_MEMO = new Map();   // the route is fixed per chain, so each campsite's way in and out only needs working out once
 function campPaths(ch, c) {
+  const mk = `${ch.north || "s1"}|${c.ll[0]},${c.ll[1]}`;
+  if (!CAMP_PATH_MEMO.has(mk)) CAMP_PATH_MEMO.set(mk, campPathsCalc(ch, c));
+  return CAMP_PATH_MEMO.get(mk);
+}
+function campPathsCalc(ch, c) {
   const e = CAMP_PATHS[`${c.ll[0].toFixed(4)},${c.ll[1].toFixed(4)}`];
   const p = e && ch.north && (e[ch.north] || e.inside);
   if (!p) return null;
@@ -1202,6 +1243,7 @@ async function main() {
   [ROUTE, cfg] = await Promise.all([get("data/route.json"), get("data/stations.json")]);
   STATIONS = cfg.stations;
   try { CAMP_PATHS = (await get("data/camp_paths.json")).sites; } catch (e) { console.warn("camp paths", e); }
+  try { FIELD = await get("data/stream_field.json"); } catch (e) { console.warn("stream field", e); }
   try { PRED = await get("data/predictions.json"); } catch (e) { PRED = { stations: {}, failures: ["predictions.json not found: run the Fetch predictions workflow"] }; }
   const r = $("time");
   r.min = Date.parse(cfg.window.start); r.max = Date.parse(cfg.window.end); r.step = 600e3;
