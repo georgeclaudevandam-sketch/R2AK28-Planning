@@ -113,6 +113,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 table { border-collapse: collapse; width: 100%; font: 13px var(--font-data); font-variant-numeric: tabular-nums; }
 th { text-align: left; font: 600 11px var(--font-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
 td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--rule); }
+/* the stops table has many columns: two sizes smaller so it fits the panel without scrolling */
+#stops-tbl { font-size: 11px; }
+#stops-tbl th { font-size: 9px; letter-spacing: .03em; padding-right: 4px; }
+#stops-tbl td { padding: 3px 4px 3px 0; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 .sources { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
