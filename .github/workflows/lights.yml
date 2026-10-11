@@ -1,4 +1,4 @@
-name: Fetch navigation lights (OpenSeaMap)
+name: Fetch navigation lights (CHS and NOAA charts)
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
