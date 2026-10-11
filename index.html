@@ -421,7 +421,8 @@ function initMap() {
   })).addTo(map);
   stationLayer = L.layerGroup().addTo(map);
 
-  layersCtl = L.control.layers({}, { "Satellite imagery (Esri)": imagery, "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer }, { collapsed: true }).addTo(map);
+  const flow = new FlowLayer().addTo(map);
+  layersCtl = L.control.layers({}, { "Satellite imagery (Esri)": imagery, "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer, "Tidal stream flow lines (model)": flow }, { collapsed: true }).addTo(map);
   const Opacity = L.Control.extend({ onAdd() {
     const d = L.DomUtil.create("div", "opacity-ctl");
     d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a"><input type="checkbox" id="sat"> Satellite</label>' +
@@ -1254,6 +1255,109 @@ function setTime(t) {
   syncProgress();
   if (state.selected) renderDetail();
 }
+// Flow lines: drifting streaks that show the modelled tidal stream at the map time (after the RAR2026 replay's current layer).
+// Data: data/stream_grid.json (east/north tidal stream on a half-mile grid within 3 nm of the routes, from SalishSeaCast and
+// WebTide) and data/water_mask.png (shoreline). Both load the first time the layer is shown. Streak speed is for the eye
+// (faster current, faster streak), not to scale; colour bands are under 0.5, 0.5-1, 1-2, 2-3 and over 3 kn.
+const FLOW_RAMP = ["rgba(30,64,175,0.30)", "rgba(29,78,216,0.45)", "rgba(37,99,235,0.6)", "rgba(124,58,237,0.75)", "rgba(190,18,60,0.85)"];
+const FLOW_DARK = ["rgba(147,197,253,0.30)", "rgba(191,219,254,0.45)", "rgba(224,242,254,0.6)", "rgba(233,213,255,0.75)", "rgba(254,205,211,0.85)"];
+const FLOW_BREAKS = [0.5, 1, 2, 3];
+async function loadFlow() {
+  const d = await fetch("data/stream_grid.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error("stream_grid " + r.status); return r.json(); });
+  const b64 = (s, T) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new T(u.buffer); };
+  const cells = b64(d.cells, Int32Array), vals = b64(d.vals, Int16Array), g = d.grid, nc = cells.length, K = 2 + 4 * d.const.length;
+  // dense index over the rows the cells use
+  let jMin = Infinity, jMax = -1; for (const c of cells) { const j = Math.floor(c / g.nLon); jMin = Math.min(jMin, j); jMax = Math.max(jMax, j); }
+  const idx = new Int32Array((jMax - jMin + 1) * g.nLon).fill(-1); cells.forEach((c, k) => { idx[c - jMin * g.nLon] = k; });
+  // shoreline mask, 1 = water
+  const img = new Image(); img.src = d.mask.file; await img.decode();
+  const mw = img.naturalWidth, mh = img.naturalHeight, mask = new Uint8Array(mw * mh), cv = document.createElement("canvas"), STRIP = 400;
+  cv.width = mw; cv.height = STRIP; const cx = cv.getContext("2d", { willReadFrequently: true });
+  for (let y0 = 0; y0 < mh; y0 += STRIP) { cx.clearRect(0, 0, mw, STRIP); cx.drawImage(img, 0, -y0); const px = cx.getImageData(0, 0, mw, Math.min(STRIP, mh - y0)).data;
+    for (let i = 0, n = px.length / 4; i < n; i++) mask[y0 * mw + i] = px[i * 4] > 127 ? 1 : 0; }
+  const m = d.mask, U = new Float32Array(nc), V = new Float32Array(nc); let tNow = null;
+  const wet = (lat, lon) => { const j = Math.round((m.lat1 - lat) / m.dlat), i = Math.round((lon - m.lon0) / m.dlon); return j >= 0 && i >= 0 && j < mh && i < mw && mask[j * mw + i] === 1; };
+  function setT(t) {   // stream at every cell for time t (knots east and north)
+    if (tNow != null && Math.abs(t - tNow) < 5 * 60e3) return; tNow = t;
+    const hrs = (t - Date.parse(d.t0)) / H, ph = d.const.map((c) => { const a = d.astro[c], r = ((a.ph0 + a.w * hrs) % 360) * Math.PI / 180; return [a.f * Math.cos(r), a.f * Math.sin(r)]; });
+    for (let k = 0; k < nc; k++) { const o = k * K; let u = vals[o], v = vals[o + 1];
+      for (let c = 0; c < ph.length; c++) { const q = o + 2 + 4 * c, [fc, fs] = ph[c]; u += fc * vals[q] - fs * vals[q + 1]; v += fc * vals[q + 2] - fs * vals[q + 3]; }
+      U[k] = u / 100; V[k] = v / 100; }
+  }
+  function at(lat, lon) {   // [east, north] kn, bilinear over the cells that exist, or null off the grid or ashore
+    if (!wet(lat, lon)) return null;
+    const fy = (lat - g.lat0) / g.dlat - 0.5, fx = (lon - g.lon0) / g.dlon - 0.5, j = Math.floor(fy), i = Math.floor(fx), ay = fy - j, ax = fx - i;
+    let e = 0, n = 0, w = 0;
+    for (const [dj, di, cw] of [[0, 0, (1 - ay) * (1 - ax)], [0, 1, (1 - ay) * ax], [1, 0, ay * (1 - ax)], [1, 1, ay * ax]]) {
+      const jj = j + dj - jMin; if (jj < 0 || jj > jMax - jMin) continue;
+      const k = idx[jj * g.nLon + i + di]; if (k < 0 || cw <= 0) continue; e += cw * U[k]; n += cw * V[k]; w += cw; }
+    return w > 0.05 ? [e / w, n / w] : null;
+  }
+  return { setT, at };
+}
+const FlowLayer = L.Layer.extend({
+  onAdd(map) {
+    this.map = map;
+    if (!map.getPane("flowPane")) { const p = map.createPane("flowPane"); p.style.zIndex = 390; p.style.pointerEvents = "none"; }
+    this.canvas = L.DomUtil.create("canvas", "flow-canvas"); this.canvas.style.pointerEvents = "none";
+    map.getPane("flowPane").appendChild(this.canvas);
+    map.on("movestart zoomstart", this._pause, this); map.on("moveend zoomend resize", this._reset, this);
+    this.running = true;
+    (this.fieldP ||= loadFlow()).then((f) => { this.field = f; if (this.running) { this._reset(); this._loop(); } }).catch((e) => console.warn("flow lines", e));
+  },
+  onRemove(map) {
+    this.running = false; cancelAnimationFrame(this.raf);
+    map.off("movestart zoomstart", this._pause, this); map.off("moveend zoomend resize", this._reset, this);
+    this.canvas.remove();
+  },
+  _loop() { const go = () => { if (!this.running) return; this._step(); this.raf = requestAnimationFrame(go); }; this.raf = requestAnimationFrame(go); },
+  _pause() { this.paused = true; if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h); },
+  _reset() {
+    if (!this.field) return;
+    const map = this.map, size = map.getSize(), dpr = window.devicePixelRatio || 1;
+    this.w = size.x; this.h = size.y;
+    this.canvas.width = size.x * dpr; this.canvas.height = size.y * dpr;
+    this.canvas.style.width = size.x + "px"; this.canvas.style.height = size.y + "px";
+    L.DomUtil.setPosition(this.canvas, map.containerPointToLayerPoint([0, 0]));
+    this.ctx = this.canvas.getContext("2d"); this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.ctx.lineCap = "round";
+    // Web Mercator: latitude depends on the screen row only, longitude is linear across
+    this.latY = new Float64Array(size.y + 1); for (let y = 0; y <= size.y; y++) this.latY[y] = map.containerPointToLatLng([0, y]).lat;
+    const w0 = map.containerPointToLatLng([0, 0]).lng, w1 = map.containerPointToLatLng([size.x, 0]).lng;
+    this.lon = (x) => w0 + (w1 - w0) * (x / size.x);
+    this.lat = (y) => { const k = Math.max(0, Math.min(this.h, y)), j = Math.floor(k), f = k - j; return j >= this.h ? this.latY[this.h] : this.latY[j] * (1 - f) + this.latY[j + 1] * f; };
+    this.field.setT(state.t);
+    const count = Math.round(Math.min(2500, Math.max(400, (size.x * size.y) / 250)));
+    this.parts = Array.from({ length: count }, () => this._spawn({}, true));
+    this.last = null; this.paused = false;
+  },
+  _spawn(p, initial) {
+    p.ok = false;
+    for (let tries = 0; tries < 30; tries++) { p.x = Math.random() * this.w; p.y = Math.random() * this.h; if (this.field.at(this.lat(p.y), this.lon(p.x))) { p.ok = true; break; } }
+    p.age = initial ? Math.random() * 3 : 0; p.max = 2 + Math.random() * 3;
+    return p;
+  },
+  _step() {
+    if (this.paused || !this.ctx || !this.parts) return;
+    const ctx = this.ctx, f = this.field, now = performance.now(), dt = this.last == null ? 1 / 60 : Math.min(0.1, (now - this.last) / 1000);
+    this.last = now; f.setT(state.t);
+    ctx.globalCompositeOperation = "destination-in"; ctx.fillStyle = `rgba(0,0,0,${Math.exp(-dt / 0.7).toFixed(4)})`; ctx.fillRect(0, 0, this.w, this.h);
+    ctx.globalCompositeOperation = "source-over";
+    const b0 = this.map.getCenter(), ramp = isDark(state.t, [b0.lat, b0.lng]) ? FLOW_DARK : FLOW_RAMP, buckets = ramp.map(() => []);
+    const k = 9 * dt;   // pixels per knot per second
+    for (const p of this.parts) {
+      p.age += dt;
+      if (p.age > p.max || !p.ok) { this._spawn(p); continue; }
+      const v = f.at(this.lat(p.y), this.lon(p.x)); if (!v) { this._spawn(p); continue; }
+      const kn = Math.hypot(v[0], v[1]), nx = p.x + v[0] * k, ny = p.y - v[1] * k;
+      let b = 0; while (b < FLOW_BREAKS.length && kn >= FLOW_BREAKS[b]) b++;
+      buckets[b].push(p.x, p.y, nx, ny); p.x = nx; p.y = ny;
+      if (nx < 0 || ny < 0 || nx > this.w || ny > this.h) this._spawn(p);
+    }
+    ctx.lineWidth = 1.4;
+    buckets.forEach((seg, b) => { if (!seg.length) return; ctx.strokeStyle = ramp[b]; ctx.beginPath();
+      for (let i = 0; i < seg.length; i += 4) { ctx.moveTo(seg[i], seg[i + 1]); ctx.lineTo(seg[i + 2], seg[i + 3]); } ctx.stroke(); });
+  },
+});
 let layersCtl;
 const PAST = { races: [], groups: {}, lines: {}, shown: new Set(), sel: null };
 const classColor = (c) => { c = (c || "").toLowerCase(); return /row|oar/.test(c) ? "#38bdf8" : /kayak/.test(c) ? "#e879f9" : /canoe/.test(c) ? "#fb923c" : /sup|paddleboard/.test(c) ? "#4ade80" : "#f8fafc"; };
