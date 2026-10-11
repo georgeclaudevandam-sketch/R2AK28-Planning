@@ -25,7 +25,7 @@ Set SSC_CACHE to a folder to keep the SalishSeaCast downloads between runs.
 """
 import csv, io, json, math, os, sys, time, urllib.parse, urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -44,6 +44,7 @@ ERDDAP = "https://salishsea.eos.ubc.ca/erddap/griddap"
 SSC_U, SSC_V, SSC_GRID = "ubcSSg3DuGridFields1hV21-11", "ubcSSg3DvGridFields1hV21-11", "ubcSSnBathymetryV21-08"
 FIT = ("2024-06-01T00:30:00Z", "2024-07-31T23:30:00Z")   # two months, June and July as in the race (Fraser freshet included)
 SSC_CONST = ["M2", "S2", "N2", "K1", "O1", "Q1", "M4", "MS4"]   # two months can't separate K1/P1 or S2/K2: those ride in K1 and S2
+SSC_CHUNK_D = 4           # days of hourly fields per ERDDAP request
 SSC_STEP_NM = 2.0        # SalishSeaCast cells every 2 nm along the route; samples in between use the nearest one
 BUDGET_MIN = float(os.environ.get("SSC_BUDGET_MIN", "150"))   # stop downloading after this; a re-run carries on from the cache
 SSC_EDGE = 12            # skip grid cells this close to the model's open boundaries
@@ -167,9 +168,15 @@ class SalishSea:
         f = CACHE / f"{y}_{x}.npz"
         if f.exists():
             z = np.load(f); return z["t"], z["u"], z["v"]
-        t0, t1 = FIT
-        ru = erddap_csv(f"{ERDDAP}/{SSC_U}.csv?" + q(f"uVelocity[({t0}):1:({t1})][(0.5000003)][({y}):1:({y})][({x - 1}):1:({x})]"))
-        rv = erddap_csv(f"{ERDDAP}/{SSC_V}.csv?" + q(f"vVelocity[({t0}):1:({t1})][(0.5000003)][({y - 1}):1:({y})][({x}):1:({x})]"))
+        # in pieces of SSC_CHUNK_D days: the server times out (HTTP 408) reading two months of hourly files in one request
+        ru, rv = [], []
+        a0, a1 = (datetime.fromisoformat(x.replace("Z", "+00:00")) for x in FIT)
+        while a0 <= a1:
+            b1 = min(a1, a0 + timedelta(days=SSC_CHUNK_D) - timedelta(hours=1))
+            t0, t1 = a0.strftime("%Y-%m-%dT%H:%M:%SZ"), b1.strftime("%Y-%m-%dT%H:%M:%SZ")
+            ru += erddap_csv(f"{ERDDAP}/{SSC_U}.csv?" + q(f"uVelocity[({t0}):1:({t1})][(0.5000003)][({y}):1:({y})][({x - 1}):1:({x})]"))
+            rv += erddap_csv(f"{ERDDAP}/{SSC_V}.csv?" + q(f"vVelocity[({t0}):1:({t1})][(0.5000003)][({y - 1}):1:({y})][({x}):1:({x})]"))
+            a0 = b1 + timedelta(hours=1)
         def avg(rows):
             out = {}
             for r in rows: out.setdefault(r[0], []).append(float(r[4]) if r[4] not in ("", "NaN") else np.nan)
