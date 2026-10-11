@@ -1016,27 +1016,40 @@ function renderSun() {
 // ---------- big map follows the boat, framing the last stop and the next two
 let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [], followKey = null;
 function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
-// Follow-mode moves: while playing, a smooth fly (zooming out and back in continuously) instead of jumping to the new zoom;
-// a plain pan when the zoom stays the same.
-let FLYING = false, SLOW_UNTIL = 0;
-function glide(ll, z) {
-  if (!playTimer) { map.setView(ll, z, { animate: false }); return; }
-  if (z === map.getZoom()) { map.panTo(ll, { animate: true, duration: 0.6 }); return; }
-  // after the zoom, stay at half speed until the visible chart layers have drawn (at most 5 s)
-  FLYING = true; map.once("moveend", () => { FLYING = false; SLOW_UNTIL = Date.now() + 5000;
-    const busy = []; map.eachLayer((l) => { if (l instanceof L.TileLayer && l._loading) busy.push(l); });
-    let n = busy.length; if (!n) SLOW_UNTIL = 0;
-    busy.forEach((l) => l.once("load", () => { if (--n <= 0) SLOW_UNTIL = 0; })); });
-  map.flyTo(ll, z, { duration: 1.6 + 0.3 * Math.abs(z - map.getZoom()), easeLinearity: 0.2 });
+// Follow-mode moves while playing: zoom one level at a time, each step a normal animated zoom (the charts already drawn stay
+// up, scaled, until the new ones arrive) and the next step only once the charts at this level have drawn (at most 3 s).
+// Playback runs at half speed until the zoom is done. A plain pan when the zoom stays the same.
+let FLYING = false, GLIDE = 0;
+const chartsDrawn = (cap) => new Promise((done) => {
+  const busy = []; map.eachLayer((l) => { if (l instanceof L.TileLayer && l._loading) busy.push(l); });
+  let n = busy.length; if (!n) return done();
+  const t = setTimeout(done, cap); busy.forEach((l) => l.once("load", () => { if (--n <= 0) { clearTimeout(t); done(); } }));
+});
+async function glide(ll, z) {
+  const id = ++GLIDE;
+  if (!playTimer) { FLYING = false; map.setView(ll, z, { animate: false }); return; }
+  const z0 = map.getZoom();
+  if (z === z0) { map.panTo(ll, { animate: true, duration: 0.6 }); return; }
+  FLYING = true;
+  const from = map.getCenter(), n = Math.abs(z - z0), dz = Math.sign(z - z0);
+  for (let k = 1; k <= n && id === GLIDE; k++) {
+    const f = k / n, c = L.latLng(from.lat + (ll.lat - from.lat) * f, from.lng + (ll.lng - from.lng) * f);
+    await new Promise((done) => { map.once("moveend", done); map.setView(c, z0 + dz * k, { animate: true }); });
+    await new Promise((done) => setTimeout(done, 150));   // let the new tiles be requested
+    await chartsDrawn(3000);
+  }
+  if (id === GLIDE) FLYING = false;
 }
 function followBoat() {
   const c = $("follow"); if (!map || !c || !c.checked) return;
   const b = boatAt(state.t); if (!b) return;
   // Stage 2: the stop before the boat and the next two; Stage 1: just the boat
   let pts = [b.ll], key = "s1", maxZoom = 13;
-  const atStop = LAST_PLAN && state.t >= LAST_PLAN.s2 ? STOP_LL.findIndex((x) => state.t >= x.t && state.t < x.until) : -1;
-  if (atStop >= 0) {   // stopped: close in on the landing (about 3 times closer) to show exactly where it is
-    key = "at" + atStop; pts = [b.ll, STOP_LL[atStop].ll]; maxZoom = 15;
+  const atStop = LAST_PLAN && state.t >= LAST_PLAN.s2 ? STOP_LL.findIndex((x) => state.t >= x.zIn && state.t < x.zOut) : -1;
+  if (atStop >= 0) {   // near a stop: close in on the way in, the landing and the way out, to show exactly where it is
+    // first the approach (3 nm out), then closer once the boat turns off the route for the landing
+    const x = STOP_LL[atStop], near = state.t >= x.tTurn && state.t < x.until;
+    key = (near ? "at" : "ap") + atStop; pts = (near ? x.tight : x.view).concat([b.ll]); maxZoom = 14;
   } else if (LAST_PLAN && state.t >= LAST_PLAN.s2 && STOP_LL.length) {
     const k = STOP_LL.findIndex((x) => x.until > state.t), i = k < 0 ? STOP_LL.length : k;
     key = i;
@@ -1049,7 +1062,7 @@ function followBoat() {
     // keep the boat and stops clear of the inset and play box down the right-hand side
     const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40;
     if (atStop >= 0) {
-      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.8)), 15) - 1;   // one level out: twice the area
+      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.25), false, L.point(rw, 0)));
       const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); glide(map.unproject(c, z), z);
     } else if (pts.length > 1) {
       const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb, false, L.point(rw + 80, 120)));
@@ -1081,7 +1094,7 @@ function startPlay() {
     // in port in Victoria (Stage 1 finished, Stage 2 not started): 5 times faster when that box is ticked
     const P = LAST_PLAN, inPort = P && playT >= P.r1.finish && playT < P.s2 && $("skipvic").checked;
     // half speed while follow mode glides to a new zoom and the charts draw at it (see glide)
-    playT += +$("play-speed").value * H / 10 * (inPort ? 5 : 1) * (FLYING || Date.now() < SLOW_UNTIL ? 0.5 : 1);
+    playT += +$("play-speed").value * H / 10 * (inPort ? 5 : 1) * (FLYING ? 0.5 : 1);
     if (inPort && playT > P.s2) playT = P.s2;
     const end = Math.min(+r.max, LAST_PLAN ? LAST_PLAN.r2.finish : +r.max);
     if (playT >= end) { playT = end; stopPlay(); }
@@ -1165,7 +1178,12 @@ function renderPlanner() {
   const stopRows = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
-    STOP_LL.push({ t: x.t, until: x.until, ll });
+    // follow mode closes in on the stop from 3 nm before the boat turns off the route until 1 nm after it rejoins it
+    const a0 = x.site ? x.site.ain : x.pos, a1 = x.site ? Math.max(x.site.aout, a0) : x.pos;
+    const tr = r2.track, tIn = (tr.find((q) => q[1] >= a0 - 3) || tr[0])[0], tOut = (tr.find((q) => q[0] >= (x.tBack || x.until) && q[1] >= a1 + 1) || tr[tr.length - 1])[0];
+    STOP_LL.push({ t: x.t, until: x.until, ll, zIn: Math.min(x.t0 ?? x.t, tIn), zOut: Math.max(x.tBack ?? x.until, tOut),
+      view: [pointAt(ch.stage2, Math.max(0, a0 - 3)), ll, pointAt(ch.stage2, Math.min(ch.stage2.total, a1 + 1))],
+      tight: [pointAt(ch.stage2, Math.max(0, a0 - 0.3)), ll, pointAt(ch.stage2, Math.min(ch.stage2.total, a1 + 0.3))], tTurn: x.t0 ?? x.t });
     if (miniStops) L.circleMarker(ll, { radius: x.camp ? 3 : 2, color: x.camp ? "#7c2d12" : "#0f172a", weight: 1, fillColor: x.camp ? "#f59e0b" : "#fff", fillOpacity: 1, interactive: false }).addTo(miniStops);
     const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "coffee/snack"}`;
     const where = x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite within reach, find a beach` : `${esc(nearPlace(on))}, on the water`;
