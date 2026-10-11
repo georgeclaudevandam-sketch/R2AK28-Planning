@@ -1018,11 +1018,15 @@ let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [
 function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
 // Follow-mode moves: while playing, a smooth fly (zooming out and back in continuously) instead of jumping to the new zoom;
 // a plain pan when the zoom stays the same.
-let FLYING = false;
+let FLYING = false, SLOW_UNTIL = 0;
 function glide(ll, z) {
   if (!playTimer) { map.setView(ll, z, { animate: false }); return; }
   if (z === map.getZoom()) { map.panTo(ll, { animate: true, duration: 0.6 }); return; }
-  FLYING = true; map.once("moveend", () => { FLYING = false; });
+  // after the zoom, stay at half speed until the visible chart layers have drawn (at most 5 s)
+  FLYING = true; map.once("moveend", () => { FLYING = false; SLOW_UNTIL = Date.now() + 5000;
+    const busy = []; map.eachLayer((l) => { if (l instanceof L.TileLayer && l._loading) busy.push(l); });
+    let n = busy.length; if (!n) SLOW_UNTIL = 0;
+    busy.forEach((l) => l.once("load", () => { if (--n <= 0) SLOW_UNTIL = 0; })); });
   map.flyTo(ll, z, { duration: 1.6 + 0.3 * Math.abs(z - map.getZoom()), easeLinearity: 0.2 });
 }
 function followBoat() {
@@ -1076,7 +1080,8 @@ function startPlay() {
   playTimer = setInterval(() => {
     // in port in Victoria (Stage 1 finished, Stage 2 not started): 5 times faster when that box is ticked
     const P = LAST_PLAN, inPort = P && playT >= P.r1.finish && playT < P.s2 && $("skipvic").checked;
-    playT += +$("play-speed").value * H / 10 * (inPort ? 5 : 1);
+    // half speed while follow mode glides to a new zoom and the charts draw at it (see glide)
+    playT += +$("play-speed").value * H / 10 * (inPort ? 5 : 1) * (FLYING || Date.now() < SLOW_UNTIL ? 0.5 : 1);
     if (inPort && playT > P.s2) playT = P.s2;
     const end = Math.min(+r.max, LAST_PLAN ? LAST_PLAN.r2.finish : +r.max);
     if (playT >= end) { playT = end; stopPlay(); }
