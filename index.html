@@ -177,8 +177,11 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
         </div>
-        <label for="hullFt">Hull length (waterline, monohull): <b class="clock" id="hullFt-out">24 ft</b>, hull speed <b class="clock" id="hull-v"></b>
-          <input id="hullFt" type="range" min="20" max="60" step="1" value="24"></label>
+        <div class="row" style="align-items:flex-end">
+          <label for="hullFt-r" style="flex:1">Hull length (waterline, monohull)<input id="hullFt-r" type="range" min="20" max="60" step="1" value="24"></label>
+          <label for="hullFt">ft<input id="hullFt" type="number" min="20" max="60" step="0.5" value="24" style="width:70px"></label>
+        </div>
+        <div style="margin:2px 0 6px">Hull speed: <b class="clock" id="hull-v"></b> <span style="opacity:.7">(1.34 × √length in ft)</span></div>
         <label for="campGapH">Most hours from one camp to the next (coffee stops count)<input id="campGapH" type="number" min="8" max="48" step="1" value="20"></label>
         <label class="check" for="nightOn"><input id="nightOn" type="checkbox" checked> No rowing at night: ashore at a past campsite</label>
         <label for="nightH" id="nightH-l">From <b class="clock" id="nightH-out">0.5 h</b> after sunset to the same before sunrise
@@ -1157,7 +1160,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = state.hullFt; $("hullFt-out").textContent = `${state.hullFt} ft`; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(1)} kn`; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 async function main() {
@@ -1183,7 +1186,10 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
-  $("hullFt").addEventListener("input", (e) => { state.hullFt = parseFloat(e.target.value); $("hullFt-out").textContent = `${state.hullFt} ft`; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(1)} kn`; changed(); });
+  ["hullFt", "hullFt-r"].forEach((id) => $(id).addEventListener("input", (e) => {
+    const v = parseFloat(e.target.value); if (!(v >= 20 && v <= 60)) return;
+    state.hullFt = v; $(id === "hullFt" ? "hullFt-r" : "hullFt").value = v; $("hull-v").textContent = `${hullSpeed(v).toFixed(2)} kn`; changed();
+  }));
   $("campGapH").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 8 && v <= 48) { state.campGapH = v; changed(); } });
   $("nightOn").addEventListener("change", (e) => { state.nightOn = e.target.checked; syncInputs(); changed(); });
   $("nightH").addEventListener("input", (e) => { state.nightH = parseFloat(e.target.value); $("nightH-out").textContent = `${state.nightH} h`; changed(); });
