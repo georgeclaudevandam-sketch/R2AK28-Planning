@@ -171,6 +171,40 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .opacity-ctl input[type="range"] { width: 110px; vertical-align: middle; }
 .opacity-ctl label { display: flex; }
 .opacity-ctl label[hidden] { display: none; }
+
+/* ---------- storm contingency page */
+.app[hidden], #storm-page[hidden] { display: none; }
+.pagelink { display: inline-block; margin-top: 8px; font: 600 13px var(--font-ui); color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 3px 12px; }
+#storm-page { height: 100%; overflow-y: auto; padding: 18px 20px 40px; }
+#storm-page .wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+#storm-page .top { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; justify-content: space-between; }
+#storm-page .grid { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { #storm-page .grid { grid-template-columns: 1fr; } #storm-page { padding-inline: 16px; } }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card h2 { margin: 0; }
+.sl { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; color: var(--muted); }
+.sl b { color: var(--ink); font: 500 13px var(--font-data); }
+.sl small { font-size: 11.5px; }
+.runbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.runbar button { font: 600 14px var(--font-ui); border-radius: 6px; padding: 7px 16px; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+.runbar button.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.runbar button:disabled { opacity: .5; cursor: default; }
+progress { width: 100%; height: 8px; accent-color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.tile { background: var(--chip); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.tile span { font-size: 12px; color: var(--muted); }
+.tile b { font: 500 19px var(--font-data); font-variant-numeric: tabular-nums; }
+.tile small { font-size: 11.5px; color: var(--muted); }
+.tile.bad b { color: var(--bad); } .tile.good b { color: var(--good); }
+#sm-hist svg { width: 100%; height: auto; display: block; }
+#sm-hist text { font: 11px var(--font-data); fill: var(--muted); }
+#sm-map { height: 460px; border-radius: 6px; background: #0a2533; }
+.stbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.stbl th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--rule); padding: 4px 6px 4px 0; vertical-align: bottom; }
+.stbl td { border-bottom: 1px solid var(--rule); padding: 4px 6px 4px 0; vertical-align: top; }
+.stbl td.n, .stbl th.n { text-align: right; white-space: nowrap; font-family: var(--font-data); }
+.stbl tr[data-i] { cursor: pointer; } .stbl tr[data-i]:hover { background: var(--chip); }
+.stale { opacity: .55; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -181,6 +215,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
     <header>
       <h1>R2AK 2028 tide and current planner</h1>
       <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and how many days you want to take to see what the stream is doing at each tidal gate when you get there.</p>
+      <a class="pagelink" href="#storms">Storm contingency: test this plan against storms &rarr;</a>
     </header>
 
     <section aria-labelledby="h-scn">
@@ -286,6 +321,50 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
   </aside>
 </div>
 
+
+<div id="storm-page" hidden>
+ <div class="wrap">
+  <div class="top">
+   <div>
+    <h1>Storm contingency</h1>
+    <p class="sub">Runs the plan from the planner page many times, each with storms dropped in at random. When a storm warning comes the crew makes for the nearest past campsite or beach and stays ashore until it has blown through; then the plan carries on under the same rules, so the tides, gates and camps all move. Stage 2 only (Victoria to Ketchikan).</p>
+   </div>
+   <a class="pagelink" href="#">&larr; Back to the planner</a>
+  </div>
+  <div class="grid">
+   <div class="card" id="sm-controls">
+    <h2>Scenarios</h2>
+    <p class="hint" id="sm-plan"></p>
+    <label class="sl" for="sm-n">Scenarios <b id="sm-n-o"></b><input id="sm-n" type="range" min="1000" max="10000" step="1000" value="10000"></label>
+    <h2>Storms</h2>
+    <label class="sl" for="sm-k">Storms per race <b id="sm-k-o"></b><input id="sm-k" type="range" min="0" max="4" step="1" value="2"></label>
+    <label class="sl" for="sm-dmin">Shortest storm <b id="sm-dmin-o"></b><input id="sm-dmin" type="range" min="1" max="5" step="1" value="1"></label>
+    <label class="sl" for="sm-dmax">Longest storm <b id="sm-dmax-o"></b><input id="sm-dmax" type="range" min="1" max="5" step="1" value="3"><small>Each storm lasts a whole number of days, picked evenly between these.</small></label>
+    <label class="sl" for="sm-w0">Storms can start from day <b id="sm-w0-o"></b><input id="sm-w0" type="range" min="0" max="20" step="1" value="0"></label>
+    <label class="sl" for="sm-w1">to day <b id="sm-w1-o"></b><input id="sm-w1" type="range" min="1" max="30" step="1" value="16"><small>Days after the Stage 2 start, any hour of the day. A storm that comes after you finish does nothing.</small></label>
+    <label class="sl" for="sm-gap">At least this long between storms <b id="sm-gap-o"></b><input id="sm-gap" type="range" min="0" max="7" step="0.5" value="1"></label>
+    <h2>Crew</h2>
+    <label class="sl" for="sm-warn">Warning before a storm hits <b id="sm-warn-o"></b><input id="sm-warn" type="range" min="0" max="24" step="1" value="6"><small>The crew heads for shelter this long before it hits, and waits ashore from then on.</small></label>
+    <label class="sl" for="sm-reach">Furthest to row for shelter <b id="sm-reach-o"></b><input id="sm-reach" type="range" min="2" max="30" step="1" value="10"><small>Along the route, ahead or back, not through a tidal gate. Nothing in reach: the storm is sat out on the water and the table flags it.</small></label>
+    <label class="sl" for="sm-pct">Boat speed vs the plan <b id="sm-pct-o"></b><input id="sm-pct" type="range" min="80" max="115" step="1" value="100"><small>100% is the speed the planner worked out for your days.</small></label>
+    <label class="sl" for="sm-target">Finish target <b id="sm-target-o"></b><input id="sm-target" type="range" min="8" max="30" step="0.5" value="19"></label>
+    <label class="sl" for="sm-seed">Random seed<input id="sm-seed" type="number" min="1" max="999999" step="1" value="2028"><small>Same seed and settings, same scenarios.</small></label>
+    <div class="runbar"><button id="sm-run" type="button">Run scenarios</button><button id="sm-stop" type="button" class="ghost" disabled>Stop</button></div>
+    <progress id="sm-prog" max="1" value="0"></progress>
+    <p class="hint" id="sm-status">Not run yet.</p>
+   </div>
+   <div class="stack" style="gap:18px;min-width:0" id="sm-results">
+    <div class="card"><h2>Finish, Victoria to Ketchikan</h2><div class="tiles" id="sm-tiles"></div><div id="sm-hist"></div><p class="hint" id="sm-hist-note"></p></div>
+    <div class="card"><h2>What the storms cost</h2><p class="hint">Days lost against the storm days. A storm can cost more than its own length when the tides and gates no longer line up afterwards, or less when it falls on a stop you were making anyway.</p><div class="tbl-wrap"><table class="stbl" id="sm-cost"></table></div></div>
+    <div class="card"><h2>Storm shelters</h2><p class="hint">Where crews sat out the storms, most used first. Cumulative share: how many of all storm stops the list covers down to that row, so a short list can cover most of them. Click a row to see it on the map.</p>
+     <div class="runbar"><button id="sm-csv" type="button" class="ghost" disabled>Download the list (CSV)</button></div>
+     <div id="sm-map"></div>
+     <div class="tbl-wrap"><table class="stbl" id="sm-shel"></table></div></div>
+    <div class="card"><h2>Gaps: no shelter in reach</h2><p class="hint">Stretches where a storm caught the crew with no past campsite or beach within reach, so it was sat out on the water. Worth scouting for a landing, or rowing through only with a good forecast.</p><div class="tbl-wrap"><table class="stbl" id="sm-gaps"></table></div></div>
+   </div>
+  </div>
+ </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 "use strict";
@@ -651,7 +730,7 @@ let FIELD = null;
 function fieldAt(ch, pos, t) {
   const F = FIELD, key = ch.north || "stage1"; if (!F || !F.chains[key]) return null;
   if (!F._k) {
-    F._k = F.const.map((c) => F.astro[c]); F._t0 = Date.parse(F.t0); F._ph = new Map(); F._rows = {};
+    F._k = F.const.map((c) => F.astro[c]); F._t0 = Date.parse(F.t0); F._rows = {};
     const r = Math.PI / 180;
     // per sample: mean, then f*A*cos(g) and f*A*sin(g) for each constituent
     for (const [k, rows] of Object.entries(F.chains)) F._rows[k] = rows.map((row) => {
@@ -663,17 +742,20 @@ function fieldAt(ch, pos, t) {
   }
   const rows = F._rows[key], c = rows[Math.max(0, Math.min(rows.length - 1, Math.round(pos / F.step_nm)))];
   if (!c) return null;
-  // the astronomical phase of each constituent at time t is the same everywhere: work it out once per time
-  let ph = F._ph.get(t);
-  if (!ph) {
-    if (F._ph.size > 50000) F._ph.clear();
-    const h = (t - F._t0) / H, r = Math.PI / 180;
-    ph = new Float64Array(2 * F._k.length);
+  // the astronomical phase of each constituent at time t is the same everywhere: work it out once per minute (kept in one
+  // table for the season, since the storm page runs the simulator thousands of times)
+  const nk = F._k.length, m = Math.round((t - F._t0) / 60000);
+  let ph, o;
+  if (m >= 0 && m < 150000) {
+    if (!F._tab) { F._tab = new Float64Array(150000 * 2 * nk); F._has = new Uint8Array(150000); }
+    ph = F._tab; o = m * 2 * nk;
+    if (!F._has[m]) { const h = (m * 60000) / H, r = Math.PI / 180; F._k.forEach((q, i) => { const a = (q.ph0 + q.w * h) * r; ph[o + 2 * i] = Math.cos(a); ph[o + 2 * i + 1] = Math.sin(a); }); F._has[m] = 1; }
+  } else {
+    const h = (t - F._t0) / H, r = Math.PI / 180; ph = new Float64Array(2 * nk); o = 0;
     F._k.forEach((q, i) => { const a = (q.ph0 + q.w * h) * r; ph[2 * i] = Math.cos(a); ph[2 * i + 1] = Math.sin(a); });
-    F._ph.set(t, ph);
   }
   let x = c[0];
-  for (let i = 0; i < F._k.length; i++) x += c[1 + 2 * i] * ph[2 * i] + c[2 + 2 * i] * ph[2 * i + 1];
+  for (let i = 0; i < nk; i++) x += c[1 + 2 * i] * ph[o + 2 * i] + c[2 + 2 * i] * ph[o + 2 * i + 1];
   return x;
 }
 // stream along the track at a position and time, + = with you. Close to a current station its tables rule; moving away they
@@ -754,17 +836,30 @@ const HOLD_MAX_NM = 40; const BACK_NM = 4;   // with no campsite ahead in reach,
 const MIN_STOP_H = 1;      // shorter pauses on the water are not listed as stops   // furthest a stop will go off the route to reach a past campsite
 const MIN_FOUL_H = 1;      // tides mode: row through head-current spells shorter than this rather than stopping
 const MIN_LEG_NM = 10;     // tides mode: after a stop, set off only if the fair stream and rowing hours left carry you this far (less for slow boats)
-function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
-  const total = ch.total, S = STEP / H;
+// opt (the storm page): storms = [{go, t, end}] sorted by time: at `go` (the warning) the crew makes for the nearest past campsite or
+// beach within opt.shelterNm along the route (not through a tidal gate) and stays ashore until `end`. opt.from = a day's snapshot from
+// an earlier run (its _snaps) to carry on from rather than rerun the storm-free days before it.
+function simulateRow(ch, gates, start, v, hours, win, waits, head, night, opt = {}) {
+  const total = ch.total, S = STEP / H, storms = opt.storms || [];
   // night: no rowing from `night` hours after sunset to `night` hours before sunrise (null = row at night too)
-  const llCache = new Map();
-  const isNight = night == null ? () => false : (pos, t) => {
-    const k = Math.round(pos / 2); let ll = llCache.get(k); if (!ll) { ll = pointAt(ch, k * 2); llCache.set(k, ll); }
-    return isDark(t - night * H, ll) && isDark(t + night * H, ll);
+  // (from each 2 nm piece's sunset and sunrise times, worked out once: the sun sums were most of the simulator's time, and the
+  // storm page runs it thousands of times)
+  const dk = ch._dark || (ch._dark = new Map());
+  const darkAt = (k, t) => {
+    let e = dk.get(k); if (!e) { const ll = pointAt(ch, k * 2); e = { ll, off: 12 * H - (ll[1] / 15) * H, days: new Map() }; dk.set(k, e); }
+    const n = Math.floor((t - e.off) / 864e5), T = n * 864e5 + e.off;   // T: local solar noon
+    let d = e.days.get(n);
+    if (!d) {
+      const cross = (a, b, down) => { for (let i = 0; i < 12; i++) { const m = (a + b) / 2; if (isDark(m, e.ll) === down) b = m; else a = m; } return (a + b) / 2; };
+      d = isDark(T + 12 * H, e.ll) ? [cross(T, T + 12 * H, true), cross(T + 12 * H, T + 24 * H, false)] : [Infinity, Infinity];
+      e.days.set(n, d);
+    }
+    return t >= d[0] && t < d[1];
   };
+  const isNight = night == null ? () => false : (pos, t) => { const k = Math.round(pos / 2); return darkAt(k, t - night * H) && darkAt(k, t + night * H); };
   // rowing only pays while it makes headway: a head stream within 0.5 kn of the rowing speed counts as foul whatever the cutoff
   const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= (win ? theta : Math.max(theta, 0.5 - v));
-  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null, lastCamp: start, stopFrom: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
+  let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null, lastCamp: start, stopFrom: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [], storms: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
   // the day's rowing hours used up, or too few left for a leg worth setting off on
   const spent = (rowed) => rowed >= hours - 1e-9 || (hours - rowed) * v < Math.min(MIN_LEG_NM, 2.5 * v);
@@ -796,6 +891,8 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   };
   // campsites within CAMP_MAX_NM of the route, by where the way in to each leaves the route, in order along it
   if (!ch._near) { pickCamp(ch, { pos: 0 }, Infinity); ch._near = ch._camps.filter((c) => c.o <= CAMP_MAX_NM).map((c) => c.ain).sort((a, b) => a - b); }
+  // the first campsite way in beyond x along the route (binary search: this runs every step)
+  const NEAR = ch._near, nearAfter = (x) => { let lo = 0, hi = NEAR.length; while (lo < hi) { const m = (lo + hi) >> 1; if (NEAR[m] > x) hi = m; else lo = m + 1; } return NEAR[lo]; };
   // tides mode: where and when the next stop of 2 h or more would start if you keep rowing, and when it would end
   const nextStop = (s, theta, rowed, end) => {
     let t = s.t, pos = s.pos, h = rowed, gi = s.gi ?? 0;
@@ -822,7 +919,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   const runDay = (s0, end, theta, rec, rowed0 = 0) => {
     const s = { ...s0 }; let rowed = rowed0;
     // the way in to a campsite that this last step rowed past
-    const passed = () => ch._near.find((a) => a > s.pos0 && a <= s.pos);
+    const passed = () => { const a = nearAfter(s.pos0); return a != null && a <= s.pos ? a : undefined; };
     // deciding to stop at a campsite the last step rowed past: stop where its way in leaves the route, not beyond it
     const backTo = (a) => {
       if (a == null || s.tp == null || s.pos <= a || s.pos <= s.pos0) return;
@@ -831,6 +928,29 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       if (rec && rec.track.length) rec.track[rec.track.length - 1] = [s.t, s.pos];
     };
     while (s.t < end && s.pos < total - 1e-6) {
+      // storm warning: get ashore and stay there until it has blown through
+      if ((s.si || 0) < storms.length && s.t >= storms[s.si || 0].go) {
+        const sd = storms[s.si || 0]; s.si = (s.si || 0) + 1;
+        s.hold = Math.max(s.hold || 0, sd.end); s.holdPos = s.pos; s.stormEnd = sd.end;
+        let site = s.camp ? s.camp.site : null, nm = 0;
+        if (!s.camp && CAMPSITES.length && total - s.pos > 1) {
+          const ahead = s.gi < gates.length ? gates[s.gi].along : total, behind = s.gi > 0 ? gates[s.gi - 1].along : 0;
+          let best = null;
+          ch._camps.forEach((c) => {
+            if (Math.abs(c.ain - s.pos) > opt.shelterNm || c.ain > ahead || c.ain < behind) return;
+            const cost = Math.abs(c.ain - s.pos) + c.din;
+            if (!best || cost < best.cost) best = { ...c, cost };
+          });
+          if (best) {
+            const t0 = s.t, hrs = best.cost / v; site = best; nm = best.cost;
+            s.t += hrs * H; rowed += hrs; s.pos = s.pos0 = best.ain; s.tp = s.t; s.wait = false; s.stopFrom = s.t;
+            s.camp = { site: best, d: best.din, extra: best.din + best.dout, t0, arrive: s.t };
+            if (rec) rec.track.push([s.t, s.pos]);
+          }
+        }
+        if (s.camp) s.camp = { ...s.camp, storm: true };   // (a copy: the camp may belong to a shared snapshot)
+        if (rec) rec.storms.push({ ...sd, at: s.t, pos: s.pos, site, nm, port: total - s.pos <= 1 || s.pos < 1 });   // (in port at Victoria or Ketchikan)
+      }
       // passing a past campsite: if the next stop would fall where no campsite is in reach, stop here instead
       if (!win && s.rowing && !s.hold && CAMPSITES.length && s.pos > (s.holdPos || -1) + MIN_LEG_NM && passed() != null) {
         const x = nextStop(s, theta, rowed, end);
@@ -844,7 +964,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       if (!win && night != null && s.rowing && !s.hold && !s.camp && CAMPSITES.length && passed() != null && total - s.pos > 2) {
         let dark = s.t; while (dark < s.t + 8 * H && !isNight(s.pos, dark)) dark += STEP;
         if (dark < s.t + 8 * H) {
-          const next = ch._near.find((a) => a > s.pos + 0.5);
+          const next = nearAfter(s.pos + 0.5);
           if (next == null || s.t + ((next - s.pos) / Math.max(0.5, v - 0.5)) * H > dark) {
             backTo(passed());
             let dawn = dark; while (dawn < dark + 16 * H && isNight(s.pos, dawn)) dawn += STEP;
@@ -859,7 +979,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
         const brk = state.breakH * H, left = state.breakAfterH - (s.rowH || 0);
         if (left <= 0) { s.hold = s.t + brk; s.afterBrk = brk < MIN_STOP_H * H; }   // a short break is on the water
         else if (CAMPSITES.length && state.breakH >= MIN_STOP_H && left < state.breakAfterH / 2 && passed() != null) {
-          const next = ch._near.find((a) => a > s.pos + 0.5);
+          const next = nearAfter(s.pos + 0.5);
           if (next == null || (next - s.pos) / Math.max(0.5, v - 0.5) > left) { backTo(passed()); s.hold = s.t + brk; s.holdPos = s.pos; }
         }
       }
@@ -872,7 +992,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
         if (s.t >= due - 0.5 * H) s.hold = s.t + campLen;
         // (only once more than half the allowance has gone: stopping again soon after a camp gains nothing)
         else if (s.rowing && CAMPSITES.length && s.t - s.lastCamp > state.campGapH * H / 2 && passed() != null) {
-          const next = ch._near.find((a) => a > s.pos + 0.5);
+          const next = nearAfter(s.pos + 0.5);
           if (next == null || s.t + ((next - s.pos) / Math.max(0.5, v - 0.5) + 1) * H > due) { backTo(passed()); s.hold = s.t + campLen; s.holdPos = s.pos; }
         }
       }
@@ -900,14 +1020,14 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
         }
       }
       // the last 2 nm into port (Victoria, Ketchikan): row straight in, whatever the hour or stream; the stop is there
-      if (!win && total - s.pos < 2 && !s.wait && !s.camp && (s.rowing || s.pos > 0)) { want = true; s.hold = 0; }
+      if (!win && total - s.pos < 2 && !s.wait && !s.camp && (s.rowing || s.pos > 0) && !(s.stormEnd > s.t)) { want = true; s.hold = 0; }
       // stopping for MIN_STOP_H or more (also waiting at a gate): row to the nearest past campsite (counts as rowing time), and back when you set off
       // (a short break on the water that runs into a longer stop, for the stream or the night, goes ashore too)
       const rest = (!want || s.wait) && (s.rowing || s.wait || (s.afterBrk && !s.hold)) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
       // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
       const capped = !win && rest > 0 && spent(rowed) && !s.wait;
       let longer = false;
-      if ((rest >= MIN_STOP_H * H || capped) && total - s.pos > 1) {   // at the stage end the boat is in port (Victoria, Ketchikan)
+      if ((rest >= MIN_STOP_H * H || capped) && total - s.pos > 1 && !(s.stormEnd > s.t)) {   // (in a storm with no shelter in reach: sit it out)   // at the stage end the boat is in port (Victoria, Ketchikan)
         const lim = Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity);
         // not worth it if the stop would be mostly over by the time you are on the beach
         // (a set stop, s.hold, is lengthened by the trip in, so any campsite in reach will do)
@@ -962,13 +1082,20 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
     }
     return s;
   };
-  for (let day = 0; st.pos < total - 1e-6 && day < 45; day++) {
+  let day0 = 0;
+  const snaps = opt.snap ? [] : null;
+  if (opt.from) {   // carry on from a snapshot of a storm-free run (runDay never changes the state it is handed, so it can be shared)
+    const f = opt.from; day0 = f.day; st = f.st;
+    out = { track: f.out.track.slice(0, f.n[0]), passed: f.out.passed.slice(0, f.n[1]), rests: [], camps: f.out.camps.slice(0, f.n[2]), storms: [] };
+  }
+  for (let day = day0; st.pos < total - 1e-6 && day < 60; day++) {
+    if (snaps) snaps.push({ day, st, out, n: [out.track.length, out.passed.length, out.camps.length] });
     const end = start + (day + 1) * 24 * H;
     st = runDay(st, end, win ? -99 : -head, out);
   }
   // stops: campsite visits, plus pauses of 3 h or more on the water where no campsite was within reach
   const tr = out.track; let i = 0;
-  out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v, t0: c.t0, tBack: c.back }));
+  out.camps.forEach((c) => out.rests.push({ t: c.arrive, until: c.leave, pos: c.pos, site: c.site, d: c.d, extra: c.extra, detourH: c.extra / v, t0: c.t0, tBack: c.back, storm: c.storm }));
   while (i < tr.length - 1) {
     let j = i; while (j + 1 < tr.length && tr[j + 1][1] - tr[i][1] < 0.05) j++;
     if (tr[j][0] - tr[i][0] >= Math.min(MIN_STOP_H, state.breakH) * H - 1 && tr[i][1] < total - 0.1 && !out.camps.some((c) => c.t0 < tr[j][0] && c.back > tr[i][0])) out.rests.push({ t: tr[i][0], pos: tr[i][1], until: tr[j][0] });
@@ -977,7 +1104,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   out.rests.sort((a, b) => a.t - b.t);
   // Type 1 camp (tent): state.campH hours or more. Type 2 snack/rest: shorter.
   out.rests.forEach((r) => { r.camp = r.until - r.t >= state.campH * H - 1; });
-  return { track: tr, nights: out.rests, passed: out.passed, finish: st.t };
+  return { track: tr, nights: out.rests, passed: out.passed, finish: st.t, storms: out.storms, _snaps: snaps };
 }
 function posAt(track, t) {
   if (t <= track[0][0]) return track[0][1];
@@ -1810,6 +1937,174 @@ function renderPast() {
 function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
+
+// ---------- storm contingency page: Monte Carlo storms against the plan
+const SM = { ctl: { n: 10000, k: 2, dmin: 1, dmax: 3, w0: 0, w1: 16, gap: 1, warn: 6, reach: 10, pct: 100, target: 19, seed: 2028 }, run: null, res: null, map: null, layer: null, init: false };
+const SM_FMT = { n: (v) => v.toLocaleString("en-US"), k: (v) => `${v}`, dmin: (v) => `${v} day${v > 1 ? "s" : ""}`, dmax: (v) => `${v} day${v > 1 ? "s" : ""}`, w0: (v) => `${v}`, w1: (v) => `${v}`,
+  gap: (v) => `${v} day${v === 1 ? "" : "s"}`, warn: (v) => `${v} h`, reach: (v) => `${v} nm (${(v * 1.852).toFixed(0)} km)`, pct: (v) => `${v}%`, target: (v) => `${v} days` };
+function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const siteLabel = (c) => c.landing ? `${landingKind(c.landing)}${c.landing.name ? " " + c.landing.name : ""}, ${c.place}` : `past campsite ${c.place} (used by ${c.teams} team${c.teams > 1 ? "s" : ""})`;
+const fmtDH = (h) => { const m = Math.round(h); return `${Math.floor(m / 24)} d ${String(m % 24).padStart(2, "0")} h`; };
+function smSync() {
+  const c = SM.ctl;
+  Object.keys(SM_FMT).forEach((k) => { $("sm-" + k).value = c[k]; $("sm-" + k + "-o").textContent = SM_FMT[k](c[k]); });
+  $("sm-seed").value = c.seed;
+  const P = LAST_PLAN;
+  if (P) $("sm-plan").innerHTML = `Plan from the planner page: Stage 2 starts ${esc(fmt.format(P.s2))}, ${state.days} days to Ketchikan by the ${state.north} route, boat speed ${P.v2.toFixed(2)} kn through the water, ${state.whours} rowing hours a day${state.nightOn ? ", ashore at night" : ""}. Change these on the planner page.`;
+}
+function smInit() {
+  if (SM.init) return; SM.init = true;
+  let saved = null; try { saved = JSON.parse(localStorage.getItem("r2ak28storm")); } catch (e) {}
+  if (saved) Object.assign(SM.ctl, saved); else { SM.ctl.w1 = Math.ceil(state.days); SM.ctl.target = state.days + 3; }   // first visit: storms across the planned days
+  Object.keys(SM_FMT).forEach((k) => $("sm-" + k).addEventListener("input", (e) => {
+    let v = parseFloat(e.target.value); const c = SM.ctl; c[k] = v;
+    if (k === "dmin" && c.dmax < v) c.dmax = v; if (k === "dmax" && c.dmin > v) c.dmin = v;
+    if (k === "w0" && c.w1 <= v) c.w1 = v + 1; if (k === "w1" && c.w0 >= v) c.w0 = v - 1;
+    smSync(); smSave(); if (k === "target" && SM.res) smRender(); else smStale();
+  }));
+  $("sm-seed").addEventListener("change", (e) => { SM.ctl.seed = Math.max(1, parseInt(e.target.value) || 1); smSave(); smStale(); });
+  $("sm-run").onclick = smRun;
+  $("sm-stop").onclick = () => { if (SM.run) SM.run.stop = true; };
+  $("sm-csv").onclick = smCsv;
+  SM.map = L.map("sm-map", { zoomControl: true, attributionControl: true, preferCanvas: true }).setView([52, -128], 6);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16, attribution: "Esri" }).addTo(SM.map);
+  SM.layer = L.layerGroup().addTo(SM.map);
+  smSync();
+}
+function smSave() { try { localStorage.setItem("r2ak28storm", JSON.stringify(SM.ctl)); } catch (e) {} }
+function smStale() { if (SM.res) { $("sm-results").classList.add("stale"); $("sm-status").textContent = "Settings changed: run again to update the results."; } }
+// one scenario's storms: start times spread evenly over the window, whole-day lengths, kept apart by the gap
+function smStorms(rnd, s2) {
+  const c = SM.ctl, out = [];
+  for (let tries = 0; tries < 60; tries++) {
+    out.length = 0;
+    for (let i = 0; i < c.k; i++) { const d = c.dmin + Math.floor(rnd() * (c.dmax - c.dmin + 1)); out.push({ t: s2 + (c.w0 + rnd() * (c.w1 - c.w0)) * 864e5, days: d }); }
+    out.sort((a, b) => a.t - b.t);
+    if (out.every((x, i) => i === 0 || x.t >= out[i - 1].t + (out[i - 1].days + c.gap) * 864e5)) break;
+  }
+  return out.map((x) => ({ ...x, end: x.t + x.days * 864e5, go: x.t - c.warn * H }));
+}
+function smRun() {
+  const P = LAST_PLAN; if (!P || SM.run) return;
+  const c = { ...SM.ctl }, ch = P.ch, g2 = gatesOn(ch.stage2, 2), v = P.v2 * c.pct / 100;
+  const sim = (o) => simulateRow(ch.stage2, g2, P.s2, v, state.whours, P.win, state.waits, state.headKn, state.nightOn ? state.nightH : null, o);
+  const base = sim({ snap: true }), rnd = mulberry32(c.seed);
+  const swDep = pdt(addDays(state.s2d, SWEEPER_DAYS), "12:00"), raceEnd = pdt(addDays(state.s2d, RACE_END_DAYS), "12:00"), t1 = ch.stage1.total;
+  const swept = (tr) => { for (const [t, pos] of tr) if (t >= swDep && ((t - swDep) / H) * (SWEEPER_NM_DAY / 24) >= t1 + pos) return true; return false; };
+  const R = SM.run = { c, P, ch, base, i: 0, fin: new Float64Array(c.n), sdays: new Uint8Array(c.n), swept: 0, beforeEnd: 0, water: 0, waterScn: 0, events: 0, sites: new Map(), gaps: new Map(), stop: false, raceEnd, t0: performance.now() };
+  $("sm-run").disabled = true; $("sm-stop").disabled = false; $("sm-csv").disabled = true; $("sm-results").classList.remove("stale");
+  const chunk = () => {
+    const until = performance.now() + 60;
+    while (R.i < c.n && performance.now() < until && !R.stop) {
+      const storms = smStorms(rnd, P.s2);
+      let r = base;
+      if (storms.length && storms[0].go < base.finish) {
+        const day = Math.max(0, Math.min(base._snaps.length - 1, Math.floor((storms[0].go - P.s2) / 864e5)));
+        r = sim({ storms, shelterNm: c.reach, from: base._snaps[day] });
+      }
+      R.fin[R.i] = (r.finish - P.s2) / 864e5;
+      let sd = 0, wet = false;
+      (r.storms || []).forEach((x) => {
+        sd += x.days; R.events++;
+        if (x.port) return;
+        if (x.site) {
+          const k = x.site.ll.join(",");
+          let e = R.sites.get(k); if (!e) R.sites.set(k, e = { site: x.site, n: 0, scn: new Set(), h: 0, nm: 0, fresh: 0, along: x.site.a });
+          e.n++; e.scn.add(R.i); e.h += (x.end - x.at) / H; if (x.nm > 0) { e.fresh++; e.nm += x.nm; }
+        } else {
+          wet = true; R.water++;
+          const k = Math.floor(x.pos / 10); let e = R.gaps.get(k); if (!e) R.gaps.set(k, e = { k, n: 0, h: 0, pos: 0 });
+          e.n++; e.h += (x.end - x.at) / H; e.pos += x.pos;
+        }
+      });
+      R.sdays[R.i] = sd; if (wet) R.waterScn++;
+      if (r.finish <= raceEnd) R.beforeEnd++;
+      if (r.finish > swDep && swept(r.track)) R.swept++;
+      R.i++;
+    }
+    $("sm-prog").value = R.i / c.n;
+    const secs = (performance.now() - R.t0) / 1000;
+    $("sm-status").textContent = `${R.i.toLocaleString("en-US")} of ${c.n.toLocaleString("en-US")} scenarios, ${secs.toFixed(0)} s` + (R.i < c.n && !R.stop ? `, about ${Math.ceil(secs / R.i * (c.n - R.i))} s to go` : "");
+    if (R.i % 1000 < 60 || R.i >= c.n || R.stop) { SM.res = R; smRender(); }
+    if (R.i < c.n && !R.stop) setTimeout(chunk, 0);
+    else { SM.res = R; SM.run = null; smRender(); $("sm-run").disabled = false; $("sm-stop").disabled = true; $("sm-csv").disabled = false; if (R.stop) $("sm-status").textContent += " (stopped)"; }
+  };
+  setTimeout(chunk, 0);
+}
+function smRender() {
+  const R = SM.res; if (!R || !R.i) return;
+  const n = R.i, fin = Array.from(R.fin.subarray(0, n)).sort((a, b) => a - b), q = (p) => fin[Math.min(n - 1, Math.floor(p * n))];
+  const plan = (R.base.finish - R.P.s2) / 864e5, tgt = SM.ctl.target, pct = (x) => `${(100 * x / n).toFixed(x && x < n / 100 ? 1 : 0)}%`;
+  const d = (x) => `${x.toFixed(1)} d`, onT = fin.filter((x) => x <= tgt).length;
+  $("sm-tiles").innerHTML = [
+    ["No storms", d(plan), "the plan at this speed"], ["Median", d(q(0.5)), `+${(q(0.5) - plan).toFixed(1)} d`], ["9 in 10 finish by", d(q(0.9)), `+${(q(0.9) - plan).toFixed(1)} d`],
+    ["19 in 20 by", d(q(0.95)), `+${(q(0.95) - plan).toFixed(1)} d`], ["Worst", d(fin[n - 1]), `+${(fin[n - 1] - plan).toFixed(1)} d`],
+    [`Within ${tgt} d target`, pct(onT), "", onT / n >= 0.9 ? "good" : onT / n < 0.5 ? "bad" : ""], [`Before race end (${RACE_END_DAYS} d)`, pct(R.beforeEnd), "", R.beforeEnd / n >= 0.95 ? "good" : "bad"],
+    ["Caught by Grim Sweeper", pct(R.swept), `leaves PT day ${SWEEPER_DAYS}, ${SWEEPER_NM_DAY} nm a day`, R.swept ? "bad" : "good"],
+    ["Storm sat out on the water", pct(R.waterScn), "of scenarios: no shelter in reach", R.waterScn ? "bad" : "good"],
+  ].map(([a, b, c2, k]) => `<div class="tile ${k || ""}"><span>${a}</span><b>${b}</b>${c2 ? `<small>${c2}</small>` : ""}</div>`).join("");
+  // histogram, half-day bins
+  const lo = Math.floor(Math.min(plan, fin[0])), hi = Math.ceil(Math.max(fin[n - 1], tgt, plan) + 0.5), bins = new Array(Math.round((hi - lo) * 2)).fill(0);
+  fin.forEach((x) => bins[Math.min(bins.length - 1, Math.floor((x - lo) * 2))]++);
+  const W = 720, Hh = 190, pl = 34, pb = 26, bw = (W - pl - 6) / bins.length, mx = Math.max(...bins), X = (dd) => pl + ((dd - lo) * 2) * bw;
+  const line = (x, col, lab, y) => x >= lo && x <= hi ? `<line x1="${X(x)}" x2="${X(x)}" y1="8" y2="${Hh - pb}" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${X(x) + 3}" y="${y}" style="fill:${col}">${lab}</text>` : "";
+  $("sm-hist").innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Spread of finish times">` +
+    bins.map((b, i) => `<rect x="${(pl + i * bw + 1).toFixed(1)}" y="${(Hh - pb - (b / mx) * (Hh - pb - 14)).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${((b / mx) * (Hh - pb - 14)).toFixed(1)}" rx="2" fill="${lo + (i + 1) / 2 <= tgt + 1e-9 ? "var(--flood)" : "var(--ebb)"}"><title>${(lo + i / 2).toFixed(1)} to ${(lo + (i + 1) / 2).toFixed(1)} d: ${b} scenarios</title></rect>`).join("") +
+    Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).filter((x) => (x - lo) % (hi - lo > 16 ? 2 : 1) === 0).map((x) => `<text x="${X(x)}" y="${Hh - 8}" text-anchor="middle">${x}</text>`).join("") +
+    `<line x1="${pl}" x2="${W - 6}" y1="${Hh - pb}" y2="${Hh - pb}" stroke="var(--rule)"/><text x="2" y="16">${mx}</text>` +
+    line(plan, "var(--ink)", "no storms", 18) + line(tgt, "var(--good)", "target", 32) + line(RACE_END_DAYS, "var(--bad)", "race end", 46) + `</svg>`;
+  $("sm-hist-note").textContent = `Days from the Stage 2 start to Ketchikan across ${n.toLocaleString("en-US")} scenarios, in half-day bars: green within the target, amber after it.`;
+  // cost by total storm days
+  const by = new Map();
+  for (let i = 0; i < n; i++) { const k = R.sdays[i]; let e = by.get(k); if (!e) by.set(k, e = []); e.push(R.fin[i] - plan); }
+  $("sm-cost").innerHTML = `<thead><tr><th class="n">Storm days</th><th class="n">Scenarios</th><th class="n">Days lost, average</th><th class="n">9 in 10 lose at most</th><th class="n">Lost per storm day</th></tr></thead><tbody>` +
+    [...by.keys()].sort((a, b) => a - b).map((k) => { const a = by.get(k).sort((x, y) => x - y), m = a.reduce((x, y) => x + y, 0) / a.length;
+      return `<tr><td class="n">${k}</td><td class="n">${a.length.toLocaleString("en-US")}</td><td class="n">${m.toFixed(2)}</td><td class="n">${a[Math.min(a.length - 1, Math.floor(0.9 * a.length))].toFixed(2)}</td><td class="n">${k ? (m / k).toFixed(2) : ""}</td></tr>`; }).join("") +
+    `</tbody><caption class="hint" style="caption-side:bottom;text-align:left;padding-top:6px">Storm days counts only storms that came before the finish; ones after it cost nothing.</caption>`;
+  // shelter list
+  const list = [...R.sites.values()].sort((a, b) => b.n - a.n), tot = list.reduce((x, e) => x + e.n, 0) + R.water;
+  let cum = 0;
+  SM.list = list.map((e, i) => { cum += e.n; return { ...e, rank: i + 1, cum: cum / Math.max(1, tot) }; });
+  $("sm-shel").innerHTML = `<thead><tr><th class="n">#</th><th>Shelter</th><th class="n">nm from Victoria</th><th class="n">Storm stops</th><th class="n">Cumulative share</th><th class="n">Ashore, average</th><th class="n" title="The storm warning came while the crew was already camped here">Already there</th><th class="n" title="Average rowing to get there when the crew was on the water">Rowed to reach</th></tr></thead><tbody>` +
+    SM.list.slice(0, 60).map((e, i) => `<tr data-i="${i}"><td class="n">${e.rank}</td><td>${esc(siteLabel(e.site))}</td><td class="n">${e.along.toFixed(0)}</td><td class="n">${e.n.toLocaleString("en-US")}</td><td class="n">${(100 * e.cum).toFixed(0)}%</td><td class="n">${fmtDH(e.h / e.n)}</td><td class="n">${(100 * (1 - e.fresh / e.n)).toFixed(0)}%</td><td class="n">${e.fresh ? (e.nm / e.fresh).toFixed(1) + " nm" : ""}</td></tr>`).join("") +
+    `</tbody>` + (SM.list.length > 60 ? `<caption class="hint" style="caption-side:bottom;text-align:left;padding-top:6px">Top 60 of ${SM.list.length} shown; the CSV has them all.</caption>` : "");
+  document.querySelectorAll("#sm-shel tr[data-i]").forEach((r) => r.onclick = () => { const e = SM.list[+r.dataset.i]; SM.map.setView(e.site.ll, 12); smMark(e); });
+  // gaps
+  const gaps = [...R.gaps.values()].sort((a, b) => b.n - a.n);
+  $("sm-gaps").innerHTML = gaps.length ? `<thead><tr><th>Stretch</th><th class="n">nm from Victoria</th><th class="n">Storms on the water</th><th class="n">Scenarios hit</th><th class="n">Afloat, average</th></tr></thead><tbody>` +
+    gaps.map((g) => `<tr><td>${esc(nearPlace(pointAt(R.ch.stage2, g.pos / g.n)))}</td><td class="n">${g.k * 10} to ${g.k * 10 + 10}</td><td class="n">${g.n.toLocaleString("en-US")}</td><td class="n">${pct(g.n)}</td><td class="n">${fmtDH(g.h / g.n)}</td></tr>`).join("") + `</tbody>`
+    : `<tbody><tr><td>None: every storm found shelter within ${SM.ctl.reach} nm.</td></tr></tbody>`;
+  smMap(R, gaps);
+}
+function smMark(e) { L.popup().setLatLng(e.site.ll).setContent(`<b>#${e.rank} ${esc(siteLabel(e.site))}</b><br>${e.n.toLocaleString("en-US")} storm stops, ashore ${fmtDH(e.h / e.n)} on average`).openOn(SM.map); }
+function smMap(R, gaps) {
+  SM.layer.clearLayers();
+  const ch = R.ch.stage2, pts = []; for (let a = 0; a <= ch.total; a += 1) pts.push(pointAt(ch, a));
+  L.polyline(pts, { color: "#c2410c", weight: 2, opacity: 0.8 }).addTo(SM.layer);
+  const mx = Math.max(1, ...SM.list.map((e) => e.n));
+  SM.list.forEach((e) => L.circleMarker(e.site.ll, { radius: 3 + 11 * Math.sqrt(e.n / mx), color: "#0f766e", weight: 1.5, fillColor: "#2dd4bf", fillOpacity: 0.55 })
+    .bindTooltip(`#${e.rank} ${esc(siteLabel(e.site))}: ${e.n.toLocaleString("en-US")} storm stops`).on("click", () => smMark(e)).addTo(SM.layer));
+  const gm = Math.max(1, ...gaps.map((g) => g.n));
+  gaps.forEach((g) => L.circleMarker(pointAt(ch, g.pos / g.n), { radius: 4 + 10 * Math.sqrt(g.n / gm), color: "#b91c1c", weight: 2, fillColor: "#f87171", fillOpacity: 0.6 })
+    .bindTooltip(`No shelter in reach near ${esc(nearPlace(pointAt(ch, g.pos / g.n)))}: ${g.n.toLocaleString("en-US")} storms on the water`).addTo(SM.layer));
+  if (!SM.fitted) { SM.map.fitBounds(L.latLngBounds(pts), { padding: [20, 20] }); SM.fitted = true; }
+}
+function smCsv() {
+  const R = SM.res; if (!R || !SM.list) return;
+  const q = (x) => `"${String(x).replace(/"/g, '""')}"`;
+  const rows = [["rank", "shelter", "lat", "lon", "nm_from_victoria", "storm_stops", "scenarios", "cumulative_share", "avg_hours_ashore", "share_already_camped_there", "avg_nm_rowed_to_reach"]].concat(
+    SM.list.map((e) => [e.rank, q(siteLabel(e.site)), e.site.ll[0].toFixed(5), e.site.ll[1].toFixed(5), e.along.toFixed(1), e.n, e.scn.size, e.cum.toFixed(3), (e.h / e.n).toFixed(1), (1 - e.fresh / e.n).toFixed(3), e.fresh ? (e.nm / e.fresh).toFixed(1) : ""]));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([rows.map((r) => r.join(",")).join("\n")], { type: "text/csv" }));
+  a.download = `r2ak28-storm-shelters-seed${R.c.seed}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+function showPage() {
+  const storm = location.hash === "#storms";
+  $("storm-page").hidden = !storm; document.querySelector(".app").hidden = storm;
+  if (storm) { smInit(); smSync(); setTimeout(() => SM.map && SM.map.invalidateSize(), 0); }
+  else if (map) setTimeout(() => map.invalidateSize(), 0);
+}
+window.addEventListener("hashchange", showPage);
 async function main() {
   const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(p + " " + r.status); return r.json(); });
   let cfg;
@@ -1858,6 +2153,7 @@ async function main() {
   await loadPast().catch((e) => console.warn("past tracks", e));
   renderPlanner();
   setTime(starts().s1);
+  showPage();
 }
 main().catch((e) => { document.querySelector("aside").insertAdjacentHTML("afterbegin", `<p class="warn">Could not load the planner data: ${esc(e.message)}</p>`); });
 </script>
