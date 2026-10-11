@@ -380,7 +380,7 @@ function initMap() {
       <button type="button" id="play" aria-label="Play">&#9654;</button>
       <button type="button" id="reset" aria-label="Reset to the start" title="Reset to the start">&#8634;</button>
       <label class="follow" title="While playing, run 5 times faster through the time in port in Victoria"><input type="checkbox" id="skipvic" checked> Victoria 5&times;</label>
-      <select id="play-speed" aria-label="Playback speed"><option value="1">1 h/s</option><option value="3" selected>3 h/s</option><option value="6">6 h/s</option><option value="12">12 h/s</option></select>
+      <select id="play-speed" aria-label="Playback speed"><option value="0.25">0.25 h/s</option><option value="0.5">0.5 h/s</option><option value="1" selected>1 h/s</option><option value="2">2 h/s</option><option value="4">4 h/s</option></select>
       <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
       <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
