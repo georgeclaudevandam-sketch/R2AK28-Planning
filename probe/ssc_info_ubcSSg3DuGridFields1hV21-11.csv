@@ -1,0 +1,76 @@
+Row Type,Variable Name,Attribute Name,Data Type,Value
+attribute,NC_GLOBAL,_NCProperties,String,"version=2,netcdf=4.9.2,hdf5=1.10.10"
+attribute,NC_GLOBAL,acknowledgement,String,"MEOPAR, Ocean Networks Canada (ONC), Digital Research Alliance of Canada"
+attribute,NC_GLOBAL,cdm_data_type,String,Grid
+attribute,NC_GLOBAL,comment,String,"If you use this dataset in your research,\nplease reference it with wording similar to the example below,\nand include citations of the publications below.\nInclusion of the date(s) when you downloaded the dataset,\nand the dataset id help to ensure reproducibility of your work.\n\nReference wording:\n\n3d zonal (u) component velocity fields from the SalishSeaCast model\n(Soontiens et al, 2016; Soontiens and Allen, 2017)\nwere downloaded from their ERDDAP server\n(https://salishsea.eos.ubc.ca/erddap/)\non DATE from dataset ubcSSg3DuGridFields1hV21-11.\n\nCitations:\n\nSoontiens, N., Allen, S., Latornell, D., Le Souef, K., Machuca, I., Paquin, J.-P., Lu, Y., Thompson, K., Korabel, V., 2016.\nStorm surges in the Strait of Georgia simulated with a regional model. Atmosphere-Ocean 54 1-21.\nhttps://dx.doi.org/10.1080/07055900.2015.1108899\n\nSoontiens, N. and Allen, S., 2017.\nModelling sensitivities to mixing and advection in a sill-basin estuarine system. Ocean Modelling, 112, 17-32.\nhttps://dx.doi.org/10.1016/j.ocemod.2017.02.008"
+attribute,NC_GLOBAL,Conventions,String,"CF-1.6, COARDS, ACDD-1.3"
+attribute,NC_GLOBAL,creator_email,String,sallen@eoas.ubc.ca
+attribute,NC_GLOBAL,creator_name,String,SalishSeaCast Project Contributors
+attribute,NC_GLOBAL,creator_url,String,https://salishsea-meopar-docs.readthedocs.io/
+attribute,NC_GLOBAL,description,String,U velocity
+attribute,NC_GLOBAL,infoUrl,String,https://salishsea.eos.ubc.ca/
+attribute,NC_GLOBAL,institution,String,UBC EOAS
+attribute,NC_GLOBAL,institution_fullname,String,"Earth, Ocean & Atmospheric Sciences, University of British Columbia"
+attribute,NC_GLOBAL,keywords,String,"circulation, current, currents, depthu, Earth Science > Oceans > Ocean Circulation > Ocean Currents, ocean, oceans, sea, sea_water_x_velocity, seawater, time_counter, u grid, u velocity component, velocity along x-axis, vozocrtx"
+attribute,NC_GLOBAL,keywords_vocabulary,String,GCMD Science Keywords
+attribute,NC_GLOBAL,license,String,"The SalishSeaCast NEMO model results are copyright\nby the SalishSeaCast Project Contributors and The University of British Columbia.\n\nThey are licensed under the Apache License, Version 2.0. https://www.apache.org/licenses/LICENSE-2.0"
+attribute,NC_GLOBAL,project,String,SalishSeaCast NEMO Model
+attribute,NC_GLOBAL,sourceUrl,String,(local files)
+attribute,NC_GLOBAL,standard_name_vocabulary,String,CF Standard Name Table v91
+attribute,NC_GLOBAL,summary,String,"Green, Salish Sea, 3d u Grid Variable Fields, Hourly, v21-11\n\nVariable values at the 3d zonal (u) component velocity grid points averaged over 1 hour intervals\nfrom SalishSeaCast NEMO model runs with physics, biology and chemistry. The values are calculated for the entire model grid\nthat includes the Juan de Fuca Strait, the Strait of Georgia, Puget Sound,\nand Johnstone Strait on the coasts of Washington State and British Columbia.\nThe time values are UTC.\nThey are the centre of the intervals over which the calculated model results are averaged;\ne.g. the field average values for the 00:00 to 01:00 UTC hour on 2021-06-03 have a time value of 2021-06-03 00:30:00Z.\nGeo-location and depth data for the SalishSeaCast NEMO model grid are available in the ubcSSnBathymetryV21-08 dataset.\n\nv1: uVelocity variable\nv16-10: NEMO-3.6; ubcSSnBathymetry2V16-07 bathymetry; see infoUrl link for full details.\nv17-02: NEMO-3.6; ubcSSnBathymetryV17-02 bathymetry; see infoUrl link for full details.\nv18-06: NEMO-3.6 SalishSeaCast-201806 configuration; ubcSSnBathymetryV17-02 bathymetry;\n        see infoUrl link for full details.\nv18-12: NEMO-3.6 SalishSeaCast-201812 configuration; ubcSSnBathymetryV17-02 bathymetry;\n        see infoUrl link for full details.\nv19-05: NEMO-3.6 SalishSeaCast-201905 configuration; ubcSSnBathymetryV17-02 bathymetry;\n        see infoUrl link for full details.\nv21-11: NEMO-3.6 SalishSeaCast-202111 configuration; ubcSSnBathymetryV21-08 bathymetry;\n        see infoUrl link for full details."
+attribute,NC_GLOBAL,testOutOfDate,String,now-16hours
+attribute,NC_GLOBAL,time_coverage_end,String,2026-10-10T23:30:00Z
+attribute,NC_GLOBAL,time_coverage_start,String,2007-01-01T00:30:00Z
+attribute,NC_GLOBAL,timeStamp,String,2026-Oct-10 15:58:01 GMT
+attribute,NC_GLOBAL,title,String,"Green, Salish Sea, 3d u Grid Variable Fields, Hourly, v21-11"
+attribute,NC_GLOBAL,uuid,String,2306c8cf-7563-4a5e-9fe3-7157b364b476
+dimension,time,,double,"nValues=173352, evenlySpaced=true, averageSpacing=1h 0m 0s"
+attribute,time,_CoordinateAxisType,String,Time
+attribute,time,actual_range,double,"1.1676114E9, 1.791675E9"
+attribute,time,axis,String,T
+attribute,time,calendar,String,gregorian
+attribute,time,comment,String,time values are UTC at the centre of the intervals over which the calculated model results are averaged; e.g. the field average values for the 00:00 to 01:00 UTC hour on 2021-06-03 have a time value of 2021-06-03 00:30:00Z
+attribute,time,coverage_content_type,String,modelResult
+attribute,time,ioos_category,String,Time
+attribute,time,long_name,String,Time axis
+attribute,time,standard_name,String,time
+attribute,time,time_origin,String,01-JAN-1970 00:00:00
+attribute,time,units,String,seconds since 1970-01-01T00:00:00Z
+dimension,depth,,float,"nValues=40, evenlySpaced=false, averageSpacing=11.306823069230768"
+attribute,depth,_CoordinateAxisType,String,Height
+attribute,depth,_CoordinateZisPositive,String,down
+attribute,depth,actual_range,float,"0.5000003, 441.4661"
+attribute,depth,axis,String,Z
+attribute,depth,coverage_content_type,String,modelResult
+attribute,depth,ioos_category,String,Location
+attribute,depth,long_name,String,Depth
+attribute,depth,positive,String,down
+attribute,depth,standard_name,String,depth
+attribute,depth,units,String,m
+dimension,gridY,,short,"nValues=898, evenlySpaced=true, averageSpacing=1.0"
+attribute,gridY,actual_range,short,"0, 897"
+attribute,gridY,comment,String,gridY values are grid indices in the model y-direction; geo-location data for the SalishSeaCast NEMO model grid is available in the ubcSSnBathymetryV21-08 dataset.
+attribute,gridY,coverage_content_type,String,modelResult
+attribute,gridY,ioos_category,String,location
+attribute,gridY,long_name,String,Grid Y
+attribute,gridY,standard_name,String,y
+attribute,gridY,units,String,count
+dimension,gridX,,short,"nValues=398, evenlySpaced=true, averageSpacing=1.0"
+attribute,gridX,actual_range,short,"0, 397"
+attribute,gridX,comment,String,gridX values are grid indices in the model x-direction; geo-location data for the SalishSeaCast NEMO model grid is available in the ubcSSnBathymetryV21-08 dataset.
+attribute,gridX,coverage_content_type,String,modelResult
+attribute,gridX,ioos_category,String,location
+attribute,gridX,long_name,String,Grid X
+attribute,gridX,standard_name,String,x
+attribute,gridX,units,String,count
+variable,uVelocity,,float,"time, depth, gridY, gridX"
+attribute,uVelocity,_FillValue,float,1.0E20
+attribute,uVelocity,colorBarMaximum,double,8.0
+attribute,uVelocity,colorBarMinimum,double,-8.0
+attribute,uVelocity,colorBarPalette,String,KT_curl
+attribute,uVelocity,coverage_content_type,String,modelResult
+attribute,uVelocity,ioos_category,String,currents
+attribute,uVelocity,long_name,String,Ocean Current Along x-axis
+attribute,uVelocity,missing_value,float,1.0E20
+attribute,uVelocity,standard_name,String,sea_water_x_velocity
+attribute,uVelocity,units,String,m s-1
