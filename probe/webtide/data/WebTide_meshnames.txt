@@ -1,0 +1,10 @@
+Arctic:arctic9
+Bras d'Or Lake:brador
+Global (LEGOS France):HRglobal
+Halifax Harbour:h3o
+Hudson Bay (IML):hudson
+Northeast Pacific (IOS):ne_pac4
+North West Atlantic:nwatl
+Quatsino Sound:QuatsinoModel14
+Scotian - Fundy - Maine:sshelf
+Upper Fundy:flood
