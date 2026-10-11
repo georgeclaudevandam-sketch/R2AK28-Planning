@@ -161,6 +161,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .night { background: #facc15; border: 1.5px solid #111827; border-radius: 3px; color: #111827; font: 600 10px/14px var(--font-data); text-align: center; }
 /* Leaflet overrides */
 .leaflet-container { font: 13px var(--font-ui); }
+.leaflet-tooltip.stop-tip { white-space: normal; width: 210px; font: 12px/1.35 var(--font-data); padding: 6px 8px; }
 .leaflet-tooltip.stn { font: 12px var(--font-data); padding: 3px 6px; }
 .opacity-ctl { background: #fff; padding: 6px 8px; border-radius: 4px; font: 12px var(--font-ui); color: #102a3a; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
 .opacity-ctl input[type="range"] { width: 110px; vertical-align: middle; }
@@ -1320,7 +1321,7 @@ function renderPlanner() {
     if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
     const sd = shortDur(hrs), wd = (x.camp ? 34 : 28) + 6 * sd.length + 4;
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b><i class="dur">${sd}</i>`, iconSize: [wd, x.camp ? 20 : 16] }), zIndexOffset: x.camp ? 500 : 400 })
-      .bindTooltip(`${label}: stopped ${fmtDur(hrs)}, arrive ${fmt.format(x.t)}, leave ${fmt.format(x.until)}. ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
+      .bindTooltip(`<b>${label}</b><br>Stopped <b>${fmtDur(hrs)}</b><br>Arrive ${fmt.format(x.t)}<br>Leave ${fmt.format(x.until)}<br>${where}${x.site ? `<br>${x.d.toFixed(1)} nm off the route` : ""}`, { className: "stop-tip", direction: "auto" }).addTo(nightLayer);
     stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${fmt.format(x.until)}</td><td><b>${fmtDur(hrs)}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     pics.push({ n, x, ll, on, hrs, where });
     prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
