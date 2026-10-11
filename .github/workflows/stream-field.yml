@@ -24,7 +24,7 @@ jobs:
         with: { distribution: temurin, java-version: "8" }
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install numpy scipy utide
+      - run: pip install numpy scipy utide pillow
       - name: Install DFO WebTide and its Northeast Pacific data
         run: |
           W=https://www.bio.gc.ca/science/research-recherche/ocean/webtide/Application/Install/InstData
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
-          git add data/stream_field.json
+          git add data/stream_field.json data/stream_grid.json
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Update tidal stream field"
           git pull --rebase

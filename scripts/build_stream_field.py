@@ -226,6 +226,99 @@ def predict(model, hd, t_hours, ast):
     return x
 
 
+
+# ---------- 2-D stream grid for the flow lines on the map
+GRID_CONST = ["M2", "S2", "N2", "K1", "O1", "M4"]
+GRID = {"lat0": 48.0, "dlat": 1 / 120, "lon0": -131.9, "dlon": 1 / 72}   # about half a mile square
+GRID_NM = 3.0            # cells within this far of either route
+MASK = ROOT / "data" / "water_mask.png"
+MASK_G = {"lat1": 55.5, "dlat": 0.002, "lon0": -131.9, "dlon": 0.002 / math.cos(math.radians(51.5))}
+
+
+def water_mask():
+    from PIL import Image
+    m = np.array(Image.open(MASK).convert("L")) > 127
+    def wet(lat, lon):
+        j = int(round((MASK_G["lat1"] - lat) / MASK_G["dlat"])); i = int(round((lon - MASK_G["lon0"]) / MASK_G["dlon"]))
+        return 0 <= j < m.shape[0] and 0 <= i < m.shape[1] and bool(m[j, i])
+    return wet
+
+
+def build_grid(chains, wt, ssc, ast):
+    """east/north tidal stream (mean + GRID_CONST) on a half-mile grid along the routes, for drawing flow lines.
+    SalishSeaCast where a downloaded cell is within 0.6 nm, else WebTide, else the nearest SalishSeaCast cells within 2.5 nm."""
+    import base64
+    wet = water_mask()
+    k = math.cos(math.radians(52))
+    pts = [ch.at(a) for ch in chains.values() for a in np.arange(0, ch.total, 0.25)]
+    tree = cKDTree(np.array([(p[1] * k, p[0]) for p in pts]))
+    la = np.array([p[0] for p in pts]); lo = np.array([p[1] for p in pts])
+    j0 = int((la.min() - 0.1 - GRID["lat0"]) / GRID["dlat"]); j1 = int((la.max() + 0.1 - GRID["lat0"]) / GRID["dlat"]) + 1
+    i0 = int((lo.min() - 0.15 - GRID["lon0"]) / GRID["dlon"]); i1 = int((lo.max() + 0.15 - GRID["lon0"]) / GRID["dlon"]) + 1
+    n_lon = int(round((-122.6 - GRID["lon0"]) / GRID["dlon"]))
+    jj, ii = np.mgrid[j0:j1, i0:i1]
+    clat = GRID["lat0"] + (jj.ravel() + 0.5) * GRID["dlat"]; clon = GRID["lon0"] + (ii.ravel() + 0.5) * GRID["dlon"]
+    d, _ = tree.query(np.c_[clon * k, clat])
+    near = np.nonzero(d * 60 <= GRID_NM)[0]
+    log(f"stream grid: {len(near)} cells near the routes")
+    # downloaded SalishSeaCast cells
+    sc, sp = [], []
+    if ssc is not None:
+        for f in CACHE.glob("*_*.npz"):
+            y, x = (int(v) for v in f.stem.split("_"))
+            sc.append((y, x)); sp.append((ssc.lon[y, x] * k, ssc.lat[y, x]))
+    stree = cKDTree(np.array(sp)) if sp else None
+    memo = {}
+    def ssc_fit(c):
+        if c not in memo:
+            y, x = c
+            try: memo[c] = ssc.uv(float(ssc.lat[y, x]), float(ssc.lon[y, x]))
+            except Exception as e: log(f"  fit {c} failed: {e}"); memo[c] = None
+        return memo[c]
+    def mix(ms):
+        ws = [w for w, _ in ms]; W = sum(ws)
+        return {key: tuple(sum(w * m[key][q] for w, m in ms) / W for q in (0, 1)) for key in ["mean"] + GRID_CONST}
+    cells, vals, srcs = [], [], []
+    for n in near:
+        lat, lon = float(clat[n]), float(clon[n])
+        # the cell's water: its centre, or else the wettest of nine points across it
+        sub = [(lat + a * GRID["dlat"] / 3, lon + b * GRID["dlon"] / 3) for a in (0, -1, 1) for b in (0, -1, 1)]
+        wp = [p for p in sub if wet(*p)]
+        if not wp: continue
+        lat, lon = wp[0]
+        m, src = None, 0
+        if stree is not None:
+            dd, ix = stree.query([lon * k, lat], 4)
+            ok = [(float(a) * 60, sc[b]) for a, b in zip(dd, ix) if np.isfinite(a)]
+            if ok and ok[0][0] <= 0.6: m = ssc_fit(ok[0][1]); src = 2 if m else 0
+            if m is None: 
+                m = wt.uv(lat, lon); src = 1 if m else 0
+            if m is None:
+                ms = [(1 / max(0.2, a) ** 2, ssc_fit(c)) for a, c in ok if a <= 2.5]
+                ms = [(w, x) for w, x in ms if x]
+                if ms: m, src = mix(ms), 3
+        else:
+            m = wt.uv(lat, lon); src = 1 if m else 0
+        if not m: continue
+        row = [m["mean"][0].real, m["mean"][1].real]
+        for c in GRID_CONST:
+            cu, cv = m.get(c, (0j, 0j))
+            row += [cu.real, cu.imag, cv.real, cv.imag]
+        cells.append(int(jj.ravel()[n]) * n_lon + int(ii.ravel()[n])); vals.append(row); srcs.append(src)
+    v = np.clip(np.round(np.array(vals) * 100), -32767, 32767).astype("<i2")
+    b64 = lambda a: base64.b64encode(a.tobytes()).decode()
+    log(f"stream grid: {len(cells)} wet cells, SalishSeaCast {srcs.count(2)}, WebTide {srcs.count(1)}, SalishSeaCast nearby {srcs.count(3)}")
+    (ROOT / "data" / "stream_grid.json").write_text(json.dumps({
+        "note": "East/north tidal stream on a half-mile grid within 3 nm of the routes, for the flow lines on the map. "
+                "cells: grid index j*nLon+i (int32, base64). vals: per cell [mean_u, mean_v, then per const Re(u), Im(u), Re(v), Im(v)] "
+                "in 0.01 kn (int16, base64), complex amplitude A*exp(-ig): u(t) = mean_u + sum f*(Re*cos(ph) - Im*sin(ph)), ph = ph0 + w*hours since t0. "
+                "src (uint8): 1 WebTide, 2 SalishSeaCast, 3 SalishSeaCast nearby. Built by scripts/build_stream_field.py.",
+        "t0": ast["_t0"], "grid": {**GRID, "nLon": n_lon}, "const": GRID_CONST, "astro": {c: ast[c] for c in GRID_CONST},
+        "mask": {"file": "data/water_mask.png", **MASK_G},
+        "cells": b64(np.array(cells, "<i4")), "vals": b64(v), "src": b64(np.array(srcs, "u1"))}, separators=(",", ":")))
+    log("wrote data/stream_grid.json")
+
+
 def main():
     route = json.loads((ROOT / "data" / "route.json").read_text())
     leg = {l["key"]: l["points"] for l in route["legs"]}
@@ -235,6 +328,8 @@ def main():
     ast = astro(t0, t1)
     wt = WebTide(WT)
     log("WebTide loaded")
+    if os.environ.get("GRID_ONLY"):   # local test of the flow-line grid from WebTide alone
+        build_grid(chains, wt, None, {**ast, "_t0": cfg["window"]["start"]}); return
     ssc = SalishSea()
     log("SalishSeaCast grid loaded")
 
@@ -307,6 +402,7 @@ def main():
         "const": CONST, "astro": ast, "fit": {"salishsea": f"{SSC_U}/{SSC_V} surface 0.5 m, {FIT[0]} to {FIT[1]}", "webtide": "ne_pac4 barotropic"},
         "check": check, "chains": out}, separators=(",", ":")))
     log("wrote data/stream_field.json")
+    build_grid(chains, wt, ssc, {**ast, "_t0": cfg["window"]["start"]})
 
 
 if __name__ == "__main__":
