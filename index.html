@@ -833,7 +833,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       // snack/rest break: after state.breakAfterH hours of rowing without a stop of state.breakH hours, stop for state.breakH at a
       // past campsite. Stop at one you pass when the next one can't be reached in time; else when the time is up (the stop
       // then goes to the nearest campsite, ahead or a little back). A break shorter than MIN_STOP_H is taken on the water.
-      if (!win && state.breakAfterH && !s.hold && !s.camp && s.rowing) {
+      if (!win && state.breakAfterH && !s.hold && !s.camp && s.rowing && total - s.pos > v * 1.5) {   // not with the stage end in sight
         const brk = state.breakH * H, left = state.breakAfterH - (s.rowH || 0);
         if (left <= 0) s.hold = s.t + brk;
         else if (CAMPSITES.length && state.breakH >= MIN_STOP_H && left < state.breakAfterH / 2 && passed() != null) {
@@ -877,18 +877,22 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
           if (t < s.t + MIN_FOUL_H * H && !isNight(s.pos, s.t)) want = true;
         }
       }
+      // the last 2 nm into port (Victoria, Ketchikan): row straight in, whatever the hour or stream; the stop is there
+      if (!win && total - s.pos < 2 && !s.wait && !s.camp && (s.rowing || s.pos > 0)) { want = true; s.hold = 0; }
       // stopping for MIN_STOP_H or more (also waiting at a gate): row to the nearest past campsite (counts as rowing time), and back when you set off
       const rest = (!want || s.wait) && (s.rowing || s.wait) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
       // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
       const capped = !win && rest > 0 && rowed >= hours - 1e-9 && !s.wait;
       let longer = false;
-      if (rest >= MIN_STOP_H * H || capped) {
+      if ((rest >= MIN_STOP_H * H || capped) && total - s.pos > 1) {   // at the stage end the boat is in port (Victoria, Ketchikan)
         const lim = Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity);
         // not worth it if the stop would be mostly over by the time you are on the beach
         // (a set stop, s.hold, is lengthened by the trip in, so any campsite in reach will do)
         const worth = (c, r) => c && (s.hold || r - ((Math.abs(c.ain - s.pos) + c.din) / v) * H >= (MIN_STOP_H / 2) * H) ? c : null;
         // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
-        let c = worth(pickCamp(ch, s, lim, 2.5, BACK_NM), capped ? Math.max(rest, state.campH * H) : rest); longer = capped && !!c;
+        let c = worth(pickCamp(ch, s, lim, 2.5, BACK_NM), capped ? Math.max(rest, state.campH * H) : rest);
+        if (c && c.ain > total - 1) c = null;   // nothing ashore by the stage end: the boat goes on into port
+        longer = capped && !!c;
         if (c) {
           // row on along the route to where the way in leaves it, then in to the campsite
           const t0 = s.t, along = Math.abs(c.ain - s.pos), hrs = (along + c.din) / v;   // (back, if the campsite is behind)
@@ -1740,7 +1744,8 @@ function buildStops(races) {
   const sites = [];
   stops.forEach((s) => { const site = sites.find((x) => nmBetween(x.ll, s.ll) < 1); if (site) site.stops.push(s); else sites.push({ ll: s.ll, stops: [s] }); });
   CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, "") }))
-    .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1))
+    // not around Victoria, where the boat spends the layover in port
+    .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1) && nmBetween([l.lat, l.lon], [48.4225, -123.372]) > 6)
       .map((l) => ({ ll: [l.lat, l.lon], teams: 0, place: nearPlace([l.lat, l.lon]).replace(/^at /, ""), landing: l })));
   const g = L.layerGroup();
   sites.forEach((site) => {
