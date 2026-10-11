@@ -28,6 +28,8 @@ HUMAN_TAGS = {"kayak", "rowboat", "row boat", "rowing", "sup", "paddleboard", "s
 NOT_HUMAN = ("sail", "kite", "wing", "pedal", "foil")
 YEARS = [2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026]
 SUFFIXES = ["", "s1", "stage1"]
+# pace boats: boats replayed alongside the plan, whatever their class (name match, lower case)
+PACE = {"r2ak2026": ["boogie barge"]}
 
 
 def log(*a):
@@ -155,6 +157,20 @@ def race(key: str):
     if s1:
         (OUT / "stage1").mkdir(exist_ok=True)
         (OUT / "stage1" / f"{key}.json").write_text(json.dumps({"key": key, "title": setup.get("title"), "stage2_start": s2, "teams": s1}, separators=(",", ":")))
+    for t in setup["teams"]:
+        nm = (t.get("name") or "").lower()
+        if not any(p in nm for p in PACE.get(key, [])):
+            continue
+        tg = [tags[i] for i in t.get("tags") or [] if i in tags and tags[i] != "All Teams"]
+        start = t.get("start") or setup.get("start")
+        fin = t.get("finishedAt")
+        pts = thin([p for p in pos.get(t["id"], []) if p[0] >= start - 1800], min_gap_s=300, min_nm=0.1)
+        pace = json.loads((OUT / "pace.json").read_text()) if (OUT / "pace.json").exists() else {"boats": []}
+        pace["boats"] = [b for b in pace["boats"] if not (b["race"] == key and b["id"] == t["id"])] + [{
+            "race": key, "id": t["id"], "name": t.get("name"), "boat": t.get("model"), "class": ", ".join(tg),
+            "status": str(t.get("explain") or t.get("status") or ""), "start": start, "finished": fin, "track": pts}]
+        (OUT / "pace.json").write_text(json.dumps(pace, separators=(",", ":")))
+        log(f"  pace boat {t.get('name')!r} ({', '.join(tg)}): {len(pts)} pts, {'finished %.2f d' % ((fin - start) / 86400) if fin else 'no finish'}")
     out = []
     for t in teams:
         pts = thin(pos.get(t["id"], []))
