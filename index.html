@@ -1016,6 +1016,15 @@ function renderSun() {
 // ---------- big map follows the boat, framing the last stop and the next two
 let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [], followKey = null;
 function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
+// Follow-mode moves: while playing, a smooth fly (zooming out and back in continuously) instead of jumping to the new zoom;
+// a plain pan when the zoom stays the same.
+let FLYING = false;
+function glide(ll, z) {
+  if (!playTimer) { map.setView(ll, z, { animate: false }); return; }
+  if (z === map.getZoom()) { map.panTo(ll, { animate: true, duration: 0.6 }); return; }
+  FLYING = true; map.once("moveend", () => { FLYING = false; });
+  map.flyTo(ll, z, { duration: 1.6 + 0.3 * Math.abs(z - map.getZoom()), easeLinearity: 0.2 });
+}
 function followBoat() {
   const c = $("follow"); if (!map || !c || !c.checked) return;
   const b = boatAt(state.t); if (!b) return;
@@ -1030,15 +1039,18 @@ function followBoat() {
     pts = pts.concat(STOP_LL.slice(Math.max(0, i - 1), i + 2).map((x) => x.ll));
     if (i + 2 > STOP_LL.length) pts.push(pointAt(LAST_PLAN.ch.stage2, LAST_PLAN.ch.stage2.total));
   }
+  if (FLYING && key === followKey) return;   // let a zoom in or out finish before following again
   if (key !== followKey || !map.getBounds().pad(-0.1).contains(b.ll)) {
     followKey = key;
     // keep the boat and stops clear of the inset and play box down the right-hand side
     const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40;
     if (atStop >= 0) {
       const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.8)), 15) - 1;   // one level out: twice the area
-      const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer });
-    } else if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [60, 60], paddingBottomRight: [rw + 20, 60], maxZoom, animate: !!playTimer });
-    else { const z = Math.max(map.getZoom(), 11), c = map.project(b.ll, z).add([rw / 2, 0]); map.setView(map.unproject(c, z), z, { animate: !!playTimer }); }
+      const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); glide(map.unproject(c, z), z);
+    } else if (pts.length > 1) {
+      const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb, false, L.point(rw + 80, 120)));
+      const c = map.project(bb.getCenter(), z).add([(rw + 20 - 60) / 2, 0]); glide(map.unproject(c, z), z);
+    } else { const z = Math.max(map.getZoom(), 11), c = map.project(b.ll, z).add([rw / 2, 0]); glide(map.unproject(c, z), z); }
   }
 }
 // ---------- live play
