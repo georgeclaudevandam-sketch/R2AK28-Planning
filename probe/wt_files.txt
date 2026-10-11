@@ -1,1 +1,6 @@
+find: ‘/tmp/wt/inst’: No such file or directory
+total 12304
+drwxr-xr-x  2 runner runner     4096 Oct 11 00:05 .
+drwxrwxrwt 15 root   root       4096 Oct 11 00:05 ..
+-rw-r--r--  1 runner runner 12590656 Oct 11 00:05 data.sh
 du: cannot access '/tmp/wt/inst': No such file or directory
