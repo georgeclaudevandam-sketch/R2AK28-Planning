@@ -760,12 +760,15 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
   const ok = (pos, t, theta) => !isNight(pos, t) && streamAt(ch, pos, t) >= (win ? theta : Math.max(theta, 0.5 - v));
   let st = { t: start, pos: 0, gi: 0, wait: false, arr: 0, rowing: false, camp: null, lastCamp: start, stopFrom: null }, out = { track: [[start, 0]], passed: [], rests: [], camps: [] };
   // how long a stop starting now would last: until the stream is fair again (or the next rowing window)
+  // the day's rowing hours used up, or too few left for a leg worth setting off on
+  const spent = (rowed) => rowed >= hours - 1e-9 || (hours - rowed) * v < Math.min(MIN_LEG_NM, 2.5 * v);
   const restLength = (s, theta, rowed, end) => {
     if (win) { let t = s.t; while (t < s.t + 24 * H && !(inWin(t, win) && !isNight(s.pos, t))) t += STEP; return t - s.t; }
-    if (rowed >= hours - 1e-9) { let t = Math.max(s.t, end); while (t < end + 16 * H && !ok(s.pos, t, theta)) t += STEP; return t - s.t; }
+    if (spent(rowed)) { let t = Math.max(s.t, end); while (t < end + 16 * H && !ok(s.pos, t, theta)) t += STEP; return t - s.t; }
     const g = s.wait && s.gi < gates.length ? gates[s.gi] : null;   // waiting at a gate: until its stream eases
     if (g) { let t = s.t; while (t < s.t + 16 * H && foulAt(g.st, t) > 0.5) t += STEP; return t - s.t; }
-    let t = s.t; while (t < s.t + 16 * H && !ok(s.pos, t, theta)) t += STEP;
+    // until a fair spell worth setting off in (an hour or more of it), as the look-ahead before leaving asks
+    let t = s.t; while (t < s.t + 16 * H && !(ok(s.pos, t, theta) && ok(s.pos, t + H / 2, theta) && ok(s.pos, t + H, theta))) t += STEP;
     return t - s.t;
   };
   const step = (s, row, rec) => {
@@ -830,12 +833,25 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
           if (x.pos - s.pos <= HOLD_MAX_NM && !ch._near.some((a) => a >= x.pos && a <= Math.min(lim, x.pos + 8))) { backTo(passed()); s.hold = x.until; s.holdPos = s.pos; }
         }
       }
+      // nightfall: passing a campsite when the next one can't be reached before dark, camp here for the night (never row on
+      // and then back, and never spend the night on the water when a campsite was passed in time)
+      if (!win && night != null && s.rowing && !s.hold && !s.camp && CAMPSITES.length && passed() != null && total - s.pos > 2) {
+        let dark = s.t; while (dark < s.t + 8 * H && !isNight(s.pos, dark)) dark += STEP;
+        if (dark < s.t + 8 * H) {
+          const next = ch._near.find((a) => a > s.pos + 0.5);
+          if (next == null || s.t + ((next - s.pos) / Math.max(0.5, v - 0.5)) * H > dark) {
+            backTo(passed());
+            let dawn = dark; while (dawn < dark + 16 * H && isNight(s.pos, dawn)) dawn += STEP;
+            s.hold = Math.max(dawn, s.t + state.campH * H); s.holdPos = s.pos;
+          }
+        }
+      }
       // snack/rest break: after state.breakAfterH hours of rowing without a stop of state.breakH hours, stop for state.breakH at a
       // past campsite. Stop at one you pass when the next one can't be reached in time; else when the time is up (the stop
       // then goes to the nearest campsite, ahead or a little back). A break shorter than MIN_STOP_H is taken on the water.
       if (!win && state.breakAfterH && !s.hold && !s.camp && s.rowing && total - s.pos > v * 1.5) {   // not with the stage end in sight
         const brk = state.breakH * H, left = state.breakAfterH - (s.rowH || 0);
-        if (left <= 0) s.hold = s.t + brk;
+        if (left <= 0) { s.hold = s.t + brk; s.afterBrk = brk < MIN_STOP_H * H; }   // a short break is on the water
         else if (CAMPSITES.length && state.breakH >= MIN_STOP_H && left < state.breakAfterH / 2 && passed() != null) {
           const next = ch._near.find((a) => a > s.pos + 0.5);
           if (next == null || (next - s.pos) / Math.max(0.5, v - 0.5) > left) { backTo(passed()); s.hold = s.t + brk; s.holdPos = s.pos; }
@@ -880,9 +896,10 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       // the last 2 nm into port (Victoria, Ketchikan): row straight in, whatever the hour or stream; the stop is there
       if (!win && total - s.pos < 2 && !s.wait && !s.camp && (s.rowing || s.pos > 0)) { want = true; s.hold = 0; }
       // stopping for MIN_STOP_H or more (also waiting at a gate): row to the nearest past campsite (counts as rowing time), and back when you set off
-      const rest = (!want || s.wait) && (s.rowing || s.wait) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
+      // (a short break on the water that runs into a longer stop, for the stream or the night, goes ashore too)
+      const rest = (!want || s.wait) && (s.rowing || s.wait || (s.afterBrk && !s.hold)) && !s.camp && CAMPSITES.length ? (s.hold ? s.hold - s.t : restLength(s, theta, rowed, end)) : 0;
       // the day's rowing hours used up: if you have to stop anyway, make it a camp at a campsite rather than a pause in the stream
-      const capped = !win && rest > 0 && rowed >= hours - 1e-9 && !s.wait;
+      const capped = !win && rest > 0 && spent(rowed) && !s.wait;
       let longer = false;
       if ((rest >= MIN_STOP_H * H || capped) && total - s.pos > 1) {   // at the stage end the boat is in port (Victoria, Ketchikan)
         const lim = Math.min(total - 0.5, s.gi < gates.length ? gates[s.gi].along : Infinity);
@@ -933,6 +950,7 @@ function simulateRow(ch, gates, start, v, hours, win, waits, head, night) {
       }
       if (want && s.camp) { const c = s.camp.site, leave = s.t, at = s.pos; s.t += (c.dout / v) * H; rowed += c.dout / v; s.pos = s.pos0 = c.aout; s.tp = s.t; if (rec) { rec.track.push([s.t, s.pos]); rec.camps.push({ ...s.camp, leave, back: s.t, pos: at }); } s.left = c.a; s.camp = null; }
       s.rowing = step(s, want, rec);
+      if (s.rowing) s.afterBrk = false;
       if (s.rowing && s.stopFrom != null) { if (s.t - s.stopFrom >= state.campH * H - STEP) s.lastCamp = s.t; if (s.t - s.stopFrom >= state.breakH * H - STEP) s.rowH = 0; s.stopFrom = null; }
       if (s.rowing) { rowed += S; s.rowH = (s.rowH || 0) + S; }
     }
