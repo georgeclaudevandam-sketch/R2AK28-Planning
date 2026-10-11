@@ -384,12 +384,15 @@ function initMap() {
     d.querySelector("#follow").addEventListener("change", (e) => { if (e.target.checked) { followKey = null; followBoat(); } });
     return d;
   } });
+  // layer order by pane, bottom to top: imagery, NOAA charts, CHS charts (the default tile pane). CHS always wins where it has
+  // data; NOAA only shows through where CHS draws nothing (US waters).
+  ["imageryPane", "noaaPane"].forEach((n, i) => { const el = map.createPane(n); el.style.zIndex = 150 + 20 * i; el.style.transition = "filter .3s"; });
   const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, maxNativeZoom: 18, zIndex: 0, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
+    pane: "imageryPane", maxZoom: 19, maxNativeZoom: 18, zIndex: 0, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" });
   // NOAA's chart service also draws its coarse small-scale charts over Canadian waters, opaquely, which hides the CHS charts.
   // So NOAA is drawn underneath and only over US waters (Washington, and Alaska north of Dixon Entrance), with CHS on top.
   const NOAA_SVC = "https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/MapServer";
-  const noaaOpts = { zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
+  const noaaOpts = { pane: "noaaPane", zIndex: 1, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", display: CHART_DISPLAY, opacity: 1, maxZoom: 19, minZoom: 5, attribution: "Charts: NOAA Office of Coast Survey" };
   const noaa = L.layerGroup([new ChartLayer("", { ...noaaOpts, bounds: [[46.5, -126.5], [49.0, -122.0]] }), new ChartLayer("", { ...noaaOpts, bounds: [[54.65, -136.5], [60.0, -129.95]] })]).addTo(map);
   noaa.eachLayer((l) => { l._noaaTag = true; });
   const chs = new ChartLayer("", { service: "https://egisp.dfo-mpo.gc.ca/arcgis/rest/services/chs/ENC_MaritimeChartService/MapServer/exts/MaritimeChartService/MapServer",
@@ -917,7 +920,8 @@ function renderSun() {
   const alt = sunAlt(t, ll[0], ll[1]);
   // full daylight above the horizon, darkening the imagery and charts through civil and nautical twilight
   const f = Math.min(1, Math.max(0, (SUN_DOWN - alt) / 11));
-  map.getPane("tilePane").style.filter = f > 0 ? `brightness(${(1 - 0.78 * f).toFixed(2)}) saturate(${(1 - 0.5 * f).toFixed(2)})` : "";
+  const filt = f > 0 ? `brightness(${(1 - 0.78 * f).toFixed(2)}) saturate(${(1 - 0.5 * f).toFixed(2)})` : "";
+  ["tilePane", "noaaPane", "imageryPane"].forEach((n) => { const el = map.getPane(n); if (el) el.style.filter = filt; });
   $("pb-sun").textContent = alt > SUN_DOWN ? (alt < 6 ? "Low sun" : "Day") : alt > -6 ? "Twilight" : "Night";
   $("pb-time").textContent = `${fmt.format(t)} PDT`;
   const P = LAST_PLAN;
