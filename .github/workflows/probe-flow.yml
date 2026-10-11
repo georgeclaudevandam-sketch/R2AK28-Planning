@@ -19,6 +19,8 @@ jobs:
           ls -la >> $GITHUB_WORKSPACE/probe/wt_log.txt
           (unzip -l data.sh 2>&1 | head -80) > $GITHUB_WORKSPACE/probe/wt_unzip.txt || true
           head -c 3000 data.sh | strings | head -60 > $GITHUB_WORKSPACE/probe/wt_head.txt || true
+          curl -sSL -m 600 "$W/Linux/WebTide_unix_0_7_1.sh" -o app.sh
+          (timeout 900 sh app.sh -q -dir /tmp/wt/inst 2>&1 | tail -10) >> $GITHUB_WORKSPACE/probe/wt_log.txt || true
           (timeout 900 sh data.sh -q -dir /tmp/wt/inst 2>&1 | tail -30) >> $GITHUB_WORKSPACE/probe/wt_log.txt || true
           (find /tmp/wt/inst -type f | xargs ls -la; du -sh /tmp/wt/inst) > $GITHUB_WORKSPACE/probe/wt_files.txt 2>&1 || true
           mkdir -p $GITHUB_WORKSPACE/probe/webtide && cd /tmp/wt/inst && find . -type f -size -60M \( -path "*data*" -o -path "*Data*" \) -exec cp --parents {} $GITHUB_WORKSPACE/probe/webtide/ \; || true
@@ -27,4 +29,4 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
-          git add -A probe && git commit -m "Probe current model sources 4" && git pull --rebase && git push
+          git add -A probe && git commit -m "Probe current model sources 5" && git pull --rebase && git push
