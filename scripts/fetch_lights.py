@@ -60,7 +60,7 @@ def sectors(tags):
         ch, col = g("character"), g("colour")
         if not ch and not col:
             continue
-        s = {"ch": ch or "F", "col": (col or "white").split(";")[0]}
+        s = {"ch": ch or "F", "col": col or "white"}
         for k, key in (("period", "per"), ("range", "rng"), ("sector_start", "s0"), ("sector_end", "s1")):
             v = num(g(k))
             if v is not None:

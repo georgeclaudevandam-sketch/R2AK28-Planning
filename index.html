@@ -274,7 +274,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 
     <section aria-labelledby="h-pics">
       <h2 id="h-pics">Stop close-ups</h2>
-      <p class="hint">Each stop on 1 km square of satellite imagery under the chart: your planned track in yellow (the trip in to a campsite and out again in pale yellow) and past human-powered tracks in their class colours. Click one to set the map time.</p>
+      <p class="hint">Each stop on 0.25 km square of satellite imagery under a faint chart: your planned track in yellow (the trip in to a campsite and out again in pale yellow) and past human-powered tracks in their class colours. Click one to set the map time.</p>
       <div class="pics" id="pics"></div>
     </section>
   </aside>
@@ -450,7 +450,8 @@ function initMap() {
   stationLayer = L.layerGroup().addTo(map);
 
   const flow = new FlowLayer().addTo(map);
-  layersCtl = L.control.layers({}, { "Satellite imagery (Esri)": imagery, "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer, "Tidal stream flow lines (model)": flow }, { collapsed: true }).addTo(map);
+  const lights = new LightLayer().addTo(map);
+  layersCtl = L.control.layers({}, { "Satellite imagery (Esri)": imagery, "CHS charts (Canada)": chs, "NOAA charts (US)": noaa, "Race tracks": routeGroup, "Start, finish and waypoints": marks, "Tide and current stations": stationLayer, "Tidal stream flow lines (model)": flow, "Navigation lights (flashing in real time)": lights }, { collapsed: true }).addTo(map);
   const Opacity = L.Control.extend({ onAdd() {
     const d = L.DomUtil.create("div", "opacity-ctl");
     d.innerHTML = '<label style="flex-direction:row;align-items:center;gap:6px;color:#102a3a"><input type="checkbox" id="sat"> Satellite</label>' +
@@ -1428,6 +1429,131 @@ async function loadFlow() {
   }
   return { setT, at };
 }
+// ---------- navigation lights: flashed on their real rhythm in real time (always lit, whatever the map time), from
+// data/lights.json (OpenSeaMap seamark tags). A light's phases are built from its exact sequence where mapped ("0.5+(3.5)":
+// on 0.5 s, off 3.5 s), otherwise from its IALA characteristic, group and period.
+const LIGHT_COL = { white: "#fffbe6", red: "#ff3b30", green: "#34d058", yellow: "#ffd60a", orange: "#ff9f0a", blue: "#4dabf7", violet: "#c084fc", amber: "#ffbf00" };
+function lightPhases(sec) {
+  const per = sec.per, cols = String(sec.col || "white").toLowerCase().split(/[;,]/).map((c) => c.trim()).filter(Boolean);
+  const ch = String(sec.ch || "F").replace(/\s+/g, ""), alt = /^Al/i.test(ch);
+  const base = ch.replace(/^Al\.?/i, "").replace(/\(.*$/, "").replace(/\+.*$/, "");
+  const grpTxt = sec.grp || (ch.match(/\(([^)]*)\)/) || [])[1] || "";
+  const groups = grpTxt.split("+").map((g) => parseInt(g, 10)).filter((n) => n > 0);
+  const ph = [];   // [seconds, colour index or -1 for dark]
+  const on = (d) => ph.push([d, 0]), off = (d) => ph.push([d, -1]);
+  if (sec.seq) {
+    String(sec.seq).split(/[,+]/).forEach((tok) => { const m = tok.match(/(\()?\s*([\d.]+)/); if (m) (m[1] ? off : on)(+m[2]); });
+    if (ph.length) return alternate({ ph, cols });
+  }
+  const fill = (P) => { const used = ph.reduce((a, q) => a + q[0], 0); if (P && P > used + 0.05) off(P - used); };
+  const flashes = (n, fl, gap) => { for (let i = 0; i < n; i++) { on(fl); if (i < n - 1) off(gap); } };
+  if (/^Mo/i.test(ch)) {
+    const MORSE = { A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", I: "..", K: "-.-", N: "-.", O: "---", R: ".-.", S: "...", T: "-", U: "..-", W: ".--", X: "-..-", Y: "-.--" };
+    const code = MORSE[(ch.match(/\(([A-Z])\)/i) || [, "A"])[1].toUpperCase()] || ".-";
+    [...code].forEach((c, i) => { on(c === "." ? 0.5 : 1.5); if (i < code.length - 1) off(0.5); }); off(0.5); fill(per || 8);
+  } else if (/^(F|FW|FR|FG)$/i.test(base) && !/Fl/i.test(ch)) {
+    on(1); return { ph, cols, fixed: true };
+  } else if (/^Iso/i.test(base)) {
+    const P = per || 4; on(P / 2); off(P / 2);
+  } else if (/^Oc/i.test(base)) {
+    const n = groups[0] || 1, P = per || 4; for (let i = 0; i < n; i++) { off(1); if (i < n - 1) on(1); }
+    const used = ph.reduce((a, q) => a + q[0], 0); on(Math.max(0.5, P - used));
+  } else if (/^(UQ|IUQ)/i.test(base)) {
+    if (groups.length) { flashes(groups[0], 0.1, 0.15); fill(per); } else { on(0.1); off(0.15); }
+  } else if (/^(VQ|IVQ)/i.test(base)) {
+    if (groups.length) { flashes(groups[0], 0.2, 0.3); if (/LFl/i.test(ch)) { off(0.3); on(2); } fill(per); } else { on(0.2); off(0.3); }
+  } else if (/^(Q|IQ)/i.test(base)) {
+    if (groups.length) { flashes(groups[0], 0.3, 0.7); if (/LFl/i.test(ch)) { off(0.7); on(2); } fill(per); } else { on(0.3); off(0.7); }
+  } else if (/^LFl/i.test(base)) {
+    flashes(groups[0] || 1, 2, 2); fill(per || 10);
+  } else {   // Fl, Fl(n), Fl(n+m), FFl
+    const P = per || 4, fl = P <= 2.5 ? 0.3 : 0.5;
+    if (groups.length > 1) groups.forEach((n, gi) => { flashes(n, fl, 1); if (gi < groups.length - 1) off(2); });
+    else flashes(groups[0] || 1, fl, 1);
+    fill(P);
+    if (/^FFl/i.test(ch)) return { ph, cols, fixedUnder: true };
+  }
+  return alternate({ ph, cols });
+  // Al: successive flashes take the colours in turn, so repeat the cycle until each flash has had each colour
+  function alternate(r) {
+    if (!alt || r.cols.length < 2) return r;
+    let k = 0; const ph2 = [];
+    for (let i = 0; i < r.cols.length; i++) r.ph.forEach(([d, c]) => ph2.push([d, c < 0 ? -1 : k++ % r.cols.length]));
+    return { ph: ph2, cols: r.cols };
+  }
+}
+function lightAt(L0, ms) {   // colour now, or null for dark
+  const r = L0.r;
+  if (r.fixed) return r.cols[0];
+  const T = r.T || (r.T = r.ph.reduce((a, q) => a + q[0], 0)); if (!T) return r.cols[0];
+  let x = ((ms / 1000) % T + T) % T;
+  for (const [d, c] of r.ph) { if (x < d) return c < 0 ? (r.fixedUnder ? r.cols[0] + "|dim" : null) : r.cols[c] || r.cols[0]; x -= d; }
+  return null;
+}
+const LightLayer = L.Layer.extend({
+  onAdd(map) {
+    this.map = map;
+    if (!map.getPane("lightPane")) { const p = map.createPane("lightPane"); p.style.zIndex = 395; p.style.pointerEvents = "none"; }
+    this.canvas = L.DomUtil.create("canvas"); this.canvas.style.pointerEvents = "none";
+    map.getPane("lightPane").appendChild(this.canvas);
+    map.on("moveend zoomend resize", this._reset, this); map.on("movestart zoomstart", this._hide, this); map.on("click", this._click, this);
+    this.running = true;
+    (this.dataP ||= fetch("data/lights.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : { lights: [] }).catch(() => ({ lights: [] }))).then((d) => {
+      // each sector its own rhythm; a light shows the sector facing our boat (or its first)
+      this.lights = (d.lights || []).map((l) => ({ ...l, rs: l.s.map(lightPhases) }));
+      if (this.running) { this._reset(); this._loop(); }
+    });
+  },
+  onRemove(map) {
+    this.running = false; cancelAnimationFrame(this.raf);
+    map.off("moveend zoomend resize", this._reset, this); map.off("movestart zoomstart", this._hide, this); map.off("click", this._click, this);
+    this.canvas.remove();
+  },
+  _hide() { this.hidden = true; if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h); },
+  _reset() {
+    if (!this.lights) return;
+    const map = this.map, size = map.getSize(), dpr = window.devicePixelRatio || 1;
+    this.w = size.x; this.h = size.y; this.canvas.width = size.x * dpr; this.canvas.height = size.y * dpr;
+    this.canvas.style.width = size.x + "px"; this.canvas.style.height = size.y + "px";
+    L.DomUtil.setPosition(this.canvas, map.containerPointToLayerPoint([0, 0]));
+    this.ctx = this.canvas.getContext("2d"); this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const b = map.getBounds().pad(0.05), z = map.getZoom();
+    this.vis = z < 8 ? [] : this.lights.filter((l) => b.contains([l.lat, l.lon])).map((l) => ({ l, p: map.latLngToContainerPoint([l.lat, l.lon]) }));
+    this.rad = z >= 13 ? 1.4 : z >= 11 ? 1.15 : 0.9;
+    this.hidden = false;
+  },
+  _loop() { const go = () => { if (!this.running) return; this._draw(); this.raf = requestAnimationFrame(go); }; this.raf = requestAnimationFrame(go); },
+  _sector(l) {
+    if (l.s.length < 2) return 0;
+    const b = boatAt(state.t); if (!b) return 0;
+    const brg = (Math.atan2((l.lon - b.ll[1]) * Math.cos(l.lat * Math.PI / 180), l.lat - b.ll[0]) * 180 / Math.PI + 360) % 360;   // boat to light
+    const i = l.s.findIndex((s) => s.s0 != null && s.s1 != null && (s.s0 <= s.s1 ? brg >= s.s0 && brg <= s.s1 : brg >= s.s0 || brg <= s.s1));
+    return i < 0 ? 0 : i;
+  },
+  _draw() {
+    if (this.hidden || !this.ctx || !this.vis) return;
+    const ctx = this.ctx, now = Date.now(), k = this.rad;
+    ctx.clearRect(0, 0, this.w, this.h);
+    if (this._secT !== state.t) { this._secT = state.t; this.vis.forEach((v) => { v.si = this._sector(v.l); }); }
+    this.vis.forEach((v) => {
+      const sec = v.l.s[v.si || 0];
+      let c = lightAt({ r: v.l.rs[v.si || 0] }, now); const dim = c && c.endsWith("|dim"); if (dim) c = c.slice(0, -4);
+      const hex = LIGHT_COL[(c || sec.col.split(/[;,]/)[0] || "white").trim().toLowerCase()] || "#fffbe6", { x, y } = v.p;
+      // the beacon itself: a small ringed dot in its colour, lit or not
+      ctx.beginPath(); ctx.arc(x, y, 2.6 * k, 0, 7); ctx.fillStyle = "#111827"; ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = hex; ctx.stroke();
+      if (!c) return;
+      const R = (dim ? 7 : 13) * k, g = ctx.createRadialGradient(x, y, 0, x, y, R);
+      g.addColorStop(0, "#ffffff"); g.addColorStop(0.18, hex); g.addColorStop(1, hex + "00");
+      ctx.globalAlpha = dim ? 0.55 : 1; ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.fillStyle = g; ctx.fill(); ctx.globalAlpha = 1;
+    });
+  },
+  _click(e) {
+    if (!this.vis) return;
+    const p = this.map.latLngToContainerPoint(e.latlng), v = this.vis.find((v) => v.p.distanceTo(p) < 9); if (!v) return;
+    const txt = v.l.s.map((s) => `${esc(s.ch)}${s.grp && !/\(/.test(s.ch) ? `(${esc(s.grp)})` : ""} ${esc(s.col)}${s.per ? ` ${s.per} s` : ""}${s.seq ? ` [${esc(s.seq)}]` : ""}${s.s0 != null ? ` (${s.s0}°–${s.s1}°)` : ""}`).join("<br>");
+    L.popup().setLatLng([v.l.lat, v.l.lon]).setContent(`<b>${esc(v.l.name || "Light")}</b><br>${txt}`).openOn(this.map);
+  },
+});
 const FlowLayer = L.Layer.extend({
   onAdd(map) {
     this.map = map;
@@ -1504,11 +1630,11 @@ function renderPics(list, line) {
   const route = line.points;
   const build = (fig) => {
     const p = list[+fig.dataset.i], el = fig.querySelector(".pm");
-    const dLa = 0.5 / 111.32, dLo = dLa / Math.cos(p.ll[0] * Math.PI / 180), bb = L.latLngBounds([p.ll[0] - dLa, p.ll[1] - dLo], [p.ll[0] + dLa, p.ll[1] + dLo]);
+    const dLa = 0.125 / 111.32, dLo = dLa / Math.cos(p.ll[0] * Math.PI / 180), bb = L.latLngBounds([p.ll[0] - dLa, p.ll[1] - dLo], [p.ll[0] + dLa, p.ll[1] + dLo]);
     const m = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false, zoomSnap: 0 });
     m.fitBounds(bb, { padding: [0, 0], animate: false });
     L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, maxNativeZoom: 18 }).addTo(m);
-    const co = { opacity: 0.45, maxZoom: 19, minZoom: 5, display: chartDisplay(1.3), dpi: 192 };
+    const co = { opacity: 0.2, maxZoom: 19, minZoom: 5, display: chartDisplay(1.3), dpi: 192 };
     new ChartLayer("", { ...co, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", bounds: [[46.5, -126.5], [48.2, -122.0]] }).addTo(m);
     new ChartLayer("", { ...co, service: NOAA_SVC, show: "show:0,1,2,3,4,5,6,7", bounds: [[54.65, -136.5], [60.0, -129.95]] }).addTo(m);
     new ChartLayer("", { ...co, service: CHS_SVC, show: "show:0,1,2,3,4,5,6,7,9,12", bounds: [[48.2, -140], [54.72, -122.0]] }).addTo(m);
@@ -1522,7 +1648,7 @@ function renderPics(list, line) {
     clip(route).forEach((c) => L.polyline(c, { color: "#facc15", weight: 3, opacity: 0.95, interactive: false }).addTo(m));
     if (p.x.site && p.x.site.pin) [p.x.site.pin.concat([p.ll]), [p.ll].concat(p.x.site.pout)].forEach((c, k) => L.polyline(c, { color: k ? "#fde68a" : "#facc15", weight: 2.5, opacity: 0.95, dashArray: "5 4", interactive: false }).addTo(m));
     L.marker(p.ll, { interactive: false, icon: L.divIcon({ className: p.x.camp ? "stop camp" : "stop snack", html: `${p.x.camp ? ICON.camp : ICON.snack}<b>${p.n}</b>`, iconSize: p.x.camp ? [34, 20] : [28, 16] }) }).addTo(m);
-    L.control.scale({ imperial: false, metric: true, position: "bottomleft", maxWidth: 80 }).addTo(m);
+    L.control.scale({ imperial: false, metric: true, position: "bottomleft", maxWidth: 60 }).addTo(m);
     PICS.push(m);
   };
   picObs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { picObs.unobserve(e.target); build(e.target); } }), { rootMargin: "300px" });
