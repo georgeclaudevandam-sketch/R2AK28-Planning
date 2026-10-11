@@ -1014,7 +1014,7 @@ function renderSun() {
   if (boatMarker._key !== key) { boatMarker.setIcon(L.divIcon({ className: "boat" + (lit ? " lit" : ""), html: BOAT_SVG(hd), iconSize: [36, 36], iconAnchor: [18, 18] })); boatMarker._key = key; }
 }
 // ---------- big map follows the boat, framing the last stop and the next two
-let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [], followKey = null;
+let mini = null, miniStops = null, miniView = null, miniBoat = null, STOP_LL = [], MARK_ZOOM = [], followKey = null;
 function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) { followKey = null; followBoat(); } }
 // Follow-mode moves while playing: zoom one level at a time, each step a normal animated zoom (the charts already drawn stay
 // up, scaled, until the new ones arrive) and the next step only once the charts at this level have drawn (at most 3 s).
@@ -1045,11 +1045,12 @@ function followBoat() {
   const b = boatAt(state.t); if (!b) return;
   // Stage 2: the stop before the boat and the next two; Stage 1: just the boat
   let pts = [b.ll], key = "s1", maxZoom = 13;
-  const atStop = LAST_PLAN && state.t >= LAST_PLAN.s2 ? STOP_LL.findIndex((x) => state.t >= x.zIn && state.t < x.zOut) : -1;
-  if (atStop >= 0) {   // near a stop: close in on the way in, the landing and the way out, to show exactly where it is
-    // first the approach (3 nm out), then closer once the boat turns off the route for the landing
-    const x = STOP_LL[atStop], near = state.t >= x.tTurn && state.t < x.until;
-    key = (near ? "at" : "ap") + atStop; pts = (near ? x.tight : x.view).concat([b.ll]); maxZoom = 14;
+  const win = (x) => state.t >= x.zIn && state.t < x.zOut, atMark = MARK_ZOOM.findIndex(win);
+  const atStop = atMark >= 0 ? -1 : LAST_PLAN && state.t >= LAST_PLAN.s2 ? STOP_LL.findIndex(win) : -1, closeUp = atMark >= 0 || atStop >= 0;
+  if (closeUp) {   // near a stop or race mark: close in on the way in, the landing and the way out, to show exactly where it is
+    // first the approach (3 nm out), then closer once the boat turns off the route for the landing (or reaches the mark)
+    const x = atMark >= 0 ? MARK_ZOOM[atMark] : STOP_LL[atStop], near = state.t >= x.tTurn && state.t < x.until;
+    key = (near ? "at" : "ap") + (atMark >= 0 ? "m" + atMark : atStop); pts = (near ? x.tight : x.view).concat([b.ll]); maxZoom = 14;
   } else if (LAST_PLAN && state.t >= LAST_PLAN.s2 && STOP_LL.length) {
     const k = STOP_LL.findIndex((x) => x.until > state.t), i = k < 0 ? STOP_LL.length : k;
     key = i;
@@ -1061,7 +1062,7 @@ function followBoat() {
     followKey = key;
     // keep the boat and stops clear of the inset and play box down the right-hand side
     const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40;
-    if (atStop >= 0) {
+    if (closeUp) {
       const bb = L.latLngBounds(pts), z = Math.min(maxZoom, map.getBoundsZoom(bb.pad(0.25), false, L.point(rw, 0)));
       const c = map.project(bb.getCenter(), z).add([rw / 2, 0]); glide(map.unproject(c, z), z);
     } else if (pts.length > 1) {
@@ -1173,6 +1174,20 @@ function renderPlanner() {
 
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
+  // follow-mode close-ups at the race marks the boat stops at or passes: Victoria, Bella Bella, the Ketchikan finish
+  {
+    const tAt = (tr, a) => (tr.find((q) => q[1] >= a) || tr[tr.length - 1])[0], S1 = ch.stage1, S2 = ch.stage2;
+    const m = (re) => ROUTE.marks.find((k) => re.test(k.name));
+    const vic = m(/Inner Harbour/), bb = m(/Bella Bella/), ktn = ROUTE.marks.find((k) => keyMark(k)?.label === "Ketchikan");
+    MARK_ZOOM = [];
+    if (vic) MARK_ZOOM.push({ zIn: tAt(r1.track, S1.total - 3), zOut: tAt(r2.track, 1), tTurn: tAt(r1.track, S1.total - 0.5), until: tAt(r2.track, 0.5),
+      view: [pointAt(S1, S1.total - 3), [vic.lat, vic.lon], pointAt(S2, 1)], tight: [pointAt(S1, S1.total - 0.5), [vic.lat, vic.lon], pointAt(S2, 0.5)] });
+    if (bb) { const a = project(S2, bb.lat, bb.lon).along;
+      MARK_ZOOM.push({ zIn: tAt(r2.track, a - 3), zOut: tAt(r2.track, a + 1), tTurn: tAt(r2.track, a - 0.5), until: tAt(r2.track, a + 0.5),
+        view: [pointAt(S2, a - 3), [bb.lat, bb.lon], pointAt(S2, a + 1)], tight: [pointAt(S2, a - 0.5), [bb.lat, bb.lon], pointAt(S2, a + 0.5)] }); }
+    if (ktn) MARK_ZOOM.push({ zIn: tAt(r2.track, S2.total - 3), zOut: r2.finish + 1, tTurn: tAt(r2.track, S2.total - 0.5), until: r2.finish + 1,
+      view: [pointAt(S2, S2.total - 3), [ktn.lat, ktn.lon]], tight: [pointAt(S2, S2.total - 0.5), [ktn.lat, ktn.lon]] });
+  }
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
   let nc = 0, prev = 0, prevOut = 0;
   const stopRows = [];
