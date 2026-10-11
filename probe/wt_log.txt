@@ -1,0 +1,8 @@
+total 12304
+drwxr-xr-x  2 runner runner     4096 Oct 11 00:04 .
+drwxrwxrwt 15 root   root       4096 Oct 11 00:04 ..
+-rw-r--r--  1 runner runner 12590656 Oct 11 00:05 data.sh
+testing JVM in /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/8.0.504-1/x64 ...
+Starting Installer ...
+This will install WebTide_ne_pac_data on your computer.
+OK [o, Enter], Cancel [c]
