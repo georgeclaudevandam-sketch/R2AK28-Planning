@@ -154,6 +154,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 #stops-tbl tr[data-t] { cursor: pointer; }
 .ico { width: 14px; height: 14px; vertical-align: -2px; flex: none; }
 .stop .ico { width: 13px; height: 13px; }
+.stop .dur { font-style: normal; font-weight: 500; margin-left: 3px; padding-left: 3px; border-left: 1px solid rgba(17,24,39,.35); }
 #stops-tbl td:nth-child(-n+5) { white-space: nowrap; }
 #stops-tbl td:nth-child(4), #stops-tbl td:nth-child(5), #stops-tbl th:nth-child(4), #stops-tbl th:nth-child(5) { text-align: right; }
 #stops-tbl tr[data-t]:hover { background: var(--chip); }
@@ -1317,16 +1318,17 @@ function renderPlanner() {
     const n = ++nc, label = `Stop ${n}, ${x.camp ? "camp" : "snack/rest"}`;
     const where = x.site && x.site.landing ? `${esc(landingKind(x.site.landing))}${x.site.landing.name ? " " + esc(x.site.landing.name) : ""}, ${esc(x.site.place)}` : x.site ? `past campsite ${esc(x.site.place)} (used by ${x.site.teams} team${x.site.teams > 1 ? "s" : ""})` : hrs >= 2 ? `${esc(nearPlace(on))}: no past campsite or beach within reach (satellite shows steep shore)` : `${esc(nearPlace(on))}, on the water`;
     if (x.site) (x.site.pin ? [x.site.pin.concat([ll]), [ll].concat(x.site.pout)] : [[on, ll]]).forEach((p, k) => L.polyline(p, { color: k ? "#fde68a" : "#facc15", weight: 2, opacity: 0.9, lineCap: "round", lineJoin: "round" }).bindTooltip(k ? "Out from camp" : "In to camp").addTo(nightLayer));
-    L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b>`, iconSize: x.camp ? [34, 20] : [28, 16] }), zIndexOffset: x.camp ? 500 : 400 })
-      .bindTooltip(`${label}: ${fmt.format(x.t)} to ${fmtT.format(x.until)} (${fmtDur(hrs)}), ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${hrs.toFixed(1)} h</td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    const sd = shortDur(hrs), wd = (x.camp ? 34 : 28) + 6 * sd.length + 4;
+    L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b><i class="dur">${sd}</i>`, iconSize: [wd, x.camp ? 20 : 16] }), zIndexOffset: x.camp ? 500 : 400 })
+      .bindTooltip(`${label}: stopped ${fmtDur(hrs)}, arrive ${fmt.format(x.t)}, leave ${fmt.format(x.until)}. ${where}${x.site ? `, ${x.d.toFixed(1)} nm off the route` : ""}`).addTo(nightLayer);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${fmt.format(x.t)}</td><td>${fmt.format(x.until)}</td><td><b>${fmtDur(hrs)}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     pics.push({ n, x, ll, on, hrs, where });
     prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
   });
   renderPics(pics, ch.stage2);
   $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Snack/rest: ${Math.min(1, state.breakH)} to ${state.campH} hours${state.breakH < 1 ? ` (breaks under an hour are taken on the water)` : ""}. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
-  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
-  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Length</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
+  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${fmt.format(r2.finish)}</td><td></td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Leave</th><th title="How long the crew is stopped, from arriving to leaving">Stopped for</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg nm</th><th title="Along the route from the Victoria start">Total nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
@@ -1341,6 +1343,7 @@ function renderPlanner() {
 
   Object.entries(routeLayers).forEach(([k, l]) => l.setStyle({ opacity: k === "inside" || k === "outside" ? (k === state.north ? 0.95 : 0.35) : 0.95, dashArray: k === "stage1" ? "8 6" : k === state.north || k === "south" ? null : "2 6" }));
 }
+function shortDur(h) { const m = Math.round(h * 60); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, "0") : ""}`; }
 function fmtDur(h) { const m = Math.round(h * 60); return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`; }
 
 // ---------- detail panel
@@ -1663,7 +1666,7 @@ function renderPics(list, line) {
   PICS.forEach((m) => m.remove()); PICS = [];
   if (picObs) picObs.disconnect();
   const box = $("pics"); if (!box) return;
-  box.innerHTML = list.map((p, i) => `<figure class="pic" data-i="${i}" data-t="${p.x.t}"><div class="pm"></div><figcaption><b>${p.n} ${p.x.camp ? ICON.camp + " camp" : ICON.snack + " snack/rest"}</b> ${fmt.format(p.x.t)}, ${fmtDur(p.hrs)}<br>${p.where}</figcaption></figure>`).join("");
+  box.innerHTML = list.map((p, i) => `<figure class="pic" data-i="${i}" data-t="${p.x.t}"><div class="pm"></div><figcaption><b>${p.n} ${p.x.camp ? ICON.camp + " camp" : ICON.snack + " snack/rest"}</b> stopped <b>${fmtDur(p.hrs)}</b><br>arrive ${fmt.format(p.x.t)}, leave ${fmt.format(p.x.until)}<br>${p.where}</figcaption></figure>`).join("");
   const route = line.points;
   const build = (fig) => {
     const p = list[+fig.dataset.i], el = fig.querySelector(".pm");
@@ -1680,7 +1683,7 @@ function renderPics(list, line) {
     PAST.races.forEach((r) => r.teams.forEach((t) => clip(t.track.map((q) => [q[1], q[2]])).forEach((c) => L.polyline(c, { color: classColor(t.class), weight: 2, opacity: 0.85, interactive: false }).addTo(m))));
     clip(route).forEach((c) => L.polyline(c, { color: "#facc15", weight: 3, opacity: 0.95, interactive: false }).addTo(m));
     if (p.x.site && p.x.site.pin) [p.x.site.pin.concat([p.ll]), [p.ll].concat(p.x.site.pout)].forEach((c, k) => L.polyline(c, { color: k ? "#fde68a" : "#facc15", weight: 2.5, opacity: 0.95, dashArray: "5 4", interactive: false }).addTo(m));
-    L.marker(p.ll, { interactive: false, icon: L.divIcon({ className: p.x.camp ? "stop camp" : "stop snack", html: `${p.x.camp ? ICON.camp : ICON.snack}<b>${p.n}</b>`, iconSize: p.x.camp ? [34, 20] : [28, 16] }) }).addTo(m);
+    L.marker(p.ll, { interactive: false, icon: L.divIcon({ className: p.x.camp ? "stop camp" : "stop snack", html: `${p.x.camp ? ICON.camp : ICON.snack}<b>${p.n}</b><i class="dur">${shortDur(p.hrs)}</i>`, iconSize: [(p.x.camp ? 34 : 28) + 6 * shortDur(p.hrs).length + 4, p.x.camp ? 20 : 16] }) }).addTo(m);
     L.control.scale({ imperial: false, metric: true, position: "bottomleft", maxWidth: 60 }).addTo(m);
     PICS.push(m);
   };
