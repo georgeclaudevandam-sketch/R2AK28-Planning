@@ -41,8 +41,9 @@ AREAS = [
     ("Queen Charlotte Strait", "CA", (50.75, -127.20), None, ""),
     ("Queen Charlotte Sound - eastern half", "CA", (51.25, -127.95), "46204", "West Sea Otter buoy; Cape Caution crossing"),
     ("Central Coast from McInnes Island to Pine Island", "CA", (51.75, -128.00), None, "Fitz Hugh Sound to Bella Bella"),
+    ("Inside channels, Finlayson to Grenville (no forecast area)", "CA", (53.00, -129.05), None, "inside route only; not a forecast area"),
     ("Hecate Strait - southern half", "CA", (52.70, -129.80), "46185", "South Hecate buoy; outside route only"),
-    ("Hecate Strait - northern half", "CA", (53.70, -130.60), "46183", "North Hecate buoy; outside route; nearest area to Grenville Channel"),
+    ("Hecate Strait - northern half", "CA", (53.70, -130.60), "46183", "North Hecate buoy; outside route only"),
     ("Dixon Entrance east", "CA", (54.55, -130.90), "46145", "Central Dixon Entrance buoy"),
     ("Clarence Strait (PKZ036)", "US", (55.10, -131.20), None, "Revillagigedo Channel to Ketchikan finish"),
 ]
@@ -76,32 +77,34 @@ def level(kn, country):
     return 3 if kn >= s else 2 if kn >= g else 1 if kn >= sc else 0
 
 
+HOURS = 61 * 24   # June 1 00:00 to July 31 24:00, Pacific daylight time (UTC-7)
+MERGE_H, MIN_H = 6, 2   # hours at small craft or more, with gaps up to MERGE_H, make one event; events shorter than MIN_H are dropped
+
+
 def era5(lat, lon, year):
-    """Hourly 10 m wind, kn, June 1 - July 31 of `year`, as {date: [hourly kn]} (local standard time days)."""
+    """Hourly 10 m wind, kn, June 1 - July 31 of `year`, a list of HOURS values (None where missing)."""
     q = urllib.parse.urlencode({"latitude": lat, "longitude": lon, "start_date": f"{year}-06-01", "end_date": f"{year}-07-31",
-                                "hourly": "wind_speed_10m", "wind_speed_unit": "kn", "models": "era5", "timezone": "America/Vancouver"})
+                                "hourly": "wind_speed_10m", "wind_speed_unit": "kn", "models": "era5", "timezone": "Etc/GMT+7"})
     b = get("https://archive-api.open-meteo.com/v1/archive?" + q)
     if not b:
         return None
-    h = json.loads(b)["hourly"]
-    days = {}
-    for t, v in zip(h["time"], h["wind_speed_10m"]):
-        if v is not None:
-            days.setdefault(t[:10], []).append(v)
-    return days
+    v = json.loads(b)["hourly"]["wind_speed_10m"]
+    return [None if x is None else round(x, 1) for x in v[:HOURS]] + [None] * max(0, HOURS - len(v))
 
 
-def count(days, country, scale=1.0):
-    """Days at small craft or higher, gale or higher, storm or higher; and episodes (runs of consecutive days at small craft+)."""
-    lv = {d: level(max(v) * scale, country) for d, v in days.items() if v}
-    n = [sum(1 for x in lv.values() if x >= k) for k in (1, 2, 3)]
-    ep, prev = 0, False
-    d0 = min(lv) if lv else None
-    for d in sorted(lv):
-        on = lv[d] >= 1
-        ep += on and not prev
-        prev = on
-    return {"sc_days": n[0], "gale_days": n[1], "storm_days": n[2], "episodes": ep, "days": len(lv), "max_kn": round(max((max(v) for v in days.values()), default=0) * scale, 1)}
+def events(hourly, country, scale=1.0):
+    """[[start hour, hours, level]] of runs at small craft or more (level = highest reached)."""
+    out, cur, gap = [], None, 0
+    for h, x in enumerate(hourly):
+        lv = level(x * scale, country) if x is not None else 0
+        if lv:
+            if cur and h - cur[1] <= MERGE_H:
+                cur[1] = h; cur[2] = max(cur[2], lv)
+            else:
+                if cur: out.append(cur)
+                cur = [h, h, lv]
+    if cur: out.append(cur)
+    return [[a, b - a + 1, lv] for a, b, lv in out if b - a + 1 >= MIN_H]
 
 
 def pct(vals, p):
@@ -110,7 +113,7 @@ def pct(vals, p):
 
 
 def meds(buoy):
-    """MEDS buoy hourly wind (kn) June-July, {date: [kn]}; WSPD is m/s (the higher of the two anemometers is used)."""
+    """MEDS buoy hourly wind (kn) June-July, {year: list of HOURS}; WSPD is m/s (the higher of the two anemometers is used)."""
     for url in (f"https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c{buoy}_csv.zip",
                 f"https://meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c{buoy}_csv.zip"):
         b = get(url, 300, 3)
@@ -119,20 +122,20 @@ def meds(buoy):
     else:
         return None
     z = zipfile.ZipFile(io.BytesIO(b))
-    days = {}
+    out = {}
     with z.open(z.namelist()[0]) as f:
         rd = csv.DictReader(io.TextIOWrapper(f, "latin-1"))
         for r in rd:
-            t = r.get("DATE") or r.get("Date") or ""
+            t = (r.get("DATE") or r.get("Date") or "").strip()
             try:
-                dt = datetime.strptime(t.strip()[:16], "%m/%d/%Y %H:%M")
+                dt = datetime.strptime(t[:16], "%m/%d/%Y %H:%M")
             except ValueError:
                 try:
-                    dt = datetime.fromisoformat(t.strip()[:16])
+                    dt = datetime.fromisoformat(t[:16])
                 except ValueError:
                     continue
-            dt -= timedelta(hours=8)   # UTC to PST days, as ERA5 above
-            if dt.month not in (6, 7):
+            dt -= timedelta(hours=7)   # UTC to PDT, as ERA5 above
+            if dt.month not in (6, 7) or r.get("Q_FLAG", "1") in ("3", "4", "9"):
                 continue
             w = []
             for k in ("WSPD", "WSS$", "WSPD$", "WSS"):
@@ -142,43 +145,67 @@ def meds(buoy):
                         w.append(x)
                 except ValueError:
                     pass
-            if r.get("Q_FLAG", "0") not in ("0", "1", "", None):
+            if not w:
                 continue
-            if w:
-                days.setdefault(dt.date().isoformat(), []).append(max(w) * 1.943844)
-    log(f"  buoy {buoy}: {len(days)} June-July days, header {rd.fieldnames[:12]}")
-    return days
+            h = int((dt - datetime(dt.year, 6, 1)).total_seconds() // 3600)
+            if 0 <= h < HOURS:
+                out.setdefault(dt.year, [None] * HOURS)[h] = round(max(w) * 1.943844, 1)
+    log(f"  buoy {buoy}: {len(out)} years, header {rd.fieldnames[:14]}")
+    return out
 
 
 def nws(zone):
+    """NWS small craft advisories and gale and storm warnings issued for a zone since 2005: June-July events as [[year, start hour, hours, level]]."""
     b = get(f"https://mesonet.agron.iastate.edu/json/vtec_events_byugc.php?ugc={zone}&sdate=2005-01-01&edate={Y1}-12-31")
     if not b:
         return None
-    ev = json.loads(b).get("events", [])
-    out = {}
-    for e in ev:
-        ph, sg = e.get("phenomena"), e.get("significance")
-        kind = {("SC", "Y"): "sc", ("GL", "W"): "gale", ("SR", "W"): "storm", ("HF", "W"): "storm"}.get((ph, sg))
-        if not kind:
+    out = []
+    for e in json.loads(b).get("events", []):
+        lv = {("SC", "Y"): 1, ("GL", "W"): 2, ("SR", "W"): 3, ("HF", "W"): 3}.get((e.get("phenomena"), e.get("significance")))
+        if not lv:
             continue
-        i = datetime.fromisoformat(e["issue"].replace("Z", "+00:00")[:19]) - timedelta(hours=8)
-        x = datetime.fromisoformat(e["expire"].replace("Z", "+00:00")[:19]) - timedelta(hours=8)
-        d = i.date()
-        while d <= x.date():
-            if d.month in (6, 7):
-                rank = {"sc": 1, "gale": 2, "storm": 3}[kind]
-                out[d.isoformat()] = max(out.get(d.isoformat(), 0), rank)
-            d += timedelta(days=1)
-    return {"days": out, "events": len(ev)}
+        i = datetime.fromisoformat(e["issue"][:19]) - timedelta(hours=7)
+        x = datetime.fromisoformat(e["expire"][:19]) - timedelta(hours=7)
+        h0 = int((i - datetime(i.year, 6, 1)).total_seconds() // 3600); h1 = int((x - datetime(i.year, 6, 1)).total_seconds() // 3600)
+        if h1 < 0 or h0 >= HOURS:
+            continue
+        out.append([i.year, max(0, h0), min(HOURS, h1) - max(0, h0), lv])
+    return out
+
+
+def stats(ev_by_year, hourly_by_year, country, scale):
+    """Likelihood, frequency and duration of events at small craft or more (sc) and gale or more (gale)."""
+    yrs = sorted(ev_by_year)
+    n = len(yrs)
+    s = {}
+    for key, lv in (("sc", 1), ("gale", 2), ("storm", 3)):
+        evs = [(y, e) for y in yrs for e in ev_by_year[y] if e[2] >= lv]
+        dur = [e[1] for _, e in evs]
+        # chance of at least one such event starting in a 16-day stretch, over every 16-day stretch of June-July
+        hit = tot = 0
+        for y in yrs:
+            st = [e[0] for e in ev_by_year[y] if e[2] >= lv]
+            for d0 in range(0, 61 - 16 + 1):
+                tot += 1; hit += any(d0 * 24 <= h < (d0 + 16) * 24 for h in st)
+        days = [len({(e[0] + k) // 24 for e in ev_by_year[y] if e[2] >= lv for k in range(e[1])}) for y in yrs]
+        hrs = sum(sum(1 for x in hourly_by_year[y] if x is not None and level(x * scale, country) >= lv) for y in yrs)
+        s[key] = {"events_per_jj": round(len(evs) / n, 2), "days_per_jj": round(sum(days) / n, 1), "share_of_hours_pct": round(100 * hrs / (n * HOURS), 2),
+                  "p_in_16_days": round(hit / tot, 3) if tot else None, "years_with_any_pct": round(100 * sum(d > 0 for d in days) / n),
+                  "dur_h": {"p25": pct(dur, 25), "median": pct(dur, 50), "p75": pct(dur, 75), "p90": pct(dur, 90), "max": max(dur) if dur else None},
+                  "longest_by_days": {"<12 h": sum(d < 12 for d in dur), "12-24 h": sum(12 <= d < 24 for d in dur), "1-2 days": sum(24 <= d < 48 for d in dur),
+                                      "2-3 days": sum(48 <= d < 72 for d in dur), "3+ days": sum(d >= 72 for d in dur)},
+                  "by_decade_events": {f"{d}-{d + 9}": round(sum(1 for y, _ in evs if d <= y < d + 10) / max(1, sum(1 for y in yrs if d <= y < d + 10)), 2) for d in range(Y0, Y1 + 1, 10)},
+                  "by_half_month_share_pct": {lab: round(100 * sum(1 for y in yrs for h in range(a * 24, b * 24) if hourly_by_year[y][h] is not None and level(hourly_by_year[y][h] * scale, country) >= lv)
+                                                        / (n * (b - a) * 24), 2) for lab, a, b in (("Jun 1-15", 0, 15), ("Jun 16-30", 15, 30), ("Jul 1-15", 30, 45), ("Jul 16-31", 45, 61))}}
+    return s
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    cache = OUT / "era5_daily_max.json"
+    cache = OUT / "era5_hourly.json"
     raw = json.loads(cache.read_text()) if cache.exists() else {}
     for name, cc, (la, lo), buoy, note in AREAS:
-        pts = [(name, la, lo)] + ([(f"buoy {buoy}", *BUOYS[buoy])] if buoy else [])
-        for key, a, b in pts:
+        for key, a, b in [(name, la, lo)] + ([(f"buoy {buoy}", *BUOYS[buoy])] if buoy else []):
             raw.setdefault(key, {})
             for y in range(Y0, Y1 + 1):
                 if str(y) in raw[key]:
@@ -186,92 +213,70 @@ def main():
                 d = era5(a, b, y)
                 if d is None:
                     log(f"  no ERA5 for {key} {y}"); continue
-                raw[key][str(y)] = {k: [round(max(v), 1), round(sorted(v)[len(v) // 2], 1)] for k, v in d.items()}   # daily max, median
+                raw[key][str(y)] = d
                 time.sleep(2.5)
             cache.write_text(json.dumps(raw, separators=(",", ":")))
             log(f"ERA5 {key}: {len(raw[key])} years")
 
-    def days_of(key, years=None):
-        return {d: [v[0]] for y, dd in raw.get(key, {}).items() if years is None or int(y) in years for d, v in dd.items()}
-
-    buoys = {}
-    for name, cc, _, buoy, _ in AREAS:
-        if buoy:
-            bd = meds(buoy)
-            if bd:
-                buoys[buoy] = bd
-    rows, summary = [], []
-    for name, cc, (la, lo), buoy, note in AREAS:
-        scale, cal = 1.0, None
-        if buoy in buoys:
-            bd = buoys[buoy]
-            yrs = sorted({int(d[:4]) for d in bd})
-            era_b = days_of(f"buoy {buoy}", set(yrs))
-            both = [d for d in bd if d in era_b and len(bd[d]) >= 12]
-            ob = [max(bd[d]) for d in both]; md = [era_b[d][0] for d in both]
-            if len(both) > 200:
-                scale = pct(ob, 95) / pct(md, 95)
-                bo = count({d: bd[d] for d in both}, cc); em = count({d: era_b[d] for d in both}, cc)
-                cal = {"buoy": buoy, "years": f"{yrs[0]}-{yrs[-1]}", "days_compared": len(both), "scale": round(scale, 2),
-                       "buoy_sc_days_per_jj": round(bo["sc_days"] / len(both) * 61, 1), "era5_sc_days_per_jj": round(em["sc_days"] / len(both) * 61, 1),
-                       "buoy_gale_days_per_jj": round(bo["gale_days"] / len(both) * 61, 2), "era5_gale_days_per_jj": round(em["gale_days"] / len(both) * 61, 2)}
-        nw = nws(NWS_ZONES[name]) if name in NWS_ZONES else None
-        per = []
-        for y in range(Y0, Y1 + 1):
-            dd = {d: [v[0]] for d, v in raw.get(name, {}).get(str(y), {}).items()}
-            if not dd:
-                continue
-            r = count(dd, cc); c = count(dd, cc, scale)
-            row = {"area": name, "year": y, **{f"era5_{k}": v for k, v in r.items() if k != "days"},
-                   **{f"corr_{k}": v for k, v in c.items() if k in ("sc_days", "gale_days", "storm_days", "episodes")}}
-            if buoy in buoys:
-                bdy = {d: v for d, v in buoys[buoy].items() if d.startswith(str(y)) and len(v) >= 12}
-                if len(bdy) >= 45:
-                    b = count(bdy, cc)
-                    row.update(buoy_days=len(bdy), buoy_sc_days=b["sc_days"], buoy_gale_days=b["gale_days"], buoy_storm_days=b["storm_days"], buoy_max_kn=b["max_kn"])
-            if nw and y >= 2005:
-                yd = [v for d, v in nw["days"].items() if d.startswith(str(y))]
-                row.update(nws_sc_days=sum(v >= 1 for v in yd), nws_gale_days=sum(v >= 2 for v in yd), nws_storm_days=sum(v >= 3 for v in yd))
-            rows.append(row); per.append(row)
-        if not per:
+    summary, out_ev, rows = [], [], []
+    for ai, (name, cc, (la, lo), buoy, note) in enumerate(AREAS):
+        hourly = {int(y): v for y, v in raw.get(name, {}).items()}
+        if not hourly:
             continue
-        n = len(per)
-        avg = lambda k: round(sum(r.get(k, 0) for r in per) / n, 2)
-        dec = {}
-        for d0 in range(1976, 2026, 10):
-            sub = [r for r in per if d0 <= r["year"] < d0 + 10]
-            if sub:
-                dec[f"{d0}s"] = round(sum(r["corr_sc_days"] for r in sub) / len(sub), 1)
-        # chance a given June-July day is at small craft or higher, by half-month
-        halves = {}
-        for lab, m, a, b in (("Jun 1-15", 6, 1, 15), ("Jun 16-30", 6, 16, 30), ("Jul 1-15", 7, 1, 15), ("Jul 16-31", 7, 16, 31)):
-            tot = hit = 0
-            for y, dd in raw.get(name, {}).items():
-                for d, v in dd.items():
-                    if int(d[5:7]) == m and a <= int(d[8:]) <= b:
-                        tot += 1; hit += level(v[0] * scale, cc) >= 1
-            halves[lab] = round(hit / tot, 3) if tot else None
-        s = {"area": name, "country": cc, "point": [la, lo], "note": note, "years": n,
-             "era5_sc_days": avg("era5_sc_days"), "era5_gale_days": avg("era5_gale_days"), "era5_storm_days": avg("era5_storm_days"),
-             "corr_sc_days": avg("corr_sc_days"), "corr_gale_days": avg("corr_gale_days"), "corr_storm_days": avg("corr_storm_days"),
-             "corr_episodes": avg("corr_episodes"), "years_with_gale_pct": round(100 * sum(r["corr_gale_days"] > 0 for r in per) / n),
-             "max_kn_era5": max(r["era5_max_kn"] for r in per), "by_decade_corr_sc_days": dec, "day_chance_sc_corr": halves, "calibration": cal}
-        if nw:
-            sub = [r for r in per if r["year"] >= 2005]
-            s["nws_2005_2025"] = {k: round(sum(r.get(k, 0) for r in sub) / len(sub), 2) for k in ("nws_sc_days", "nws_gale_days", "nws_storm_days")}
-            s["nws_events_all_months"] = nw["events"]
+        scale, cal = 1.0, None
+        bd = meds(buoy) if buoy else None
+        if bd:
+            era_b = {int(y): v for y, v in raw.get(f"buoy {buoy}", {}).items()}
+            ob, md = [], []
+            for y, obs in bd.items():
+                if y not in era_b:
+                    continue
+                for d in range(61):
+                    o = [x for x in obs[d * 24:(d + 1) * 24] if x is not None]; m = [x for x in era_b[y][d * 24:(d + 1) * 24] if x is not None]
+                    if len(o) >= 18 and len(m) == 24:
+                        ob.append(max(o)); md.append(max(m))
+            if len(ob) > 300:
+                scale = pct(ob, 95) / pct(md, 95)
+                cal = {"buoy": buoy, "years": f"{min(bd)}-{max(bd)}", "days_compared": len(ob), "scale": round(scale, 3),
+                       "buoy_p95_daily_max_kn": pct(ob, 95), "era5_p95_daily_max_kn": pct(md, 95),
+                       "buoy_sc_days_pct": round(100 * sum(level(x, cc) >= 1 for x in ob) / len(ob), 1),
+                       "era5_sc_days_pct": round(100 * sum(level(x, cc) >= 1 for x in md) / len(md), 1),
+                       "era5_scaled_sc_days_pct": round(100 * sum(level(x * scale, cc) >= 1 for x in md) / len(md), 1)}
+        ev = {y: events(hourly[y], cc, scale) for y in sorted(hourly)}
+        raw_ev = {y: events(hourly[y], cc) for y in sorted(hourly)}
+        s = {"area": name, "country": cc, "point": [la, lo], "note": note, "years": len(ev), "scale": round(scale, 3), "calibration": cal,
+             "thresholds_kn": dict(zip(("small_craft", "gale", "storm"), thresholds(cc))),
+             "corrected": stats(ev, hourly, cc, scale), "era5_raw": stats(raw_ev, hourly, cc, 1.0)}
+        if bd:
+            bev = {y: events(v, cc) for y, v in bd.items() if sum(x is not None for x in v) > 0.75 * HOURS}
+            if bev:
+                s["buoy_observed"] = stats(bev, {y: bd[y] for y in bev}, cc, 1.0)
+        if name in NWS_ZONES:
+            nw = nws(NWS_ZONES[name])
+            if nw is not None:
+                byy = {y: [[h, d, lv] for yy, h, d, lv in nw if yy == y] for y in range(2005, Y1 + 1)}
+                s["nws_issued_2005_on"] = stats(byy, {y: [None] * HOURS for y in byy}, cc, 1.0)
         summary.append(s)
-        log(name, json.dumps({k: s[k] for k in ("corr_sc_days", "corr_gale_days", "corr_storm_days")}), "cal", cal)
-    keys = sorted({k for r in rows for k in r}, key=lambda k: (k not in ("area", "year"), k))
-    keys = ["area", "year"] + [k for k in keys if k not in ("area", "year")]
+        out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "scale": round(scale, 3),
+                       "years": {str(y): e for y, e in ev.items()}})
+        for y in sorted(ev):
+            rows.append({"area": name, "year": y, **{f"{k}_events": sum(e[2] >= lv for e in ev[y]) for k, lv in (("sc", 1), ("gale", 2), ("storm", 3))},
+                         "sc_hours": sum(e[1] for e in ev[y]), "longest_h": max((e[1] for e in ev[y]), default=0),
+                         "max_kn": round(max((x for x in hourly[y] if x is not None), default=0) * scale, 1)})
+        log(name, "scale", round(scale, 2), json.dumps({k: (v["events_per_jj"], v["dur_h"]["median"]) for k, v in s["corrected"].items()}))
     with open(OUT / "area_year.csv", "w", newline="") as f:
-        w = csv.DictWriter(f, keys); w.writeheader(); w.writerows(rows)
+        w = csv.DictWriter(f, list(rows[0])); w.writeheader(); w.writerows(rows)
+    gen = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())
     (OUT / "summary.json").write_text(json.dumps({
-        "note": "June 1 - July 31, 1976-2025. Days per June-July at or above each warning level from ERA5 hourly 10 m wind at a route point "
-                "per marine forecast area (era5_*), the same scaled by the buoy/ERA5 ratio of 95th percentile daily max wind where a MEDS "
-                "buoy is in the area (corr_*; equal to era5_* elsewhere), MEDS buoy observations (buoy_*), and NWS warnings issued (nws_*, "
-                "US zone, 2005 on). Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn.",
-        "generated": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "areas": summary}, indent=1))
+        "note": "June 1 - July 31, 1976-2025, from ERA5 hourly 10 m wind at a point on the route in each marine forecast area. An event is a run "
+                f"of hours at small craft strength or more (gaps up to {MERGE_H} h merged, at least {MIN_H} h); its level is the highest it reached. "
+                "corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). "
+                "buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. "
+                "Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
+        "generated": gen, "areas": summary}, indent=1))
+    (OUT / "events.json").write_text(json.dumps({
+        "note": "Per area and year, June-July events at small craft strength or more: [start hour after June 1 00:00 PDT, hours, level 1 small craft / 2 gale / 3 storm]. "
+                "From scripts/storm_history.py (corrected ERA5).", "generated": gen, "y0": Y0, "y1": Y1, "areas": out_ev}, separators=(",", ":")))
     log("done")
 
 
