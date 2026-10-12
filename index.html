@@ -338,12 +338,21 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
     <p class="hint" id="sm-plan"></p>
     <label class="sl" for="sm-n">Scenarios <b id="sm-n-o"></b><input id="sm-n" type="range" min="1000" max="10000" step="1000" value="10000"></label>
     <h2>Storms</h2>
+    <label class="sl" for="sm-mode">Where the storms come from<select id="sm-mode"><option value="hist">Replay June&ndash;July weather, 1976&ndash;2025</option><option value="fixed">Set by the sliders</option></select>
+     <small id="sm-mode-note"></small></label>
+    <div class="stack" id="sm-hist-ctl" style="gap:10px">
+    <label class="sl" for="sm-lvl">Go ashore for<select id="sm-lvl"><option value="1">Small craft winds and up (20 kn; 23 kn in Alaska)</option><option value="2">Gales and up (34 kn)</option></select></label>
+    <label class="sl" for="sm-minh">Shortest blow that sends you ashore <b id="sm-minh-o"></b><input id="sm-minh" type="range" min="2" max="24" step="1" value="3"><small>Shorter spells of wind are rowed through.</small></label>
+    <label class="sl" for="sm-jit">Shift the calendar up to <b id="sm-jit-o"></b><input id="sm-jit" type="range" min="0" max="20" step="1" value="7"><small>Each scenario takes one past year's weather in every area along the route, moved this many days either way at random, so 50 years give many different races.</small></label>
+    </div>
+    <div class="stack" id="sm-fixed-ctl" style="gap:10px">
     <label class="sl" for="sm-k">Storms per race <b id="sm-k-o"></b><input id="sm-k" type="range" min="0" max="4" step="1" value="2"></label>
     <label class="sl" for="sm-dmin">Shortest storm <b id="sm-dmin-o"></b><input id="sm-dmin" type="range" min="1" max="5" step="1" value="1"></label>
     <label class="sl" for="sm-dmax">Longest storm <b id="sm-dmax-o"></b><input id="sm-dmax" type="range" min="1" max="5" step="1" value="3"><small>Each storm lasts a whole number of days, picked evenly between these.</small></label>
     <label class="sl" for="sm-w0">Storms can start from day <b id="sm-w0-o"></b><input id="sm-w0" type="range" min="0" max="20" step="1" value="0"></label>
     <label class="sl" for="sm-w1">to day <b id="sm-w1-o"></b><input id="sm-w1" type="range" min="1" max="30" step="1" value="16"><small>Days after the Stage 2 start, any hour of the day. A storm that comes after you finish does nothing.</small></label>
     <label class="sl" for="sm-gap">At least this long between storms <b id="sm-gap-o"></b><input id="sm-gap" type="range" min="0" max="7" step="0.5" value="1"></label>
+    </div>
     <h2>Crew</h2>
     <label class="sl" for="sm-warn">Warning before a storm hits <b id="sm-warn-o"></b><input id="sm-warn" type="range" min="0" max="24" step="1" value="6"><small>The crew heads for shelter this long before it hits, and waits ashore from then on.</small></label>
     <label class="sl" for="sm-reach">Furthest to row for shelter <b id="sm-reach-o"></b><input id="sm-reach" type="range" min="2" max="30" step="1" value="10"><small>Along the route, ahead or back, not through a tidal gate. Nothing in reach: the storm is sat out on the water and the table flags it.</small></label>
@@ -356,6 +365,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
    </div>
    <div class="stack" style="gap:18px;min-width:0" id="sm-results">
     <div class="card"><h2>Finish, Victoria to Ketchikan</h2><div class="tiles" id="sm-tiles"></div><div id="sm-hist"></div><p class="hint" id="sm-hist-note"></p></div>
+    <div class="card"><h2>Storm history by area, June&ndash;July 1976&ndash;2025</h2><p class="hint" id="sm-area-note">Loading&hellip;</p><div class="tbl-wrap"><table class="stbl" id="sm-area"></table></div></div>
     <div class="card"><h2>What the storms cost</h2><p class="hint">Days lost against the storm days. A storm can cost more than its own length when the tides and gates no longer line up afterwards, or less when it falls on a stop you were making anyway.</p><div class="tbl-wrap"><table class="stbl" id="sm-cost"></table></div></div>
     <div class="card"><h2>Storm shelters</h2><p class="hint">Where crews sat out the storms, most used first. Cumulative share: how many of all storm stops the list covers down to that row, so a short list can cover most of them. Click a row to see it on the map.</p>
      <div class="runbar"><button id="sm-csv" type="button" class="ghost" disabled>Download the list (CSV)</button></div>
@@ -1975,16 +1985,20 @@ let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 
 // ---------- storm contingency page: Monte Carlo storms against the plan
-const SM = { ctl: { n: 10000, k: 2, dmin: 1, dmax: 3, w0: 0, w1: 16, gap: 1, warn: 6, reach: 10, pct: 100, target: 19, seed: 2028 }, run: null, res: null, map: null, layer: null, init: false };
+const SM = { ctl: { mode: "hist", lvl: 1, minh: 3, jit: 7, n: 10000, k: 2, dmin: 1, dmax: 3, w0: 0, w1: 16, gap: 1, warn: 6, reach: 10, pct: 100, target: 19, seed: 2028 }, run: null, res: null, map: null, layer: null, init: false };
 const SM_FMT = { n: (v) => v.toLocaleString("en-US"), k: (v) => `${v}`, dmin: (v) => `${v} day${v > 1 ? "s" : ""}`, dmax: (v) => `${v} day${v > 1 ? "s" : ""}`, w0: (v) => `${v}`, w1: (v) => `${v}`,
-  gap: (v) => `${v} day${v === 1 ? "" : "s"}`, warn: (v) => `${v} h`, reach: (v) => `${v} nm (${(v * 1.852).toFixed(0)} km)`, pct: (v) => `${v}%`, target: (v) => `${v} days` };
+  gap: (v) => `${v} day${v === 1 ? "" : "s"}`, warn: (v) => `${v} h`, reach: (v) => `${v} nm (${(v * 1.852).toFixed(0)} km)`, pct: (v) => `${v}%`, target: (v) => `${v} days`,
+  minh: (v) => `${v} h`, jit: (v) => `${v} day${v === 1 ? "" : "s"}` };
 function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const siteLabel = (c) => c.landing ? `${landingKind(c.landing)}${c.landing.name ? " " + c.landing.name : ""}, ${c.place}` : `past campsite ${c.place} (used by ${c.teams} team${c.teams > 1 ? "s" : ""})`;
 const fmtDH = (h) => { const m = Math.round(h); return `${Math.floor(m / 24)} d ${String(m % 24).padStart(2, "0")} h`; };
 function smSync() {
   const c = SM.ctl;
   Object.keys(SM_FMT).forEach((k) => { $("sm-" + k).value = c[k]; $("sm-" + k + "-o").textContent = SM_FMT[k](c[k]); });
-  $("sm-seed").value = c.seed;
+  $("sm-seed").value = c.seed; $("sm-mode").value = c.mode; $("sm-lvl").value = c.lvl;
+  $("sm-hist-ctl").hidden = c.mode !== "hist"; $("sm-fixed-ctl").hidden = c.mode === "hist";
+  $("sm-mode-note").textContent = c.mode === "hist" ? "Each area on the route gets the winds it had in a past June and July (ERA5 reanalysis, checked against weather buoys); the crew shelters from any blow in the area it is in." : "The same storms anywhere on the route: so many per race, so long, at random times.";
+  smAreaTable();
   const P = LAST_PLAN;
   if (P) $("sm-plan").innerHTML = `Plan from the planner page: Stage 2 starts ${esc(fmt.format(P.s2))}, ${state.days} days to Ketchikan by the ${state.north} route, boat speed ${P.v2.toFixed(2)} kn through the water, ${state.whours} rowing hours a day${state.nightOn ? ", ashore at night" : ""}. Change these on the planner page.`;
 }
@@ -1998,6 +2012,8 @@ function smInit() {
     if (k === "w0" && c.w1 <= v) c.w1 = v + 1; if (k === "w1" && c.w0 >= v) c.w0 = v - 1;
     smSync(); smSave(); if (k === "target" && SM.res) smRender(); else smStale();
   }));
+  ["mode", "lvl"].forEach((k) => $("sm-" + k).addEventListener("change", (e) => { SM.ctl[k] = k === "lvl" ? +e.target.value : e.target.value; smSync(); smSave(); smStale(); smAreaTable(); }));
+  smLoadHist();
   $("sm-seed").addEventListener("change", (e) => { SM.ctl.seed = Math.max(1, parseInt(e.target.value) || 1); smSave(); smStale(); });
   $("sm-run").onclick = smRun;
   $("sm-stop").onclick = () => { if (SM.run) SM.run.stop = true; };
@@ -2020,6 +2036,69 @@ function smStorms(rnd, s2) {
   }
   return out.map((x) => ({ ...x, end: x.t + x.days * 864e5, go: x.t - c.warn * H }));
 }
+// storm history (scripts/storm_history.py): per forecast area and year, the June-July blows at small craft strength or more
+let SH = null;
+async function smLoadHist() {
+  if (SH) return SH;
+  const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(p + " " + r.status); return r.json(); });
+  try { const [e, sum] = await Promise.all([get("data/storm_history/events.json"), get("data/storm_history/summary.json")]); SH = { e, sum }; }
+  catch (err) { SH = { e: null, sum: null }; if (SM.ctl.mode === "hist") { SM.ctl.mode = "fixed"; smSync(); } $("sm-mode").querySelector('[value="hist"]').disabled = true; }
+  smAreaTable(); return SH;
+}
+// the areas a route passes through: Hecate Strait only on the outside route, the inside channels only on the inside one
+const smAreaOn = (a, north) => /Hecate/.test(a.area) ? north === "outside" : /^Inside channels/.test(a.area) ? north !== "outside" : true;
+// which area each nm of the route is in (the nearest area's sample point)
+function smAreaIdx(ch) {
+  if (ch._area) return ch._area;
+  const A = SH.e.areas, idx = new Int8Array(Math.ceil(ch.total) + 2);
+  for (let k = 0; k < idx.length; k++) {
+    const ll = pointAt(ch, Math.min(k, ch.total)); let best = -1, bd = 1e9;
+    A.forEach((a, i) => { if (!smAreaOn(a, ch.north)) return; const d = nmBetween(ll, a.point); if (d < bd) { bd = d; best = i; } });
+    idx[k] = best;
+  }
+  return (ch._area = idx);
+}
+function posAt(track, t) {
+  let lo = 0, hi = track.length - 1;
+  if (t <= track[0][0]) return track[0][1]; if (t >= track[hi][0]) return track[hi][1];
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (track[m][0] <= t) lo = m; else hi = m; }
+  return track[lo][1];
+}
+// one scenario from history: a past year's weather (shifted a few days), and the crew shelters from each blow in the area it is in
+// when it hits. Taken in time order, re-running the plan after each, since a storm moves the crew and so which later blows reach it.
+function smHistStorms(rnd, R, sim) {
+  const c = R.c, P = R.P, E = SH.e, years = Object.keys(E.areas[0].years), y = years[Math.floor(rnd() * years.length)];
+  const off = Math.round((rnd() * 2 - 1) * c.jit), j1 = pdt(`${state.s2d.slice(0, 4)}-06-01`, "00:00"), tOf = (h) => j1 + (h - off * 24) * H;
+  const idx = smAreaIdx(R.ch.stage2), on = new Set(idx);
+  const cand = [];
+  E.areas.forEach((a, ai) => { if (!on.has(ai)) return; (a.years[y] || []).forEach(([h0, dur, lv]) => { if (lv >= c.lvl && dur >= c.minh && tOf(h0 + dur) > P.s2) cand.push({ ai, t: tOf(h0), end: tOf(h0 + dur), lv }); }); });
+  cand.sort((a, b) => a.t - b.t);
+  const storms = []; let r = R.base, prevEnd = -Infinity;
+  for (const e of cand) {
+    if (e.end <= prevEnd) continue;
+    const ts = Math.max(e.t, prevEnd, P.s2); if (ts >= r.finish) break;
+    const pos = posAt(r.track, ts); if (pos >= R.ch.stage2.total - 1 || idx[Math.round(pos)] !== e.ai) continue;
+    storms.push({ go: Math.max(ts - c.warn * H, prevEnd, P.s2), t: ts, end: e.end, days: (e.end - ts) / 864e5, area: e.ai, lv: e.lv });
+    prevEnd = e.end;
+    const day = Math.max(0, Math.min(R.base._snaps.length - 1, Math.floor((storms[0].go - P.s2) / 864e5)));
+    r = sim({ storms, shelterNm: c.reach, from: R.base._snaps[day] });
+  }
+  return { r, storms, y, off };
+}
+function smAreaTable() {
+  if (!SH) return;
+  if (!SH.sum) { $("sm-area-note").textContent = "The storm history has not been built yet (data/storm_history/)."; return; }
+  const north = state.north, R = SM.res && SM.res.c.mode === "hist" ? SM.res : null;
+  const k = SM.ctl.lvl >= 2 ? "gale" : "sc", rows = SH.sum.areas.map((a, i) => ({ a, i })).filter((x) => smAreaOn(x.a, north));
+  const f1 = (x) => x == null ? "" : x.toFixed(1), hr = (x) => x == null ? "" : x >= 48 ? `${(x / 24).toFixed(1)} d` : `${x} h`;
+  $("sm-area-note").innerHTML = `One sample point on the route in each Environment Canada marine forecast area (and the US zone at Ketchikan), ${north} route. ` +
+    `A blow is a spell of ${k === "gale" ? "gale-force wind (34 kn)" : "wind at small craft warning strength (20 kn in Canada, 23 kn in Alaska)"} or more, gaps under 6 h joined. ` +
+    `From ERA5 hourly wind, scaled to match the weather buoy where an area has one. <b>Chance in 16 days</b>: that at least one starts in a given 16-day stretch of June or July.` +
+    (R ? " <b>Met per race</b>: how many the crew actually sat out there, on average, in the last run." : "");
+  $("sm-area").innerHTML = `<thead><tr><th>Area</th><th class="n">Blows per Jun&ndash;Jul</th><th class="n">Chance in 16 days</th><th class="n">Days with one</th><th class="n">Typical length</th><th class="n">1 in 10 last over</th><th class="n">Longest</th>${R ? '<th class="n">Met per race</th>' : ""}</tr></thead><tbody>` +
+    rows.map(({ a, i }) => { const s = a.corrected[k], cal = a.calibration;
+      return `<tr><td>${esc(a.area)}${a.note ? `<div class="sub">${esc(a.note)}${cal ? `; ERA5 &times;${cal.scale.toFixed(2)}` : ""}</div>` : ""}</td><td class="n">${f1(s.events_per_jj)}</td><td class="n">${Math.round(100 * s.p_in_16_days)}%</td><td class="n">${f1(s.days_per_jj)}</td><td class="n">${hr(s.dur_h.median)}</td><td class="n">${hr(s.dur_h.p90)}</td><td class="n">${hr(s.dur_h.max)}</td>${R ? `<td class="n">${((R.areaMet[i] || 0) / R.i).toFixed(2)}</td>` : ""}</tr>`; }).join("") + "</tbody>";
+}
 function smRun() {
   const P = LAST_PLAN; if (!P || SM.run) return;
   const c = { ...SM.ctl }, ch = P.ch, g2 = gatesOn(ch.stage2, 2), v = P.v2 * c.pct / 100;
@@ -2027,21 +2106,23 @@ function smRun() {
   const base = sim({ snap: true }), rnd = mulberry32(c.seed);
   const swDep = pdt(addDays(state.s2d, SWEEPER_DAYS), "12:00"), raceEnd = pdt(addDays(state.s2d, RACE_END_DAYS), "12:00"), t1 = ch.stage1.total;
   const swept = (tr) => { for (const [t, pos] of tr) if (t >= swDep && ((t - swDep) / H) * (SWEEPER_NM_DAY / 24) >= t1 + pos) return true; return false; };
-  const R = SM.run = { c, P, ch, base, i: 0, fin: new Float64Array(c.n), sdays: new Uint8Array(c.n), swept: 0, beforeEnd: 0, water: 0, waterScn: 0, events: 0, sites: new Map(), gaps: new Map(), stop: false, raceEnd, t0: performance.now() };
+  if (c.mode === "hist" && !(SH && SH.e)) return;
+  const R = SM.run = { c, P, ch, base, i: 0, fin: new Float64Array(c.n), sdays: new Float32Array(c.n), areaMet: {}, swept: 0, beforeEnd: 0, water: 0, waterScn: 0, events: 0, sites: new Map(), gaps: new Map(), stop: false, raceEnd, t0: performance.now() };
   $("sm-run").disabled = true; $("sm-stop").disabled = false; $("sm-csv").disabled = true; $("sm-results").classList.remove("stale");
   const chunk = () => {
     const until = performance.now() + 60;
     while (R.i < c.n && performance.now() < until && !R.stop) {
-      const storms = smStorms(rnd, P.s2);
-      let r = base;
-      if (storms.length && storms[0].go < base.finish) {
+      let r = base, storms = [];
+      if (c.mode === "hist") ({ r, storms } = smHistStorms(rnd, R, sim));
+      else storms = smStorms(rnd, P.s2);
+      if (c.mode !== "hist" && storms.length && storms[0].go < base.finish) {
         const day = Math.max(0, Math.min(base._snaps.length - 1, Math.floor((storms[0].go - P.s2) / 864e5)));
         r = sim({ storms, shelterNm: c.reach, from: base._snaps[day] });
       }
       R.fin[R.i] = (r.finish - P.s2) / 864e5;
       let sd = 0, wet = false;
       (r.storms || []).forEach((x) => {
-        sd += x.days; R.events++;
+        sd += x.days; R.events++; if (x.area != null) R.areaMet[x.area] = (R.areaMet[x.area] || 0) + 1;
         if (x.port) return;
         if (x.site) {
           const k = x.site.ll.join(",");
@@ -2053,7 +2134,7 @@ function smRun() {
           e.n++; e.h += (x.end - x.at) / H; e.pos += x.pos;
         }
       });
-      R.sdays[R.i] = sd; if (wet) R.waterScn++;
+      R.sdays[R.i] = c.mode === "hist" ? Math.round(sd * 2) / 2 : sd; if (wet) R.waterScn++;
       if (r.finish <= raceEnd) R.beforeEnd++;
       if (r.finish > swDep && swept(r.track)) R.swept++;
       R.i++;
@@ -2069,6 +2150,7 @@ function smRun() {
 }
 function smRender() {
   const R = SM.res; if (!R || !R.i) return;
+  smAreaTable();
   const n = R.i, fin = Array.from(R.fin.subarray(0, n)).sort((a, b) => a - b), q = (p) => fin[Math.min(n - 1, Math.floor(p * n))];
   const plan = (R.base.finish - R.P.s2) / 864e5, tgt = SM.ctl.target, pct = (x) => `${(100 * x / n).toFixed(x && x < n / 100 ? 1 : 0)}%`;
   const d = (x) => `${x.toFixed(1)} d`, onT = fin.filter((x) => x <= tgt).length;
@@ -2095,7 +2177,7 @@ function smRender() {
   for (let i = 0; i < n; i++) { const k = R.sdays[i]; let e = by.get(k); if (!e) by.set(k, e = []); e.push(R.fin[i] - plan); }
   $("sm-cost").innerHTML = `<thead><tr><th class="n">Storm days</th><th class="n">Scenarios</th><th class="n">Days lost, average</th><th class="n">9 in 10 lose at most</th><th class="n">Lost per storm day</th></tr></thead><tbody>` +
     [...by.keys()].sort((a, b) => a - b).map((k) => { const a = by.get(k).sort((x, y) => x - y), m = a.reduce((x, y) => x + y, 0) / a.length;
-      return `<tr><td class="n">${k}</td><td class="n">${a.length.toLocaleString("en-US")}</td><td class="n">${m.toFixed(2)}</td><td class="n">${a[Math.min(a.length - 1, Math.floor(0.9 * a.length))].toFixed(2)}</td><td class="n">${k ? (m / k).toFixed(2) : ""}</td></tr>`; }).join("") +
+      return `<tr><td class="n">${k % 1 ? k.toFixed(1) : k}</td><td class="n">${a.length.toLocaleString("en-US")}</td><td class="n">${m.toFixed(2)}</td><td class="n">${a[Math.min(a.length - 1, Math.floor(0.9 * a.length))].toFixed(2)}</td><td class="n">${k ? (m / k).toFixed(2) : ""}</td></tr>`; }).join("") +
     `</tbody><caption class="hint" style="caption-side:bottom;text-align:left;padding-top:6px">Storm days counts only storms that came before the finish; ones after it cost nothing.</caption>`;
   // shelter list
   const list = [...R.sites.values()].sort((a, b) => b.n - a.n), tot = list.reduce((x, e) => x + e.n, 0) + R.water;
