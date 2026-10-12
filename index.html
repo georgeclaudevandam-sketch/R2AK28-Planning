@@ -1588,12 +1588,12 @@ function sunTimes(ll, t) {   // [sunrise, sunset] on the local day containing t 
   const cross = (a, b, down) => { for (let i = 0; i < 14; i++) { const m = (a + b) / 2; if (isDark(m, ll) === down) b = m; else a = m; } return (a + b) / 2; };
   return [cross(T - 12 * H, T, false), cross(T, T + 12 * H, true)];
 }
-// Chart strips for paper: the day's route cut into pages of chart at about 1:110,000 (12 x 13.9 nm, the letter page less its
+// Chart strips for paper: the day's route cut into pages of chart at about 1:110,000 (12 x 13.3 nm, the letter page less its
 // header), each one a single export of the CHS chart for that box (NOAA in US waters, clipped at the border), with the
 // route, each hour's planned position, the gates, stops and camp, and the other past campsites drawn over it.
-const STRIP_W = 12, STRIP_H = 13.9, STRIP_PX = [1500, 1738];
+const STRIP_W = 12, STRIP_H = 13.3, STRIP_PX = [1500, 1663];
 const merc = (ll) => { const R = 6378137, r = Math.PI / 180; return [R * ll[1] * r, R * Math.log(Math.tan(Math.PI / 4 + ll[0] * r / 2))]; };
-function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
+function chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine) {
   // greedy along the route: each page takes as much route as fits in its box, less 1 nm each side
   const pts = []; for (let a = p0; a < p1; a += 0.2) pts.push([a, pointAt(c, a)]); pts.push([p1, pointAt(c, p1)]);
   const boxes = []; let i = 0;
@@ -1629,7 +1629,7 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
       <image href="${q(NOAA_SVC, "show:0,1,2,3,4,5,6,7", 200, 1.3)}" width="${PW}" height="${PH}" clip-path="url(#us${title.length}_${n})"/>
       <polyline points="${line.join(" ")}" class="rt"/>${ticks.join("")}${alt.join("")}${hrs.join("")}${mk.join("")}
       <rect x="20" y="${PH - 50}" width="${(PW / STRIP_W) * 2}" height="10" class="sb"/><text x="20" y="${PH - 60}" class="nm">2 nm</text></svg>
-      <footer>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`;
+      <footer><b>${esc(planLine)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`;
   });
 }
 function printSheets() {
@@ -1637,6 +1637,9 @@ function printSheets() {
   const { ch, r1, r2 } = P, hm = (t) => fmtT.format(t), dur = (h) => shortDur(h);
   const kn = (v) => `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(1)}`;
   const sheets = [];
+  // which plan these pages are for, on every page, so a sheet that strays from the pile can't be mistaken for another plan
+  const target = (r2.finish - P.s2) / (24 * H);
+  const planLine = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(r2.finish)} (${target.toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
   const build = (stage, c, rec, v, t0, t1, from, to, title, stops, endStop) => {
     const pos = (t) => Math.max(0, Math.min(c.total, posAt(rec.track, t))), p0 = pos(t0), p1 = endStop ? endStop.pos : pos(t1);
     const place = (p) => nearPlace(pointAt(c, p)).replace(/^at /, "");
@@ -1667,17 +1670,17 @@ function printSheets() {
     const alt = !c._camps || !endStop ? [] : c._camps.filter((x) => Math.abs(x.a - p1) <= 12 && !(endStop && endStop.site && nmBetween(x.ll, endStop.site.ll) < 0.05))
       .sort((a, b) => Math.abs(a.a - p1) - Math.abs(b.a - p1)).slice(0, 6).sort((a, b) => a.a - b.a)
       .map((x) => `<tr><td class="n">${x.a.toFixed(0)}</td><td class="n">${x.o.toFixed(1)}</td><td>${esc(x.landing ? landingKind(x.landing) + (x.landing.name ? " " + x.landing.name : "") : x.dock ? "dock" : "past campsite (" + x.teams + " team" + (x.teams > 1 ? "s" : "") + ")")}, ${esc(x.place)}</td></tr>`);
-    sheets.push(`<section><header><h1>${esc(title)}</h1><p>${fmt.format(t0)} to ${fmt.format(t1)} · ${(p1 - p0).toFixed(0)} nm along the route · rowing ${dur(rowH)} · ${v.toFixed(2)} kn through the water</p>
+    sheets.push(`<section><header><p class="plan">${esc(planLine)}</p><h1>${esc(title)}</h1><p>${fmt.format(t0)} to ${fmt.format(t1)} · ${(p1 - p0).toFixed(0)} nm along the route · rowing ${dur(rowH)} · ${v.toFixed(2)} kn through the water</p>
       <p>${esc(from)} &rarr; ${esc(to)} · sunset ${hm(set)}, sunrise next day ${hm(rise2)} at the end of the day</p></header>
       <h2>Plan</h2><table><thead><tr><th>Time</th><th>What</th><th>Where</th><th class="n">nm</th><th>Notes</th></tr></thead><tbody>${ev.map((e) => `<tr><td>${hm(e.t)}</td><td><b>${esc(e.k)}</b></td><td>${esc(e.w)}</td><td class="n">${e.p.toFixed(0)}</td><td>${esc(e.n)}</td></tr>`).join("")}</tbody></table>
       <div class="cols"><div><h2>Stream each hour while rowing</h2><table class="sm"><thead><tr><th>Time</th><th class="n">nm</th><th>Near</th><th class="n">Stream</th><th class="n">Thru water</th><th class="n">Over ground</th></tr></thead><tbody>${hrs.join("") || '<tr><td colspan="6">Not rowing</td></tr>'}</tbody></table><p class="k">Stream in knots along the route, + with you, − against.</p></div>
       <div><h2>Other stops near the end</h2><table class="sm"><thead><tr><th class="n">nm</th><th class="n">Off route</th><th>Place</th></tr></thead><tbody>${alt.join("") || `<tr><td colspan="3">${endStop ? "None listed" : "Finish line"}</td></tr>`}</tbody></table>
       <h2>Notes</h2><div class="lines"></div></div></div>
-      <footer>R2AK 2028 planner · ${esc(state.north)} route · for planning, not navigation: check the official CHS/NOAA tables and the forecast</footer></section>`);
+      <footer><b>${esc(planLine)}</b><br>R2AK 2028 planner · for planning, not navigation: check the official CHS/NOAA tables and the forecast</footer></section>`);
     const marks = [{ ll: pointAt(c, p0), label: from, cls: "go" }, ...gates.map((g) => ({ ll: [g.st.lat, g.st.lon], label: g.st.name, cls: "gate" })),
       ...stops.map((x, i) => ({ ll: x.site ? x.site.ll : pointAt(c, x.pos), label: `Stop ${i + 1} ${hm(x.t)}`, cls: "stop" })),
       { ll: endStop && endStop.site ? endStop.site.ll : pointAt(c, p1), label: endStop ? `Camp ${hm(t1)}` : to, cls: "end" }];
-    sheets.push(...chartStrips(c, rec, t0, t1, p0, p1, marks, title));
+    sheets.push(...chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine));
   };
   // Stage 1
   build(1, ch.stage1, r1, P.v1, P.s1, r1.finish, "Port Townsend", "Victoria", "Stage 1: Port Townsend to Victoria", [], null);
@@ -1701,14 +1704,14 @@ function printSheets() {
     th { font-size: 9pt; } .n { text-align: right; white-space: nowrap; } table.sm { font-size: 9pt; } .k { font-size: 8.5pt; margin: 2pt 0; }
     .cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14pt; } .lines { height: 150pt; background: repeating-linear-gradient(#fff 0 17pt, #999 17pt 17.5pt); }
     footer { font-size: 8pt; margin-top: 8pt; color: #333; }
-    .strip header p { font-size: 8.5pt; } svg.chart { display: block; width: 7.5in; height: 8.69in; margin-top: 4pt; border: 0.75pt solid #000; }
+    .strip header p { font-size: 8.5pt; } header p.plan { font-size: 9pt; font-weight: 600; border: 1pt solid #000; padding: 2pt 5pt; margin-bottom: 4pt; display: inline-block; } svg.chart { display: block; width: 7.5in; height: 8.31in; margin-top: 4pt; border: 0.75pt solid #000; }
     .sea { fill: #eef5fa; } .rt { fill: none; stroke: #c026d3; stroke-width: 6; stroke-opacity: 0.75; stroke-linejoin: round; }
     svg text { font: 600 26px system-ui, sans-serif; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 6px; } svg text.nm { font-size: 22px; fill: #7e22ce; }
     .hr { fill: #fff; stroke: #c026d3; stroke-width: 4; } .tk { fill: #7e22ce; } .alt { fill: #16a34a; stroke: #fff; stroke-width: 2; }
     .mk { stroke: #000; stroke-width: 3; fill: #fff; } .mk.gate { fill: #f59e0b; } .mk.stop { fill: #38bdf8; } .mk.end, .mk.go { fill: #dc2626; } .mkl { font-size: 28px; }
     .sb { fill: #000; } .nocharts .strip { display: none; } .bar { margin: 8pt 0; } @media print { .bar { display: none; } }`;
   const w = window.open("", "_blank"); if (!w) { alert("Allow pop-ups for this page to open the daily sheets."); return; }
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}</body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets, ${state.days} days</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}</body></html>`);
   w.document.close();
 }
 function when(t) { const d = new Date(t), p = (o) => new Intl.DateTimeFormat("en-US", Object.assign({ timeZone: TZ }, o)).format(d); return `<span class="when">${p({ month: "short", day: "numeric" })}</span><br>${p({ hour: "2-digit", minute: "2-digit", hour12: false })}`; }
