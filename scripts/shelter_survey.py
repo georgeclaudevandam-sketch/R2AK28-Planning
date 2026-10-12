@@ -120,8 +120,9 @@ def chart_features(bbox, dense):
                     continue
                 seen.add(key)
                 if t == "DEPARE":   # only drying areas (intertidal flats): DRVAL1 below chart datum
+                    v = str(a.get("DRVAL1", a.get("Depth range value 1", ""))).split()
                     try:
-                        if float(str(a.get("DRVAL1", a.get("Depth range value 1", "0"))).split()[0]) >= 0:
+                        if not v or float(v[0]) >= 0:
                             continue
                     except ValueError:
                         continue
