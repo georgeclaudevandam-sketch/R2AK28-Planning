@@ -54,21 +54,21 @@ NWS_ZONES = {"Clarence Strait (PKZ036)": "PKZ036"}
 # Observed wind: Environment Canada lightstations and automatic stations in each area (names as in its station inventory, in order of
 # preference; each name's stations within 25 km of the area are joined into one record), and NDBC stations in Alaska.
 OBS = {
-    "Juan de Fuca Strait - east entrance": ["RACE ROCKS", "VICTORIA HARTLAND", "TRIAL ISLAND"],
-    "Haro Strait": ["DISCOVERY ISLAND", "TRIAL ISLAND"],
-    "Strait of Georgia - south of Nanaimo": ["ENTRANCE ISLAND", "BALLENAS ISLAND", "SATURNA ISLAND"],
-    "Strait of Georgia - north of Nanaimo": ["SISTERS ISLAND", "MERRY ISLAND", "CAPE MUDGE"],
-    "Johnstone Strait": ["CHATHAM POINT", "HELMCKEN ISLAND", "KELSEY BAY"],
-    "Queen Charlotte Strait": ["PINE ISLAND", "PULTENEY POINT", "SCARLETT POINT", "HERBERT ISLAND"],
-    "Queen Charlotte Sound - eastern half": ["EGG ISLAND", "PINE ISLAND"],
-    "Central Coast from McInnes Island to Pine Island": ["ADDENBROKE ISLAND", "DRYAD POINT", "IVORY ISLAND", "MCINNES ISLAND"],
-    "Inside channels, Finlayson to Grenville (no forecast area)": ["BOAT BLUFF", "CATHEDRAL POINT", "IVORY ISLAND"],
-    "Hecate Strait - southern half": ["BONILLA ISLAND", "MCINNES ISLAND"],
-    "Hecate Strait - northern half": ["BONILLA ISLAND", "GREY ISLET", "HOLLAND ROCK"],
-    "Dixon Entrance east": ["GREEN ISLAND", "HOLLAND ROCK", "LUCY ISLAND", "TRIPLE ISLAND"],
-    "Clarence Strait (PKZ036)": ["ndbc:mrya2", "ndbc:scxa2"],
+    "Juan de Fuca Strait - east entrance": ["VICTORIA GONZALES", "TRIAL ISLAND"],
+    "Haro Strait": ["KELP REEFS", "DISCOVERY ISLAND"],
+    "Strait of Georgia - south of Nanaimo": ["ENTRANCE ISLAND", "BALLENAS ISLAND"],
+    "Strait of Georgia - north of Nanaimo": ["SISTERS ISLAND", "GRIEF POINT", "MERRY ISLAND"],
+    "Johnstone Strait": ["FANNY ISLAND", "HELMCKEN ISLAND", "CHATHAM POINT"],
+    "Queen Charlotte Strait": ["HERBERT ISLAND", "PINE ISLAND", "ALERT BAY"],
+    "Queen Charlotte Sound - eastern half": ["EGG ISLAND"],
+    "Central Coast from McInnes Island to Pine Island": ["ADDENBROKE ISLAND", "DRYAD POINT", "BELLA BELLA", "IVORY ISLAND", "MCINNES ISLAND"],
+    "Inside channels, Finlayson to Grenville (no forecast area)": ["BOAT BLUFF"],
+    "Hecate Strait - southern half": [],
+    "Hecate Strait - northern half": ["BONILLA ISLAND"],
+    "Dixon Entrance east": ["GREY ISLET", "GREEN ISLAND", "TRIPLE ISLAND", "LUCY ISLAND", "HOLLAND ROCK"],
+    "Clarence Strait (PKZ036)": ["ndbc:mrya2", "ndbc:ktna2"],
 }
-OBS_KM = 60   # how far from the area's route point a named station may be
+OBS_KM = 80   # how far from the area's route point a named station may be
 
 
 def log(*a):
@@ -212,14 +212,14 @@ def nm(a, b):
 
 
 def fill(series):
-    """Carry each observation forward up to 2 h, so 3-hourly lightstation reports read as a continuous record."""
+    """Carry each observation forward up to 3 h, so 3- and 4-hourly lightstation reports read as a continuous record."""
     out, last, age = list(series), None, 9
     for h, x in enumerate(series):
         if x is not None:
             last, age = x, 0
         else:
             age += 1
-            if last is not None and age <= 2:
+            if last is not None and age <= 3:
                 out[h] = last
     return out
 
@@ -308,7 +308,7 @@ def observed(name, point):
         for sname, ser in parts.items():
             for y, v in ser.items():
                 v = fill(v)
-                if sum(x is not None for x in v) >= 0.6 * HOURS and y not in rec:
+                if sum(x is not None for x in v) >= 0.4 * HOURS and y not in rec:
                     rec[y] = v; src[y] = sname
     return rec, src
 
@@ -448,7 +448,7 @@ def main():
                 s["nws_issued_2005_on"] = stats(byy, {y: [None] * HOURS for y in byy}, cc, 1.0)
         # the record used for the area: its stations' observations, else the buoy, else ERA5
         ob = obs.get(name)
-        if ob and len(ob["years"]) >= 15:
+        if ob and len(ob["years"]) >= 8:
             oh = {int(y): v for y, v in ob["years"].items()}
             best, bsrc, bh = {y: events(v, cc) for y, v in oh.items()}, "observed", oh
             st = sorted(set(ob["src"].values()))
@@ -476,7 +476,7 @@ def main():
     gen = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())
     (OUT / "summary.json").write_text(json.dumps({
         "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment "
-                "Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 60% complete), else a MEDS buoy, else ERA5 hourly 10 m wind "
+                "Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else ERA5 hourly 10 m wind "
                 "at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run "
                 f"of hours at small craft strength or more (gaps up to {MERGE_H} h merged, at least {MIN_H} h); its level is the highest it reached. "
                 "corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). "
