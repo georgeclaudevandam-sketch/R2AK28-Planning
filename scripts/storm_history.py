@@ -459,7 +459,7 @@ def main():
                               f"{tag}_max_kn": round(max((x for x in Hs[y] if x is not None), default=0) * (scale if tag == "era5" else 1), 1)})
             r["best_source"] = (ob["src"].get(str(y), "") if bsrc == "observed" else bsrc) if y in best else ""
             rows.append(r)
-        log(name, bsrc, json.dumps({k: (v["events_per_jj"], v["dur_h"]["median"]) for k, v in s["best"].items()}))
+        log(name, bsrc, json.dumps({k: (s["best"][k]["events_per_jj"], s["best"][k]["dur_h"]["median"]) for k in ("sc", "gale", "storm")}))
     with open(OUT / "area_year.csv", "w", newline="") as f:
         w = csv.DictWriter(f, list(dict.fromkeys(k for r in rows for k in r))); w.writeheader(); w.writerows(rows)
     gen = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())

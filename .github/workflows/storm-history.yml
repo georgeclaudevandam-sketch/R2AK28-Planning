@@ -2,6 +2,10 @@ name: Storm history (June-July wind by marine forecast area)
 
 on:
   workflow_dispatch:
+    inputs:
+      from_run:
+        description: "Reuse the fetched records of this earlier run (its id) instead of fetching again"
+        default: ""
   push:
     paths:
       - "scripts/storm_history.py"
@@ -9,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: storm-history-${{ github.ref }}
@@ -16,6 +21,7 @@ concurrency:
 
 jobs:
   fetch:
+    if: ${{ !inputs.from_run }}
     # one runner per ERA5 sample point (Open-Meteo throttles a single address) and per area's observed record
     runs-on: ubuntu-latest
     timeout-minutes: 150
@@ -54,6 +60,8 @@ jobs:
           pattern: part-*
           path: data/storm_history/parts
           merge-multiple: true
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
       - run: python scripts/storm_history.py
       - name: Commit the history (also the merged caches if the run failed)
         if: always()
@@ -64,5 +72,5 @@ jobs:
           git add -A data/storm_history
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Update storm history"
-          git pull --rebase
+          git pull --rebase -X theirs
           git push
