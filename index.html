@@ -2067,11 +2067,13 @@ function posAt(track, t) {
 // one scenario from history: a past year's weather (shifted a few days), and the crew shelters from each blow in the area it is in
 // when it hits. Taken in time order, re-running the plan after each, since a storm moves the crew and so which later blows reach it.
 function smHistStorms(rnd, R, sim) {
-  const c = R.c, P = R.P, E = SH.e, years = Object.keys(E.areas[0].years), y = years[Math.floor(rnd() * years.length)];
+  const c = R.c, P = R.P, E = SH.e, y = String(E.y0 + Math.floor(rnd() * (E.y1 - E.y0 + 1)));
   const off = Math.round((rnd() * 2 - 1) * c.jit), j1 = pdt(`${state.s2d.slice(0, 4)}-06-01`, "00:00"), tOf = (h) => j1 + (h - off * 24) * H;
   const idx = smAreaIdx(R.ch.stage2), on = new Set(idx);
   const cand = [];
-  E.areas.forEach((a, ai) => { if (!on.has(ai)) return; (a.years[y] || []).forEach(([h0, dur, lv]) => { if (lv >= c.lvl && dur >= c.minh && tOf(h0 + dur) > P.s2) cand.push({ ai, t: tOf(h0), end: tOf(h0 + dur), lv }); }); });
+  // (an area with no record for that year takes another of its years)
+  E.areas.forEach((a, ai) => { if (!on.has(ai)) return; let ev = a.years[y]; if (!ev) { const ys = Object.keys(a.years); ev = ys.length ? a.years[ys[Math.floor(rnd() * ys.length)]] : []; }
+    ev.forEach(([h0, dur, lv]) => { if (lv >= c.lvl && dur >= c.minh && tOf(h0 + dur) > P.s2) cand.push({ ai, t: tOf(h0), end: tOf(h0 + dur), lv }); }); });
   cand.sort((a, b) => a.t - b.t);
   const storms = []; let r = R.base, prevEnd = -Infinity;
   for (const e of cand) {
@@ -2093,11 +2095,11 @@ function smAreaTable() {
   const f1 = (x) => x == null ? "" : x.toFixed(1), hr = (x) => x == null ? "" : x >= 48 ? `${(x / 24).toFixed(1)} d` : `${x} h`;
   $("sm-area-note").innerHTML = `One sample point on the route in each Environment Canada marine forecast area (and the US zone at Ketchikan), ${north} route. ` +
     `A blow is a spell of ${k === "gale" ? "gale-force wind (34 kn)" : "wind at small craft warning strength (20 kn in Canada, 23 kn in Alaska)"} or more, gaps under 6 h joined. ` +
-    `From ERA5 hourly wind, scaled to match the weather buoy where an area has one. <b>Chance in 16 days</b>: that at least one starts in a given 16-day stretch of June or July.` +
+    `From the hourly wind at each area's lightstations (Environment Canada) or weather stations (NDBC in Alaska); where an area has too few years of those, a weather buoy or ERA5 reanalysis. <b>Chance in 16 days</b>: that at least one starts in a given 16-day stretch of June or July.` +
     (R ? " <b>Met per race</b>: how many the crew actually sat out there, on average, in the last run." : "");
   $("sm-area").innerHTML = `<thead><tr><th>Area</th><th class="n">Blows per Jun&ndash;Jul</th><th class="n">Chance in 16 days</th><th class="n">Days with one</th><th class="n">Typical length</th><th class="n">1 in 10 last over</th><th class="n">Longest</th>${R ? '<th class="n">Met per race</th>' : ""}</tr></thead><tbody>` +
-    rows.map(({ a, i }) => { const s = a.corrected[k], cal = a.calibration;
-      return `<tr><td>${esc(a.area)}${a.note ? `<div class="sub">${esc(a.note)}${cal ? `; ERA5 &times;${cal.scale.toFixed(2)}` : ""}</div>` : ""}</td><td class="n">${f1(s.events_per_jj)}</td><td class="n">${Math.round(100 * s.p_in_16_days)}%</td><td class="n">${f1(s.days_per_jj)}</td><td class="n">${hr(s.dur_h.median)}</td><td class="n">${hr(s.dur_h.p90)}</td><td class="n">${hr(s.dur_h.max)}</td>${R ? `<td class="n">${((R.areaMet[i] || 0) / R.i).toFixed(2)}</td>` : ""}</tr>`; }).join("") + "</tbody>";
+    rows.map(({ a, i }) => { const s = a.best[k], src = a.best_source === "observed" ? `${a.observed.stations.map((x) => x.replace(/\b(\w)(\w*)/g, (m, p, q) => p + q.toLowerCase())).join(", ")}, ${a.best_years}` : `${a.best_source}, ${a.best_years}`;
+      return `<tr><td>${esc(a.area)}<div class="sub">${esc(src)}${a.note ? `; ${esc(a.note)}` : ""}</div></td><td class="n">${f1(s.events_per_jj)}</td><td class="n">${Math.round(100 * s.p_in_16_days)}%</td><td class="n">${f1(s.days_per_jj)}</td><td class="n">${hr(s.dur_h.median)}</td><td class="n">${hr(s.dur_h.p90)}</td><td class="n">${hr(s.dur_h.max)}</td>${R ? `<td class="n">${((R.areaMet[i] || 0) / R.i).toFixed(2)}</td>` : ""}</tr>`; }).join("") + "</tbody>";
 }
 function smRun() {
   const P = LAST_PLAN; if (!P || SM.run) return;
