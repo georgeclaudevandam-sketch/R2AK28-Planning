@@ -1,6 +1,6 @@
 {
- "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
- "generated": "2026-10-12T08:20Z",
+ "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else the NWS warnings issued (Clarence Strait, 2005 on), else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
+ "generated": "2026-10-12T08:22Z",
  "areas": [
   {
    "area": "Juan de Fuca Strait - east entrance",
@@ -3370,59 +3370,59 @@
     "first": 1994,
     "last": 2001
    },
-   "best_source": "observed",
-   "best_years": "1994-2001 (8 years)",
+   "best_source": "buoy 46204",
+   "best_years": "1991-2023 (29 years)",
    "best": {
     "sc": {
-     "events_per_jj": 12.38,
-     "days_per_jj": 12.0,
-     "share_of_hours_pct": 5.22,
-     "p_in_16_days": 0.932,
-     "years_with_any_pct": 100,
+     "events_per_jj": 6.9,
+     "days_per_jj": 9.1,
+     "share_of_hours_pct": 4.39,
+     "p_in_16_days": 0.743,
+     "years_with_any_pct": 86,
      "dur_h": {
-      "p25": 4,
-      "median": 4,
-      "p75": 7,
-      "p90": 13,
-      "max": 16
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 24,
+      "max": 51
      },
      "longest_by_days": {
-      "<12 h": 84,
-      "12-24 h": 15,
-      "1-2 days": 0,
-      "2-3 days": 0,
+      "<12 h": 128,
+      "12-24 h": 52,
+      "1-2 days": 19,
+      "2-3 days": 1,
       "3+ days": 0
      },
      "by_decade_events": {
       "1976-1985": 0.0,
-      "1986-1995": 7.0,
-      "1996-2005": 14.17,
-      "2006-2015": 0.0,
-      "2016-2025": 0.0
+      "1986-1995": 4.75,
+      "1996-2005": 8.25,
+      "2006-2015": 7.67,
+      "2016-2025": 5.75
      },
      "by_half_month_share_pct": {
-      "Jun 1-15": 8.33,
-      "Jun 16-30": 3.54,
-      "Jul 1-15": 5.62,
-      "Jul 16-31": 3.48
+      "Jun 1-15": 7.46,
+      "Jun 16-30": 2.63,
+      "Jul 1-15": 3.78,
+      "Jul 16-31": 3.71
      }
     },
     "gale": {
-     "events_per_jj": 0.62,
-     "days_per_jj": 0.6,
-     "share_of_hours_pct": 0.16,
-     "p_in_16_days": 0.19,
-     "years_with_any_pct": 50,
+     "events_per_jj": 0.14,
+     "days_per_jj": 0.2,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.037,
+     "years_with_any_pct": 14,
      "dur_h": {
-      "p25": 10,
-      "median": 13,
-      "p75": 16,
-      "p90": 16,
-      "max": 16
+      "p25": 15,
+      "median": 22,
+      "p75": 22,
+      "p90": 22,
+      "max": 22
      },
      "longest_by_days": {
-      "<12 h": 2,
-      "12-24 h": 3,
+      "<12 h": 0,
+      "12-24 h": 4,
       "1-2 days": 0,
       "2-3 days": 0,
       "3+ days": 0
@@ -3430,15 +3430,15 @@
      "by_decade_events": {
       "1976-1985": 0.0,
       "1986-1995": 0.0,
-      "1996-2005": 0.83,
-      "2006-2015": 0.0,
-      "2016-2025": 0.0
+      "1996-2005": 0.12,
+      "2006-2015": 0.22,
+      "2016-2025": 0.12
      },
      "by_half_month_share_pct": {
-      "Jun 1-15": 0.24,
-      "Jun 16-30": 0.0,
-      "Jul 1-15": 0.42,
-      "Jul 16-31": 0.0
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.01
      }
     },
     "storm": {
@@ -3474,13 +3474,7 @@
       "Jul 1-15": 0.0,
       "Jul 16-31": 0.0
      }
-    },
-    "stations": [
-     "EGG ISLAND"
-    ],
-    "years": 8,
-    "first": 1994,
-    "last": 2001
+    }
    }
   },
   {
@@ -6396,35 +6390,35 @@
     "first": 2013,
     "last": 2025
    },
-   "best_source": "observed",
-   "best_years": "2013-2025 (12 years)",
+   "best_source": "NWS warnings issued",
+   "best_years": "2005-2025 (21 years)",
    "best": {
     "sc": {
-     "events_per_jj": 0.0,
-     "days_per_jj": 0.0,
+     "events_per_jj": 12.9,
+     "days_per_jj": 17.6,
      "share_of_hours_pct": 0.0,
-     "p_in_16_days": 0.0,
-     "years_with_any_pct": 0,
+     "p_in_16_days": 0.909,
+     "years_with_any_pct": 100,
      "dur_h": {
-      "p25": null,
-      "median": null,
-      "p75": null,
-      "p90": null,
-      "max": null
+      "p25": 9,
+      "median": 13,
+      "p75": 25,
+      "p90": 36,
+      "max": 96
      },
      "longest_by_days": {
-      "<12 h": 0,
-      "12-24 h": 0,
-      "1-2 days": 0,
-      "2-3 days": 0,
-      "3+ days": 0
+      "<12 h": 86,
+      "12-24 h": 89,
+      "1-2 days": 81,
+      "2-3 days": 12,
+      "3+ days": 3
      },
      "by_decade_events": {
       "1976-1985": 0.0,
       "1986-1995": 0.0,
-      "1996-2005": 0.0,
-      "2006-2015": 0.0,
-      "2016-2025": 0.0
+      "1996-2005": 12.0,
+      "2006-2015": 17.7,
+      "2016-2025": 8.2
      },
      "by_half_month_share_pct": {
       "Jun 1-15": 0.0,
@@ -6434,31 +6428,31 @@
      }
     },
     "gale": {
-     "events_per_jj": 0.0,
-     "days_per_jj": 0.0,
+     "events_per_jj": 2.14,
+     "days_per_jj": 2.9,
      "share_of_hours_pct": 0.0,
-     "p_in_16_days": 0.0,
-     "years_with_any_pct": 0,
+     "p_in_16_days": 0.316,
+     "years_with_any_pct": 81,
      "dur_h": {
-      "p25": null,
-      "median": null,
-      "p75": null,
-      "p90": null,
-      "max": null
+      "p25": 8,
+      "median": 12,
+      "p75": 19,
+      "p90": 27,
+      "max": 38
      },
      "longest_by_days": {
-      "<12 h": 0,
-      "12-24 h": 0,
-      "1-2 days": 0,
+      "<12 h": 21,
+      "12-24 h": 13,
+      "1-2 days": 11,
       "2-3 days": 0,
       "3+ days": 0
      },
      "by_decade_events": {
       "1976-1985": 0.0,
       "1986-1995": 0.0,
-      "1996-2005": 0.0,
-      "2006-2015": 0.0,
-      "2016-2025": 0.0
+      "1996-2005": 1.0,
+      "2006-2015": 3.1,
+      "2016-2025": 1.3
      },
      "by_half_month_share_pct": {
       "Jun 1-15": 0.0,
@@ -6468,21 +6462,21 @@
      }
     },
     "storm": {
-     "events_per_jj": 0.0,
-     "days_per_jj": 0.0,
+     "events_per_jj": 0.1,
+     "days_per_jj": 0.1,
      "share_of_hours_pct": 0.0,
-     "p_in_16_days": 0.0,
-     "years_with_any_pct": 0,
+     "p_in_16_days": 0.028,
+     "years_with_any_pct": 10,
      "dur_h": {
-      "p25": null,
-      "median": null,
-      "p75": null,
-      "p90": null,
-      "max": null
+      "p25": 12,
+      "median": 13,
+      "p75": 13,
+      "p90": 13,
+      "max": 13
      },
      "longest_by_days": {
       "<12 h": 0,
-      "12-24 h": 0,
+      "12-24 h": 2,
       "1-2 days": 0,
       "2-3 days": 0,
       "3+ days": 0
@@ -6491,7 +6485,7 @@
       "1976-1985": 0.0,
       "1986-1995": 0.0,
       "1996-2005": 0.0,
-      "2006-2015": 0.0,
+      "2006-2015": 0.2,
       "2016-2025": 0.0
      },
      "by_half_month_share_pct": {
@@ -6500,13 +6494,7 @@
       "Jul 1-15": 0.0,
       "Jul 16-31": 0.0
      }
-    },
-    "stations": [
-     "MRYA2"
-    ],
-    "years": 12,
-    "first": 2013,
-    "last": 2025
+    }
    }
   }
  ]
