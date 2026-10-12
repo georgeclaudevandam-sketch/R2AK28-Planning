@@ -387,6 +387,7 @@ const PHASES = MOON.filter((m) => /moon|quarter/.test(m[1]));
 const PLACES = [["Port Townsend",48.12,-122.76],["Victoria",48.42,-123.37],["Sidney",48.65,-123.40],["Nanaimo",49.17,-123.94],["Lasqueti Island",49.48,-124.27],["Comox",49.67,-124.93],["Campbell River",50.03,-125.24],["Seymour Narrows",50.13,-125.35],["Chatham Point",50.33,-125.44],["Kelsey Bay",50.40,-125.96],["Port Neville",50.49,-126.08],["Alert Bay",50.59,-126.93],["Port McNeill",50.59,-127.08],["Port Hardy",50.72,-127.49],["God's Pocket",50.84,-127.59],["Cape Caution",51.16,-127.79],["Namu",51.86,-127.87],["Bella Bella",52.16,-128.14],["Klemtu",52.59,-128.52],["Aristazabal Island",52.65,-129.10],["Butedale",53.16,-128.70],["Hartley Bay",53.42,-129.25],["Lowe Inlet",53.56,-129.58],["Banks Island",53.40,-130.10],["Bonilla Island",53.49,-130.64],["Prince Rupert",54.31,-130.32],["Dundas Island",54.55,-130.85],["Foggy Bay",54.95,-130.95],["Ketchikan",55.34,-131.64]];
 const FOUL_KN = 1.5;          // wait at a gate when the stream against you is stronger than this
 const SWEEPER_NM_DAY = 75;    // Grim Sweeper pace (2026 race packet)
+const RECORD_DAYS = 11 + 6 / 24 + 58 / 1440;   // human-powered record, Victoria to Ketchikan: Boogie Barge (pedal boat, 2026), 11 d 6 h 58 min
 const SWEEPER_DAYS = 12;      // 2026: left Port Townsend 29 June noon, 12 days after the Stage 2 start (inferred for 2028)
 const RACE_END_DAYS = 22;     // 2026: race ended 9 July noon, 22 days after the Stage 2 start (inferred for 2028)
 
@@ -2157,13 +2158,14 @@ function smRender() {
   smAreaTable();
   const n = R.i, fin = Array.from(R.fin.subarray(0, n)).sort((a, b) => a - b), q = (p) => fin[Math.min(n - 1, Math.floor(p * n))];
   const plan = (R.base.finish - R.P.s2) / 864e5, tgt = SM.ctl.target, pct = (x) => `${(100 * x / n).toFixed(x && x < n / 100 ? 1 : 0)}%`;
-  const d = (x) => `${x.toFixed(1)} d`, onT = fin.filter((x) => x <= tgt).length;
+  const d = (x) => `${x.toFixed(1)} d`, onT = fin.filter((x) => x <= tgt).length, rec = fin.filter((x) => x < RECORD_DAYS).length;
   $("sm-tiles").innerHTML = [
     ["No storms", d(plan), "the plan at this speed"], ["Median", d(q(0.5)), `+${(q(0.5) - plan).toFixed(1)} d`], ["9 in 10 finish by", d(q(0.9)), `+${(q(0.9) - plan).toFixed(1)} d`],
     ["19 in 20 by", d(q(0.95)), `+${(q(0.95) - plan).toFixed(1)} d`], ["Worst", d(fin[n - 1]), `+${(fin[n - 1] - plan).toFixed(1)} d`],
     [`Within ${tgt} d target`, pct(onT), "", onT / n >= 0.9 ? "good" : onT / n < 0.5 ? "bad" : ""], [`Before race end (${RACE_END_DAYS} d)`, pct(R.beforeEnd), "", R.beforeEnd / n >= 0.95 ? "good" : "bad"],
     ["Caught by Grim Sweeper", pct(R.swept), `leaves PT day ${SWEEPER_DAYS}, ${SWEEPER_NM_DAY} nm a day`, R.swept ? "bad" : "good"],
     ["Storm sat out on the water", pct(R.waterScn), "of scenarios: no shelter in reach", R.waterScn ? "bad" : "good"],
+    ["Faster than the record", pct(rec), "human-powered: Boogie Barge, 11 d 6 h 58 min", rec ? "good" : ""],
   ].map(([a, b, c2, k]) => `<div class="tile ${k || ""}"><span>${a}</span><b>${b}</b>${c2 ? `<small>${c2}</small>` : ""}</div>`).join("");
   // histogram, half-day bins
   const lo = Math.floor(Math.min(plan, fin[0])), hi = Math.ceil(Math.max(fin[n - 1], tgt, plan) + 0.5), bins = new Array(Math.round((hi - lo) * 2)).fill(0);
@@ -2174,7 +2176,7 @@ function smRender() {
     bins.map((b, i) => `<rect x="${(pl + i * bw + 1).toFixed(1)}" y="${(Hh - pb - (b / mx) * (Hh - pb - 14)).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${((b / mx) * (Hh - pb - 14)).toFixed(1)}" rx="2" fill="${lo + (i + 1) / 2 <= tgt + 1e-9 ? "var(--flood)" : "var(--ebb)"}"><title>${(lo + i / 2).toFixed(1)} to ${(lo + (i + 1) / 2).toFixed(1)} d: ${b} scenarios</title></rect>`).join("") +
     Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).filter((x) => (x - lo) % (hi - lo > 16 ? 2 : 1) === 0).map((x) => `<text x="${X(x)}" y="${Hh - 8}" text-anchor="middle">${x}</text>`).join("") +
     `<line x1="${pl}" x2="${W - 6}" y1="${Hh - pb}" y2="${Hh - pb}" stroke="var(--rule)"/><text x="2" y="16">${mx}</text>` +
-    line(plan, "var(--ink)", "no storms", 18) + line(tgt, "var(--good)", "target", 32) + line(RACE_END_DAYS, "var(--bad)", "race end", 46) + `</svg>`;
+    line(plan, "var(--ink)", "no storms", 18) + line(tgt, "var(--good)", "target", 32) + line(RACE_END_DAYS, "var(--bad)", "race end", 46) + line(RECORD_DAYS, "var(--good)", "record", 60) + `</svg>`;
   $("sm-hist-note").textContent = `Days from the Stage 2 start to Ketchikan across ${n.toLocaleString("en-US")} scenarios, in half-day bars: green within the target, amber after it.`;
   // cost by total storm days
   const by = new Map();
