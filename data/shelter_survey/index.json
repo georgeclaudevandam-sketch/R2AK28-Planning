@@ -1,0 +1,11835 @@
+[
+{
+"k": "S1",
+"kind": "shore",
+"lat": 52.9298,
+"lon": -128.50109,
+"route_nm": 0.71,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S2",
+"kind": "shore",
+"lat": 52.9293,
+"lon": -128.44586,
+"route_nm": 2.71,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S3",
+"kind": "shore",
+"lat": 52.92901,
+"lon": -128.50015,
+"route_nm": 0.75,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S4",
+"kind": "shore",
+"lat": 52.92885,
+"lon": -128.52455,
+"route_nm": 0.14,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S5",
+"kind": "shore",
+"lat": 52.92846,
+"lon": -128.45145,
+"route_nm": 2.51,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S6",
+"kind": "shore",
+"lat": 52.92652,
+"lon": -128.49646,
+"route_nm": 0.89,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S7",
+"kind": "shore",
+"lat": 52.92549,
+"lon": -128.45415,
+"route_nm": 2.41,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S8",
+"kind": "shore",
+"lat": 52.92533,
+"lon": -128.5237,
+"route_nm": 0.11,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S9",
+"kind": "shore",
+"lat": 52.92419,
+"lon": -128.49213,
+"route_nm": 1.04,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S10",
+"kind": "shore",
+"lat": 52.92409,
+"lon": -128.46455,
+"route_nm": 2.03,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S11",
+"kind": "shore",
+"lat": 52.92374,
+"lon": -128.45892,
+"route_nm": 2.24,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S12",
+"kind": "shore",
+"lat": 52.92194,
+"lon": -128.50023,
+"route_nm": 0.75,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S13",
+"kind": "shore",
+"lat": 52.92186,
+"lon": -128.4687,
+"route_nm": 1.89,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S14",
+"kind": "shore",
+"lat": 52.92186,
+"lon": -128.52573,
+"route_nm": 0.2,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S15",
+"kind": "shore",
+"lat": 52.9217,
+"lon": -128.49924,
+"route_nm": 0.78,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S16",
+"kind": "shore",
+"lat": 52.92146,
+"lon": -128.48771,
+"route_nm": 1.2,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S17",
+"kind": "shore",
+"lat": 52.92094,
+"lon": -128.47978,
+"route_nm": 1.48,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S18",
+"kind": "shore",
+"lat": 52.92066,
+"lon": -128.43807,
+"route_nm": 2.99,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S19",
+"kind": "shore",
+"lat": 52.92027,
+"lon": -128.4549,
+"route_nm": 2.38,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S20",
+"kind": "shore",
+"lat": 52.92002,
+"lon": -128.44394,
+"route_nm": 2.78,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S21",
+"kind": "shore",
+"lat": 52.91996,
+"lon": -128.48526,
+"route_nm": 1.28,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S22",
+"kind": "shore",
+"lat": 52.91969,
+"lon": -128.48488,
+"route_nm": 1.3,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S23",
+"kind": "shore",
+"lat": 52.91954,
+"lon": -128.49415,
+"route_nm": 0.96,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S24",
+"kind": "shore",
+"lat": 52.91952,
+"lon": -128.46086,
+"route_nm": 2.17,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S25",
+"kind": "shore",
+"lat": 52.91928,
+"lon": -128.47789,
+"route_nm": 1.55,
+"sheet": "sheet01.jpg"
+},
+{
+"k": "S26",
+"kind": "shore",
+"lat": 52.919,
+"lon": -128.47204,
+"route_nm": 1.76,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S27",
+"kind": "shore",
+"lat": 52.91886,
+"lon": -128.44927,
+"route_nm": 2.59,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S28",
+"kind": "shore",
+"lat": 52.91869,
+"lon": -128.46622,
+"route_nm": 1.97,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S29",
+"kind": "shore",
+"lat": 52.91842,
+"lon": -128.48342,
+"route_nm": 1.35,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S30",
+"kind": "shore",
+"lat": 52.91841,
+"lon": -128.4989,
+"route_nm": 0.8,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S31",
+"kind": "shore",
+"lat": 52.91829,
+"lon": -128.52504,
+"route_nm": 0.19,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S32",
+"kind": "shore",
+"lat": 52.91725,
+"lon": -128.48865,
+"route_nm": 1.16,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S33",
+"kind": "shore",
+"lat": 52.91597,
+"lon": -128.46954,
+"route_nm": 1.85,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S34",
+"kind": "shore",
+"lat": 52.91516,
+"lon": -128.47891,
+"route_nm": 1.51,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S35",
+"kind": "shore",
+"lat": 52.91503,
+"lon": -128.49978,
+"route_nm": 0.76,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S36",
+"kind": "shore",
+"lat": 52.91495,
+"lon": -128.52543,
+"route_nm": 0.18,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S37",
+"kind": "shore",
+"lat": 52.91457,
+"lon": -128.48436,
+"route_nm": 1.32,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S38",
+"kind": "shore",
+"lat": 52.91151,
+"lon": -128.49901,
+"route_nm": 0.78,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S39",
+"kind": "shore",
+"lat": 52.91132,
+"lon": -128.52458,
+"route_nm": 0.14,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S40",
+"kind": "shore",
+"lat": 52.90778,
+"lon": -128.49883,
+"route_nm": 0.81,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S41",
+"kind": "shore",
+"lat": 52.90678,
+"lon": -128.5225,
+"route_nm": 0.05,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S42",
+"kind": "shore",
+"lat": 52.90449,
+"lon": -128.50027,
+"route_nm": 0.77,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S43",
+"kind": "shore",
+"lat": 52.90334,
+"lon": -128.52339,
+"route_nm": 0.09,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S44",
+"kind": "shore",
+"lat": 52.90104,
+"lon": -128.50022,
+"route_nm": 0.77,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S45",
+"kind": "shore",
+"lat": 52.90005,
+"lon": -128.52229,
+"route_nm": 0.07,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S46",
+"kind": "shore",
+"lat": 52.8974,
+"lon": -128.52616,
+"route_nm": 0.14,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S47",
+"kind": "shore",
+"lat": 52.89709,
+"lon": -128.50047,
+"route_nm": 0.82,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S48",
+"kind": "shore",
+"lat": 52.89398,
+"lon": -128.52802,
+"route_nm": 0.11,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S49",
+"kind": "shore",
+"lat": 52.89349,
+"lon": -128.50104,
+"route_nm": 0.87,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S50",
+"kind": "shore",
+"lat": 52.89064,
+"lon": -128.52651,
+"route_nm": 0.15,
+"sheet": "sheet02.jpg"
+},
+{
+"k": "S51",
+"kind": "shore",
+"lat": 52.88952,
+"lon": -128.50062,
+"route_nm": 0.92,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S52",
+"kind": "shore",
+"lat": 52.88736,
+"lon": -128.52835,
+"route_nm": 0.04,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S53",
+"kind": "shore",
+"lat": 52.8862,
+"lon": -128.49873,
+"route_nm": 1.04,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S54",
+"kind": "shore",
+"lat": 52.88413,
+"lon": -128.54064,
+"route_nm": 0.42,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S55",
+"kind": "shore",
+"lat": 52.88405,
+"lon": -128.5302,
+"route_nm": 0.09,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S56",
+"kind": "shore",
+"lat": 52.88336,
+"lon": -128.51037,
+"route_nm": 0.63,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S57",
+"kind": "shore",
+"lat": 52.88326,
+"lon": -128.5101,
+"route_nm": 0.64,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S58",
+"kind": "shore",
+"lat": 52.88284,
+"lon": -128.49719,
+"route_nm": 1.11,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S59",
+"kind": "shore",
+"lat": 52.88174,
+"lon": -128.53486,
+"route_nm": 0.18,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S60",
+"kind": "shore",
+"lat": 52.88148,
+"lon": -128.51217,
+"route_nm": 0.59,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S61",
+"kind": "shore",
+"lat": 52.88145,
+"lon": -128.53375,
+"route_nm": 0.14,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S62",
+"kind": "shore",
+"lat": 52.88079,
+"lon": -128.54022,
+"route_nm": 0.35,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S63",
+"kind": "shore",
+"lat": 52.88032,
+"lon": -128.50621,
+"route_nm": 0.81,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S64",
+"kind": "shore",
+"lat": 52.88026,
+"lon": -128.51278,
+"route_nm": 0.59,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S65",
+"kind": "shore",
+"lat": 52.88013,
+"lon": -128.49371,
+"route_nm": 1.26,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S66",
+"kind": "shore",
+"lat": 52.87748,
+"lon": -128.54216,
+"route_nm": 0.4,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S67",
+"kind": "shore",
+"lat": 52.87705,
+"lon": -128.51467,
+"route_nm": 0.61,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S68",
+"kind": "shore",
+"lat": 52.87698,
+"lon": -128.49183,
+"route_nm": 1.37,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S69",
+"kind": "shore",
+"lat": 52.87691,
+"lon": -128.50509,
+"route_nm": 0.93,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S70",
+"kind": "shore",
+"lat": 52.87539,
+"lon": -128.49955,
+"route_nm": 1.15,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S71",
+"kind": "shore",
+"lat": 52.87424,
+"lon": -128.48843,
+"route_nm": 1.54,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S72",
+"kind": "shore",
+"lat": 52.87357,
+"lon": -128.51605,
+"route_nm": 0.56,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S73",
+"kind": "shore",
+"lat": 52.87356,
+"lon": -128.50467,
+"route_nm": 0.97,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S74",
+"kind": "shore",
+"lat": 52.87346,
+"lon": -128.54233,
+"route_nm": 0.4,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S75",
+"kind": "shore",
+"lat": 52.87202,
+"lon": -128.49907,
+"route_nm": 1.17,
+"sheet": "sheet03.jpg"
+},
+{
+"k": "S76",
+"kind": "shore",
+"lat": 52.8711,
+"lon": -128.48577,
+"route_nm": 1.65,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S77",
+"kind": "shore",
+"lat": 52.87106,
+"lon": -128.50089,
+"route_nm": 1.11,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S78",
+"kind": "shore",
+"lat": 52.8703,
+"lon": -128.51754,
+"route_nm": 0.52,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S79",
+"kind": "shore",
+"lat": 52.8696,
+"lon": -128.54233,
+"route_nm": 0.43,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S80",
+"kind": "shore",
+"lat": 52.86827,
+"lon": -128.49782,
+"route_nm": 1.2,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S81",
+"kind": "shore",
+"lat": 52.86809,
+"lon": -128.48331,
+"route_nm": 1.73,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S82",
+"kind": "shore",
+"lat": 52.86759,
+"lon": -128.51824,
+"route_nm": 0.46,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S83",
+"kind": "shore",
+"lat": 52.86655,
+"lon": -128.51737,
+"route_nm": 0.5,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S84",
+"kind": "shore",
+"lat": 52.86616,
+"lon": -128.5419,
+"route_nm": 0.4,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S85",
+"kind": "shore",
+"lat": 52.86524,
+"lon": -128.49512,
+"route_nm": 1.29,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S86",
+"kind": "shore",
+"lat": 52.86473,
+"lon": -128.481,
+"route_nm": 1.8,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S87",
+"kind": "shore",
+"lat": 52.86317,
+"lon": -128.51766,
+"route_nm": 0.47,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S88",
+"kind": "shore",
+"lat": 52.86278,
+"lon": -128.54258,
+"route_nm": 0.43,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S89",
+"kind": "shore",
+"lat": 52.86228,
+"lon": -128.49254,
+"route_nm": 1.38,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S90",
+"kind": "shore",
+"lat": 52.86218,
+"lon": -128.47687,
+"route_nm": 1.95,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S91",
+"kind": "shore",
+"lat": 52.86129,
+"lon": -128.4713,
+"route_nm": 2.15,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S92",
+"kind": "shore",
+"lat": 52.85996,
+"lon": -128.5196,
+"route_nm": 0.43,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S93",
+"kind": "shore",
+"lat": 52.85994,
+"lon": -128.48836,
+"route_nm": 1.54,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S94",
+"kind": "shore",
+"lat": 52.85956,
+"lon": -128.48265,
+"route_nm": 1.75,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S95",
+"kind": "shore",
+"lat": 52.85919,
+"lon": -128.54404,
+"route_nm": 0.43,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S96",
+"kind": "shore",
+"lat": 52.85908,
+"lon": -128.46713,
+"route_nm": 2.31,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S97",
+"kind": "shore",
+"lat": 52.85866,
+"lon": -128.52089,
+"route_nm": 0.42,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S98",
+"kind": "shore",
+"lat": 52.85609,
+"lon": -128.48236,
+"route_nm": 1.79,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S99",
+"kind": "shore",
+"lat": 52.85603,
+"lon": -128.54186,
+"route_nm": 0.34,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S100",
+"kind": "shore",
+"lat": 52.85597,
+"lon": -128.46457,
+"route_nm": 2.42,
+"sheet": "sheet04.jpg"
+},
+{
+"k": "S101",
+"kind": "shore",
+"lat": 52.85579,
+"lon": -128.52006,
+"route_nm": 0.46,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S102",
+"kind": "shore",
+"lat": 52.85386,
+"lon": -128.47819,
+"route_nm": 1.97,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S103",
+"kind": "shore",
+"lat": 52.85263,
+"lon": -128.46256,
+"route_nm": 2.54,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S104",
+"kind": "shore",
+"lat": 52.85256,
+"lon": -128.52148,
+"route_nm": 0.45,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S105",
+"kind": "shore",
+"lat": 52.85192,
+"lon": -128.54168,
+"route_nm": 0.28,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S106",
+"kind": "shore",
+"lat": 52.85169,
+"lon": -128.47312,
+"route_nm": 2.17,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S107",
+"kind": "shore",
+"lat": 52.84976,
+"lon": -128.45961,
+"route_nm": 2.68,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S108",
+"kind": "shore",
+"lat": 52.84917,
+"lon": -128.5207,
+"route_nm": 0.53,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S109",
+"kind": "shore",
+"lat": 52.84865,
+"lon": -128.47077,
+"route_nm": 2.3,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S110",
+"kind": "shore",
+"lat": 52.84831,
+"lon": -128.54178,
+"route_nm": 0.22,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S111",
+"kind": "shore",
+"lat": 52.84716,
+"lon": -128.45614,
+"route_nm": 2.83,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S112",
+"kind": "shore",
+"lat": 52.84608,
+"lon": -128.518,
+"route_nm": 0.65,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S113",
+"kind": "shore",
+"lat": 52.84562,
+"lon": -128.46844,
+"route_nm": 2.42,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S114",
+"kind": "shore",
+"lat": 52.84495,
+"lon": -128.54109,
+"route_nm": 0.17,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S115",
+"kind": "shore",
+"lat": 52.84381,
+"lon": -128.45334,
+"route_nm": 2.97,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S116",
+"kind": "shore",
+"lat": 52.84265,
+"lon": -128.51952,
+"route_nm": 0.64,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S117",
+"kind": "shore",
+"lat": 52.84227,
+"lon": -128.46581,
+"route_nm": 2.55,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S118",
+"kind": "shore",
+"lat": 52.8412,
+"lon": -128.54062,
+"route_nm": 0.16,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S119",
+"kind": "shore",
+"lat": 52.83908,
+"lon": -128.51978,
+"route_nm": 0.61,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S120",
+"kind": "shore",
+"lat": 52.83874,
+"lon": -128.46654,
+"route_nm": 2.54,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S121",
+"kind": "shore",
+"lat": 52.83752,
+"lon": -128.54134,
+"route_nm": 0.11,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S122",
+"kind": "shore",
+"lat": 52.83553,
+"lon": -128.52036,
+"route_nm": 0.65,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S123",
+"kind": "shore",
+"lat": 52.83502,
+"lon": -128.46657,
+"route_nm": 2.56,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S124",
+"kind": "shore",
+"lat": 52.83432,
+"lon": -128.54293,
+"route_nm": 0.19,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S125",
+"kind": "shore",
+"lat": 52.83212,
+"lon": -128.51891,
+"route_nm": 0.75,
+"sheet": "sheet05.jpg"
+},
+{
+"k": "S126",
+"kind": "shore",
+"lat": 52.83187,
+"lon": -128.54719,
+"route_nm": 0.28,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S127",
+"kind": "shore",
+"lat": 52.83117,
+"lon": -128.46702,
+"route_nm": 2.58,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S128",
+"kind": "shore",
+"lat": 52.82883,
+"lon": -128.52068,
+"route_nm": 0.71,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S129",
+"kind": "shore",
+"lat": 52.82854,
+"lon": -128.54556,
+"route_nm": 0.21,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S130",
+"kind": "shore",
+"lat": 52.82766,
+"lon": -128.46908,
+"route_nm": 2.56,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S131",
+"kind": "shore",
+"lat": 52.82549,
+"lon": -128.52157,
+"route_nm": 0.7,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S132",
+"kind": "shore",
+"lat": 52.82517,
+"lon": -128.54543,
+"route_nm": 0.2,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S133",
+"kind": "shore",
+"lat": 52.82426,
+"lon": -128.46866,
+"route_nm": 2.61,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S134",
+"kind": "shore",
+"lat": 52.82184,
+"lon": -128.54588,
+"route_nm": 0.18,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S135",
+"kind": "shore",
+"lat": 52.82146,
+"lon": -128.52311,
+"route_nm": 0.66,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S136",
+"kind": "shore",
+"lat": 52.82088,
+"lon": -128.46646,
+"route_nm": 2.71,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S137",
+"kind": "shore",
+"lat": 52.81848,
+"lon": -128.46257,
+"route_nm": 2.86,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S138",
+"kind": "shore",
+"lat": 52.81829,
+"lon": -128.54505,
+"route_nm": 0.12,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S139",
+"kind": "shore",
+"lat": 52.81813,
+"lon": -128.52402,
+"route_nm": 0.64,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S140",
+"kind": "shore",
+"lat": 52.81547,
+"lon": -128.45937,
+"route_nm": 2.99,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S141",
+"kind": "shore",
+"lat": 52.81488,
+"lon": -128.54514,
+"route_nm": 0.12,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S142",
+"kind": "shore",
+"lat": 52.8147,
+"lon": -128.52364,
+"route_nm": 0.67,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S143",
+"kind": "shore",
+"lat": 52.81156,
+"lon": -128.54582,
+"route_nm": 0.2,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S144",
+"kind": "shore",
+"lat": 52.81121,
+"lon": -128.52506,
+"route_nm": 0.64,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S145",
+"kind": "shore",
+"lat": 52.8077,
+"lon": -128.52516,
+"route_nm": 0.62,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S146",
+"kind": "shore",
+"lat": 52.80742,
+"lon": -128.54598,
+"route_nm": 0.16,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S147",
+"kind": "shore",
+"lat": 52.80426,
+"lon": -128.52443,
+"route_nm": 0.64,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S148",
+"kind": "shore",
+"lat": 52.80401,
+"lon": -128.54518,
+"route_nm": 0.13,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S149",
+"kind": "shore",
+"lat": 52.80054,
+"lon": -128.5455,
+"route_nm": 0.2,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S150",
+"kind": "shore",
+"lat": 52.79994,
+"lon": -128.52363,
+"route_nm": 0.67,
+"sheet": "sheet06.jpg"
+},
+{
+"k": "S151",
+"kind": "shore",
+"lat": 52.79717,
+"lon": -128.54761,
+"route_nm": 0.21,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S152",
+"kind": "shore",
+"lat": 52.7969,
+"lon": -128.52608,
+"route_nm": 0.57,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S153",
+"kind": "shore",
+"lat": 52.79342,
+"lon": -128.52662,
+"route_nm": 0.58,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S154",
+"kind": "shore",
+"lat": 52.79334,
+"lon": -128.5491,
+"route_nm": 0.23,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S155",
+"kind": "shore",
+"lat": 52.78989,
+"lon": -128.52762,
+"route_nm": 0.58,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S156",
+"kind": "shore",
+"lat": 52.78986,
+"lon": -128.54995,
+"route_nm": 0.24,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S157",
+"kind": "shore",
+"lat": 52.78686,
+"lon": -128.52995,
+"route_nm": 0.51,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S158",
+"kind": "shore",
+"lat": 52.78684,
+"lon": -128.5524,
+"route_nm": 0.31,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S159",
+"kind": "shore",
+"lat": 52.78433,
+"lon": -128.48338,
+"route_nm": 2.2,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S160",
+"kind": "shore",
+"lat": 52.78364,
+"lon": -128.53187,
+"route_nm": 0.46,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S161",
+"kind": "shore",
+"lat": 52.78364,
+"lon": -128.55462,
+"route_nm": 0.38,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S162",
+"kind": "shore",
+"lat": 52.78122,
+"lon": -128.53566,
+"route_nm": 0.35,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S163",
+"kind": "shore",
+"lat": 52.78099,
+"lon": -128.4826,
+"route_nm": 2.25,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S164",
+"kind": "shore",
+"lat": 52.78025,
+"lon": -128.55517,
+"route_nm": 0.36,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S165",
+"kind": "shore",
+"lat": 52.77982,
+"lon": -128.46253,
+"route_nm": 2.99,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S166",
+"kind": "shore",
+"lat": 52.77918,
+"lon": -128.48747,
+"route_nm": 2.1,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S167",
+"kind": "shore",
+"lat": 52.77755,
+"lon": -128.5377,
+"route_nm": 0.31,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S168",
+"kind": "shore",
+"lat": 52.7771,
+"lon": -128.4812,
+"route_nm": 2.33,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S169",
+"kind": "shore",
+"lat": 52.77658,
+"lon": -128.46448,
+"route_nm": 2.94,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S170",
+"kind": "shore",
+"lat": 52.77615,
+"lon": -128.55463,
+"route_nm": 0.31,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S171",
+"kind": "shore",
+"lat": 52.77536,
+"lon": -128.48839,
+"route_nm": 2.09,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S172",
+"kind": "shore",
+"lat": 52.7746,
+"lon": -128.53508,
+"route_nm": 0.42,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S173",
+"kind": "shore",
+"lat": 52.7737,
+"lon": -128.48141,
+"route_nm": 2.35,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S174",
+"kind": "shore",
+"lat": 52.77362,
+"lon": -128.46729,
+"route_nm": 2.86,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S175",
+"kind": "shore",
+"lat": 52.77227,
+"lon": -128.55497,
+"route_nm": 0.29,
+"sheet": "sheet07.jpg"
+},
+{
+"k": "S176",
+"kind": "shore",
+"lat": 52.77224,
+"lon": -128.49093,
+"route_nm": 2.02,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S177",
+"kind": "shore",
+"lat": 52.77131,
+"lon": -128.53724,
+"route_nm": 0.36,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S178",
+"kind": "shore",
+"lat": 52.77053,
+"lon": -128.46954,
+"route_nm": 2.8,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S179",
+"kind": "shore",
+"lat": 52.7696,
+"lon": -128.4809,
+"route_nm": 2.4,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S180",
+"kind": "shore",
+"lat": 52.76942,
+"lon": -128.55798,
+"route_nm": 0.38,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S181",
+"kind": "shore",
+"lat": 52.76897,
+"lon": -128.4893,
+"route_nm": 2.1,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S182",
+"kind": "shore",
+"lat": 52.7679,
+"lon": -128.53769,
+"route_nm": 0.37,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S183",
+"kind": "shore",
+"lat": 52.76789,
+"lon": -128.47298,
+"route_nm": 2.7,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S184",
+"kind": "shore",
+"lat": 52.7665,
+"lon": -128.47865,
+"route_nm": 2.5,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S185",
+"kind": "shore",
+"lat": 52.76622,
+"lon": -128.5598,
+"route_nm": 0.42,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S186",
+"kind": "shore",
+"lat": 52.7662,
+"lon": -128.49241,
+"route_nm": 2.01,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S187",
+"kind": "shore",
+"lat": 52.76555,
+"lon": -128.47732,
+"route_nm": 2.56,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S188",
+"kind": "shore",
+"lat": 52.7645,
+"lon": -128.53861,
+"route_nm": 0.36,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S189",
+"kind": "shore",
+"lat": 52.76322,
+"lon": -128.48991,
+"route_nm": 2.12,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S190",
+"kind": "shore",
+"lat": 52.76275,
+"lon": -128.56105,
+"route_nm": 0.45,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S191",
+"kind": "shore",
+"lat": 52.76117,
+"lon": -128.53985,
+"route_nm": 0.36,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S192",
+"kind": "shore",
+"lat": 52.76012,
+"lon": -128.48779,
+"route_nm": 2.22,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S193",
+"kind": "shore",
+"lat": 52.75932,
+"lon": -128.56155,
+"route_nm": 0.44,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S194",
+"kind": "shore",
+"lat": 52.75757,
+"lon": -128.54006,
+"route_nm": 0.37,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S195",
+"kind": "shore",
+"lat": 52.75712,
+"lon": -128.48483,
+"route_nm": 2.35,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S196",
+"kind": "shore",
+"lat": 52.75584,
+"lon": -128.56204,
+"route_nm": 0.42,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S197",
+"kind": "shore",
+"lat": 52.75418,
+"lon": -128.54065,
+"route_nm": 0.36,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S198",
+"kind": "shore",
+"lat": 52.75359,
+"lon": -128.48448,
+"route_nm": 2.39,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S199",
+"kind": "shore",
+"lat": 52.75182,
+"lon": -128.56159,
+"route_nm": 0.38,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S200",
+"kind": "shore",
+"lat": 52.7507,
+"lon": -128.54283,
+"route_nm": 0.31,
+"sheet": "sheet08.jpg"
+},
+{
+"k": "S201",
+"kind": "shore",
+"lat": 52.75016,
+"lon": -128.5917,
+"route_nm": 1.46,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S202",
+"kind": "shore",
+"lat": 52.74991,
+"lon": -128.48395,
+"route_nm": 2.44,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S203",
+"kind": "shore",
+"lat": 52.74872,
+"lon": -128.58674,
+"route_nm": 1.28,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S204",
+"kind": "shore",
+"lat": 52.74845,
+"lon": -128.56225,
+"route_nm": 0.39,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S205",
+"kind": "shore",
+"lat": 52.74736,
+"lon": -128.54183,
+"route_nm": 0.36,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S206",
+"kind": "shore",
+"lat": 52.7469,
+"lon": -128.59349,
+"route_nm": 1.52,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S207",
+"kind": "shore",
+"lat": 52.74647,
+"lon": -128.48426,
+"route_nm": 2.45,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S208",
+"kind": "shore",
+"lat": 52.74579,
+"lon": -128.58318,
+"route_nm": 1.14,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S209",
+"kind": "shore",
+"lat": 52.74507,
+"lon": -128.5628,
+"route_nm": 0.41,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S210",
+"kind": "shore",
+"lat": 52.74392,
+"lon": -128.54264,
+"route_nm": 0.35,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S211",
+"kind": "shore",
+"lat": 52.74381,
+"lon": -128.59094,
+"route_nm": 1.41,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S212",
+"kind": "shore",
+"lat": 52.74335,
+"lon": -128.57895,
+"route_nm": 0.98,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S213",
+"kind": "shore",
+"lat": 52.74304,
+"lon": -128.48381,
+"route_nm": 2.48,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S214",
+"kind": "shore",
+"lat": 52.74146,
+"lon": -128.56518,
+"route_nm": 0.48,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S215",
+"kind": "shore",
+"lat": 52.74039,
+"lon": -128.54223,
+"route_nm": 0.39,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S216",
+"kind": "shore",
+"lat": 52.74031,
+"lon": -128.58139,
+"route_nm": 1.05,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S217",
+"kind": "shore",
+"lat": 52.73965,
+"lon": -128.48466,
+"route_nm": 2.46,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S218",
+"kind": "shore",
+"lat": 52.73965,
+"lon": -128.5897,
+"route_nm": 1.35,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S219",
+"kind": "shore",
+"lat": 52.738,
+"lon": -128.56449,
+"route_nm": 0.44,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S220",
+"kind": "shore",
+"lat": 52.73715,
+"lon": -128.5438,
+"route_nm": 0.33,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S221",
+"kind": "shore",
+"lat": 52.73686,
+"lon": -128.5815,
+"route_nm": 1.04,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S222",
+"kind": "shore",
+"lat": 52.73618,
+"lon": -128.48358,
+"route_nm": 2.51,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S223",
+"kind": "shore",
+"lat": 52.73591,
+"lon": -128.58892,
+"route_nm": 1.31,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S224",
+"kind": "shore",
+"lat": 52.73401,
+"lon": -128.56599,
+"route_nm": 0.47,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S225",
+"kind": "shore",
+"lat": 52.73357,
+"lon": -128.54363,
+"route_nm": 0.35,
+"sheet": "sheet09.jpg"
+},
+{
+"k": "S226",
+"kind": "shore",
+"lat": 52.73306,
+"lon": -128.57963,
+"route_nm": 0.96,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S227",
+"kind": "shore",
+"lat": 52.73253,
+"lon": -128.58896,
+"route_nm": 1.3,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S228",
+"kind": "shore",
+"lat": 52.73249,
+"lon": -128.48272,
+"route_nm": 2.56,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S229",
+"kind": "shore",
+"lat": 52.73104,
+"lon": -128.57002,
+"route_nm": 0.6,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S230",
+"kind": "shore",
+"lat": 52.73044,
+"lon": -128.57602,
+"route_nm": 0.82,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S231",
+"kind": "shore",
+"lat": 52.73031,
+"lon": -128.57586,
+"route_nm": 0.81,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S232",
+"kind": "shore",
+"lat": 52.72995,
+"lon": -128.54506,
+"route_nm": 0.31,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S233",
+"kind": "shore",
+"lat": 52.72942,
+"lon": -128.58665,
+"route_nm": 1.21,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S234",
+"kind": "shore",
+"lat": 52.72897,
+"lon": -128.48131,
+"route_nm": 2.62,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S235",
+"kind": "shore",
+"lat": 52.72655,
+"lon": -128.58381,
+"route_nm": 1.09,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S236",
+"kind": "shore",
+"lat": 52.72653,
+"lon": -128.54507,
+"route_nm": 0.32,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S237",
+"kind": "shore",
+"lat": 52.7253,
+"lon": -128.4795,
+"route_nm": 2.7,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S238",
+"kind": "shore",
+"lat": 52.72509,
+"lon": -128.58299,
+"route_nm": 1.06,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S239",
+"kind": "shore",
+"lat": 52.72331,
+"lon": -128.54352,
+"route_nm": 0.41,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S240",
+"kind": "shore",
+"lat": 52.72201,
+"lon": -128.47839,
+"route_nm": 2.76,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S241",
+"kind": "shore",
+"lat": 52.72158,
+"lon": -128.58129,
+"route_nm": 0.98,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S242",
+"kind": "shore",
+"lat": 52.71962,
+"lon": -128.54498,
+"route_nm": 0.37,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S243",
+"kind": "shore",
+"lat": 52.71837,
+"lon": -128.57943,
+"route_nm": 0.89,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S244",
+"kind": "shore",
+"lat": 52.7178,
+"lon": -128.47753,
+"route_nm": 2.8,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S245",
+"kind": "shore",
+"lat": 52.7159,
+"lon": -128.54496,
+"route_nm": 0.37,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S246",
+"kind": "shore",
+"lat": 52.71453,
+"lon": -128.57859,
+"route_nm": 0.85,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S247",
+"kind": "shore",
+"lat": 52.71452,
+"lon": -128.47611,
+"route_nm": 2.87,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S248",
+"kind": "shore",
+"lat": 52.71173,
+"lon": -128.54456,
+"route_nm": 0.4,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S249",
+"kind": "shore",
+"lat": 52.71092,
+"lon": -128.47627,
+"route_nm": 2.88,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S250",
+"kind": "shore",
+"lat": 52.7106,
+"lon": -128.54996,
+"route_nm": 0.25,
+"sheet": "sheet10.jpg"
+},
+{
+"k": "S251",
+"kind": "shore",
+"lat": 52.70995,
+"lon": -128.57861,
+"route_nm": 0.86,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S252",
+"kind": "shore",
+"lat": 52.7076,
+"lon": -128.55246,
+"route_nm": 0.1,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S253",
+"kind": "shore",
+"lat": 52.70692,
+"lon": -128.47562,
+"route_nm": 2.89,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S254",
+"kind": "shore",
+"lat": 52.7066,
+"lon": -128.57882,
+"route_nm": 0.86,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S255",
+"kind": "shore",
+"lat": 52.7063,
+"lon": -128.55339,
+"route_nm": 0.1,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S256",
+"kind": "shore",
+"lat": 52.70424,
+"lon": -128.55187,
+"route_nm": 0.18,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S257",
+"kind": "shore",
+"lat": 52.70339,
+"lon": -128.5772,
+"route_nm": 0.81,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S258",
+"kind": "shore",
+"lat": 52.70317,
+"lon": -128.47614,
+"route_nm": 2.81,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S259",
+"kind": "shore",
+"lat": 52.70249,
+"lon": -128.57606,
+"route_nm": 0.76,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S260",
+"kind": "shore",
+"lat": 52.7011,
+"lon": -128.54927,
+"route_nm": 0.21,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S261",
+"kind": "shore",
+"lat": 52.69993,
+"lon": -128.47859,
+"route_nm": 2.67,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S262",
+"kind": "shore",
+"lat": 52.69989,
+"lon": -128.57671,
+"route_nm": 0.8,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S263",
+"kind": "shore",
+"lat": 52.69749,
+"lon": -128.5495,
+"route_nm": 0.18,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S264",
+"kind": "shore",
+"lat": 52.69686,
+"lon": -128.48086,
+"route_nm": 2.54,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S265",
+"kind": "shore",
+"lat": 52.69644,
+"lon": -128.57578,
+"route_nm": 0.78,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S266",
+"kind": "shore",
+"lat": 52.69402,
+"lon": -128.54927,
+"route_nm": 0.13,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S267",
+"kind": "shore",
+"lat": 52.69364,
+"lon": -128.48232,
+"route_nm": 2.44,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S268",
+"kind": "shore",
+"lat": 52.6932,
+"lon": -128.57427,
+"route_nm": 0.76,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S269",
+"kind": "shore",
+"lat": 52.69238,
+"lon": -128.54093,
+"route_nm": 0.4,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S270",
+"kind": "shore",
+"lat": 52.69125,
+"lon": -128.54615,
+"route_nm": 0.22,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S271",
+"kind": "shore",
+"lat": 52.69087,
+"lon": -128.48559,
+"route_nm": 2.27,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S272",
+"kind": "shore",
+"lat": 52.69002,
+"lon": -128.57174,
+"route_nm": 0.74,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S273",
+"kind": "shore",
+"lat": 52.68953,
+"lon": -128.53784,
+"route_nm": 0.43,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S274",
+"kind": "shore",
+"lat": 52.68898,
+"lon": -128.54095,
+"route_nm": 0.31,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S275",
+"kind": "shore",
+"lat": 52.68877,
+"lon": -128.58221,
+"route_nm": 1.12,
+"sheet": "sheet11.jpg"
+},
+{
+"k": "S276",
+"kind": "shore",
+"lat": 52.68769,
+"lon": -128.48736,
+"route_nm": 2.16,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S277",
+"kind": "shore",
+"lat": 52.68646,
+"lon": -128.56991,
+"route_nm": 0.75,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S278",
+"kind": "shore",
+"lat": 52.68609,
+"lon": -128.5374,
+"route_nm": 0.39,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S279",
+"kind": "shore",
+"lat": 52.68547,
+"lon": -128.58022,
+"route_nm": 1.11,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S280",
+"kind": "shore",
+"lat": 52.68474,
+"lon": -128.57478,
+"route_nm": 0.94,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S281",
+"kind": "shore",
+"lat": 52.68396,
+"lon": -128.489,
+"route_nm": 2.04,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S282",
+"kind": "shore",
+"lat": 52.68342,
+"lon": -128.57296,
+"route_nm": 0.9,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S283",
+"kind": "shore",
+"lat": 52.68214,
+"lon": -128.57914,
+"route_nm": 1.14,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S284",
+"kind": "shore",
+"lat": 52.68208,
+"lon": -128.53608,
+"route_nm": 0.37,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S285",
+"kind": "shore",
+"lat": 52.68074,
+"lon": -128.49058,
+"route_nm": 1.93,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S286",
+"kind": "shore",
+"lat": 52.6788,
+"lon": -128.53456,
+"route_nm": 0.38,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S287",
+"kind": "shore",
+"lat": 52.67839,
+"lon": -128.5783,
+"route_nm": 1.17,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S288",
+"kind": "shore",
+"lat": 52.6778,
+"lon": -128.49363,
+"route_nm": 1.78,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S289",
+"kind": "shore",
+"lat": 52.67718,
+"lon": -128.58173,
+"route_nm": 1.31,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S290",
+"kind": "shore",
+"lat": 52.67699,
+"lon": -128.55165,
+"route_nm": 0.28,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S291",
+"kind": "shore",
+"lat": 52.67646,
+"lon": -128.54772,
+"route_nm": 0.19,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S292",
+"kind": "shore",
+"lat": 52.67539,
+"lon": -128.53454,
+"route_nm": 0.31,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S293",
+"kind": "shore",
+"lat": 52.6747,
+"lon": -128.55249,
+"route_nm": 0.34,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S294",
+"kind": "shore",
+"lat": 52.67469,
+"lon": -128.58622,
+"route_nm": 1.52,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S295",
+"kind": "shore",
+"lat": 52.67456,
+"lon": -128.4955,
+"route_nm": 1.67,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S296",
+"kind": "shore",
+"lat": 52.67428,
+"lon": -128.59939,
+"route_nm": 1.98,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S297",
+"kind": "shore",
+"lat": 52.67344,
+"lon": -128.5449,
+"route_nm": 0.12,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S298",
+"kind": "shore",
+"lat": 52.67248,
+"lon": -128.55675,
+"route_nm": 0.52,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S299",
+"kind": "shore",
+"lat": 52.67235,
+"lon": -128.59488,
+"route_nm": 1.86,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S300",
+"kind": "shore",
+"lat": 52.67196,
+"lon": -128.60392,
+"route_nm": 2.18,
+"sheet": "sheet12.jpg"
+},
+{
+"k": "S301",
+"kind": "shore",
+"lat": 52.67182,
+"lon": -128.58919,
+"route_nm": 1.66,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S302",
+"kind": "shore",
+"lat": 52.67169,
+"lon": -128.53311,
+"route_nm": 0.29,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S303",
+"kind": "shore",
+"lat": 52.67123,
+"lon": -128.59464,
+"route_nm": 1.86,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S304",
+"kind": "shore",
+"lat": 52.6708,
+"lon": -128.49584,
+"route_nm": 1.61,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S305",
+"kind": "shore",
+"lat": 52.67079,
+"lon": -128.55962,
+"route_nm": 0.65,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S306",
+"kind": "shore",
+"lat": 52.67012,
+"lon": -128.54422,
+"route_nm": 0.12,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S307",
+"kind": "shore",
+"lat": 52.66947,
+"lon": -128.55918,
+"route_nm": 0.67,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S308",
+"kind": "shore",
+"lat": 52.66919,
+"lon": -128.60782,
+"route_nm": 2.36,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S309",
+"kind": "shore",
+"lat": 52.66912,
+"lon": -128.57713,
+"route_nm": 1.29,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S310",
+"kind": "shore",
+"lat": 52.66853,
+"lon": -128.60074,
+"route_nm": 2.12,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S311",
+"kind": "shore",
+"lat": 52.66824,
+"lon": -128.5326,
+"route_nm": 0.28,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S312",
+"kind": "shore",
+"lat": 52.66815,
+"lon": -128.5949,
+"route_nm": 1.93,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S313",
+"kind": "shore",
+"lat": 52.66753,
+"lon": -128.58253,
+"route_nm": 1.5,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S314",
+"kind": "shore",
+"lat": 52.66722,
+"lon": -128.49659,
+"route_nm": 1.54,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S315",
+"kind": "shore",
+"lat": 52.66685,
+"lon": -128.58823,
+"route_nm": 1.71,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S316",
+"kind": "shore",
+"lat": 52.66622,
+"lon": -128.54155,
+"route_nm": 0.07,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S317",
+"kind": "shore",
+"lat": 52.66618,
+"lon": -128.56057,
+"route_nm": 0.76,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S318",
+"kind": "shore",
+"lat": 52.66616,
+"lon": -128.60538,
+"route_nm": 2.33,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S319",
+"kind": "shore",
+"lat": 52.66477,
+"lon": -128.53155,
+"route_nm": 0.29,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S320",
+"kind": "shore",
+"lat": 52.66395,
+"lon": -128.61198,
+"route_nm": 2.59,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S321",
+"kind": "shore",
+"lat": 52.66342,
+"lon": -128.49762,
+"route_nm": 1.46,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S322",
+"kind": "shore",
+"lat": 52.66318,
+"lon": -128.57508,
+"route_nm": 1.31,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S323",
+"kind": "shore",
+"lat": 52.66289,
+"lon": -128.56228,
+"route_nm": 0.85,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S324",
+"kind": "shore",
+"lat": 52.66288,
+"lon": -128.60442,
+"route_nm": 2.35,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S325",
+"kind": "shore",
+"lat": 52.66287,
+"lon": -128.54054,
+"route_nm": 0.1,
+"sheet": "sheet13.jpg"
+},
+{
+"k": "S326",
+"kind": "shore",
+"lat": 52.66235,
+"lon": -128.6169,
+"route_nm": 2.79,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S327",
+"kind": "shore",
+"lat": 52.66143,
+"lon": -128.53035,
+"route_nm": 0.29,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S328",
+"kind": "shore",
+"lat": 52.66122,
+"lon": -128.62223,
+"route_nm": 3.0,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S329",
+"kind": "shore",
+"lat": 52.66003,
+"lon": -128.49935,
+"route_nm": 1.37,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S330",
+"kind": "shore",
+"lat": 52.65978,
+"lon": -128.60669,
+"route_nm": 2.47,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S331",
+"kind": "shore",
+"lat": 52.6597,
+"lon": -128.57576,
+"route_nm": 1.37,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S332",
+"kind": "shore",
+"lat": 52.65956,
+"lon": -128.56219,
+"route_nm": 0.89,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S333",
+"kind": "shore",
+"lat": 52.65936,
+"lon": -128.54083,
+"route_nm": 0.17,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S334",
+"kind": "shore",
+"lat": 52.65851,
+"lon": -128.61829,
+"route_nm": 2.9,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S335",
+"kind": "shore",
+"lat": 52.65809,
+"lon": -128.61083,
+"route_nm": 2.64,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S336",
+"kind": "shore",
+"lat": 52.65789,
+"lon": -128.52964,
+"route_nm": 0.26,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S337",
+"kind": "shore",
+"lat": 52.65667,
+"lon": -128.50036,
+"route_nm": 1.29,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S338",
+"kind": "shore",
+"lat": 52.65621,
+"lon": -128.56373,
+"route_nm": 0.99,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S339",
+"kind": "shore",
+"lat": 52.656,
+"lon": -128.5776,
+"route_nm": 1.48,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S340",
+"kind": "shore",
+"lat": 52.65595,
+"lon": -128.61523,
+"route_nm": 2.82,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S341",
+"kind": "shore",
+"lat": 52.65569,
+"lon": -128.5398,
+"route_nm": 0.17,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S342",
+"kind": "shore",
+"lat": 52.65536,
+"lon": -128.56574,
+"route_nm": 1.06,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S343",
+"kind": "shore",
+"lat": 52.65458,
+"lon": -128.52829,
+"route_nm": 0.27,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S344",
+"kind": "shore",
+"lat": 52.65312,
+"lon": -128.50112,
+"route_nm": 1.22,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S345",
+"kind": "shore",
+"lat": 52.6528,
+"lon": -128.564,
+"route_nm": 1.04,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S346",
+"kind": "shore",
+"lat": 52.65255,
+"lon": -128.57737,
+"route_nm": 1.51,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S347",
+"kind": "shore",
+"lat": 52.65243,
+"lon": -128.53829,
+"route_nm": 0.13,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S348",
+"kind": "shore",
+"lat": 52.65095,
+"lon": -128.52747,
+"route_nm": 0.26,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S349",
+"kind": "shore",
+"lat": 52.65014,
+"lon": -128.50363,
+"route_nm": 1.1,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S350",
+"kind": "shore",
+"lat": 52.64944,
+"lon": -128.56531,
+"route_nm": 1.12,
+"sheet": "sheet14.jpg"
+},
+{
+"k": "S351",
+"kind": "shore",
+"lat": 52.64928,
+"lon": -128.56615,
+"route_nm": 1.15,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S352",
+"kind": "shore",
+"lat": 52.64927,
+"lon": -128.57855,
+"route_nm": 1.59,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S353",
+"kind": "shore",
+"lat": 52.64905,
+"lon": -128.53746,
+"route_nm": 0.13,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S354",
+"kind": "shore",
+"lat": 52.64763,
+"lon": -128.52617,
+"route_nm": 0.3,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S355",
+"kind": "shore",
+"lat": 52.64748,
+"lon": -128.58141,
+"route_nm": 1.71,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S356",
+"kind": "shore",
+"lat": 52.64673,
+"lon": -128.50408,
+"route_nm": 1.03,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S357",
+"kind": "shore",
+"lat": 52.64653,
+"lon": -128.58198,
+"route_nm": 1.75,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S358",
+"kind": "shore",
+"lat": 52.64592,
+"lon": -128.56617,
+"route_nm": 1.19,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S359",
+"kind": "shore",
+"lat": 52.64564,
+"lon": -128.53756,
+"route_nm": 0.23,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S360",
+"kind": "shore",
+"lat": 52.64507,
+"lon": -128.51891,
+"route_nm": 0.48,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S361",
+"kind": "shore",
+"lat": 52.64416,
+"lon": -128.52527,
+"route_nm": 0.24,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S362",
+"kind": "shore",
+"lat": 52.64406,
+"lon": -128.51357,
+"route_nm": 0.67,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S363",
+"kind": "shore",
+"lat": 52.64395,
+"lon": -128.58254,
+"route_nm": 1.8,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S364",
+"kind": "shore",
+"lat": 52.64385,
+"lon": -128.58594,
+"route_nm": 1.92,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S365",
+"kind": "shore",
+"lat": 52.6433,
+"lon": -128.50395,
+"route_nm": 0.99,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S366",
+"kind": "shore",
+"lat": 52.64309,
+"lon": -128.5241,
+"route_nm": 0.29,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S367",
+"kind": "shore",
+"lat": 52.64293,
+"lon": -128.56873,
+"route_nm": 1.32,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S368",
+"kind": "shore",
+"lat": 52.6428,
+"lon": -128.50825,
+"route_nm": 0.83,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S369",
+"kind": "shore",
+"lat": 52.64274,
+"lon": -128.52318,
+"route_nm": 0.33,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S370",
+"kind": "shore",
+"lat": 52.64225,
+"lon": -128.58911,
+"route_nm": 2.05,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S371",
+"kind": "shore",
+"lat": 52.64177,
+"lon": -128.53791,
+"route_nm": 0.25,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S372",
+"kind": "shore",
+"lat": 52.64141,
+"lon": -128.44766,
+"route_nm": 2.98,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S373",
+"kind": "shore",
+"lat": 52.64114,
+"lon": -128.58252,
+"route_nm": 1.83,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S374",
+"kind": "shore",
+"lat": 52.641,
+"lon": -128.58927,
+"route_nm": 2.07,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S375",
+"kind": "shore",
+"lat": 52.63972,
+"lon": -128.57087,
+"route_nm": 1.44,
+"sheet": "sheet15.jpg"
+},
+{
+"k": "S376",
+"kind": "shore",
+"lat": 52.6384,
+"lon": -128.53601,
+"route_nm": 0.22,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S377",
+"kind": "shore",
+"lat": 52.63805,
+"lon": -128.44813,
+"route_nm": 2.94,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S378",
+"kind": "shore",
+"lat": 52.6376,
+"lon": -128.57543,
+"route_nm": 1.63,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S379",
+"kind": "shore",
+"lat": 52.63748,
+"lon": -128.58889,
+"route_nm": 2.11,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S380",
+"kind": "shore",
+"lat": 52.63495,
+"lon": -128.53439,
+"route_nm": 0.21,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S381",
+"kind": "shore",
+"lat": 52.63481,
+"lon": -128.52414,
+"route_nm": 0.17,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S382",
+"kind": "shore",
+"lat": 52.63451,
+"lon": -128.58603,
+"route_nm": 2.05,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S383",
+"kind": "shore",
+"lat": 52.63441,
+"lon": -128.44804,
+"route_nm": 2.91,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S384",
+"kind": "shore",
+"lat": 52.63436,
+"lon": -128.577,
+"route_nm": 1.73,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S385",
+"kind": "shore",
+"lat": 52.63251,
+"lon": -128.51493,
+"route_nm": 0.51,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S386",
+"kind": "shore",
+"lat": 52.63149,
+"lon": -128.53331,
+"route_nm": 0.16,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S387",
+"kind": "shore",
+"lat": 52.63142,
+"lon": -128.58824,
+"route_nm": 2.16,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S388",
+"kind": "shore",
+"lat": 52.6311,
+"lon": -128.44912,
+"route_nm": 2.84,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S389",
+"kind": "shore",
+"lat": 52.63103,
+"lon": -128.57784,
+"route_nm": 1.78,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S390",
+"kind": "shore",
+"lat": 52.6308,
+"lon": -128.52368,
+"route_nm": 0.2,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S391",
+"kind": "shore",
+"lat": 52.62921,
+"lon": -128.51341,
+"route_nm": 0.51,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S392",
+"kind": "shore",
+"lat": 52.62798,
+"lon": -128.44688,
+"route_nm": 2.88,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S393",
+"kind": "shore",
+"lat": 52.62782,
+"lon": -128.53201,
+"route_nm": 0.17,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S394",
+"kind": "shore",
+"lat": 52.62781,
+"lon": -128.57987,
+"route_nm": 1.87,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S395",
+"kind": "shore",
+"lat": 52.62765,
+"lon": -128.58866,
+"route_nm": 2.19,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S396",
+"kind": "shore",
+"lat": 52.62746,
+"lon": -128.5229,
+"route_nm": 0.17,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S397",
+"kind": "shore",
+"lat": 52.62687,
+"lon": -128.59409,
+"route_nm": 2.39,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S398",
+"kind": "shore",
+"lat": 52.62596,
+"lon": -128.51196,
+"route_nm": 0.55,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S399",
+"kind": "shore",
+"lat": 52.62527,
+"lon": -128.51154,
+"route_nm": 0.55,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S400",
+"kind": "shore",
+"lat": 52.62467,
+"lon": -128.4453,
+"route_nm": 2.9,
+"sheet": "sheet16.jpg"
+},
+{
+"k": "S401",
+"kind": "shore",
+"lat": 52.62458,
+"lon": -128.53069,
+"route_nm": 0.13,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S402",
+"kind": "shore",
+"lat": 52.62412,
+"lon": -128.52171,
+"route_nm": 0.19,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S403",
+"kind": "shore",
+"lat": 52.62406,
+"lon": -128.57996,
+"route_nm": 1.92,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S404",
+"kind": "shore",
+"lat": 52.62339,
+"lon": -128.59403,
+"route_nm": 2.42,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S405",
+"kind": "shore",
+"lat": 52.6217,
+"lon": -128.51279,
+"route_nm": 0.47,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S406",
+"kind": "shore",
+"lat": 52.62114,
+"lon": -128.44536,
+"route_nm": 2.85,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S407",
+"kind": "shore",
+"lat": 52.62109,
+"lon": -128.52954,
+"route_nm": 0.15,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S408",
+"kind": "shore",
+"lat": 52.62067,
+"lon": -128.5802,
+"route_nm": 1.95,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S409",
+"kind": "shore",
+"lat": 52.62038,
+"lon": -128.51901,
+"route_nm": 0.25,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S410",
+"kind": "shore",
+"lat": 52.62023,
+"lon": -128.59186,
+"route_nm": 2.37,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S411",
+"kind": "shore",
+"lat": 52.61842,
+"lon": -128.51433,
+"route_nm": 0.36,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S412",
+"kind": "shore",
+"lat": 52.61753,
+"lon": -128.44716,
+"route_nm": 2.75,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S413",
+"kind": "shore",
+"lat": 52.61736,
+"lon": -128.52825,
+"route_nm": 0.17,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S414",
+"kind": "shore",
+"lat": 52.6172,
+"lon": -128.59424,
+"route_nm": 2.49,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S415",
+"kind": "shore",
+"lat": 52.61689,
+"lon": -128.58024,
+"route_nm": 1.99,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S416",
+"kind": "shore",
+"lat": 52.61404,
+"lon": -128.52736,
+"route_nm": 0.19,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S417",
+"kind": "shore",
+"lat": 52.61402,
+"lon": -128.44666,
+"route_nm": 2.74,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S418",
+"kind": "shore",
+"lat": 52.61393,
+"lon": -128.59266,
+"route_nm": 2.46,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S419",
+"kind": "shore",
+"lat": 52.61357,
+"lon": -128.57934,
+"route_nm": 1.99,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S420",
+"kind": "shore",
+"lat": 52.61302,
+"lon": -128.44131,
+"route_nm": 2.94,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S421",
+"kind": "shore",
+"lat": 52.61077,
+"lon": -128.52607,
+"route_nm": 0.16,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S422",
+"kind": "shore",
+"lat": 52.61056,
+"lon": -128.59319,
+"route_nm": 2.52,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S423",
+"kind": "shore",
+"lat": 52.61034,
+"lon": -128.51851,
+"route_nm": 0.12,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S424",
+"kind": "shore",
+"lat": 52.61019,
+"lon": -128.58024,
+"route_nm": 2.07,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S425",
+"kind": "shore",
+"lat": 52.60973,
+"lon": -128.5185,
+"route_nm": 0.14,
+"sheet": "sheet17.jpg"
+},
+{
+"k": "S426",
+"kind": "shore",
+"lat": 52.60964,
+"lon": -128.52533,
+"route_nm": 0.15,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S427",
+"kind": "shore",
+"lat": 52.60822,
+"lon": -128.44424,
+"route_nm": 2.81,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S428",
+"kind": "shore",
+"lat": 52.60725,
+"lon": -128.59449,
+"route_nm": 2.61,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S429",
+"kind": "shore",
+"lat": 52.60709,
+"lon": -128.58227,
+"route_nm": 2.19,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S430",
+"kind": "shore",
+"lat": 52.60629,
+"lon": -128.51539,
+"route_nm": 0.22,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S431",
+"kind": "shore",
+"lat": 52.60628,
+"lon": -128.52378,
+"route_nm": 0.1,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S432",
+"kind": "shore",
+"lat": 52.60551,
+"lon": -128.60448,
+"route_nm": 2.99,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S433",
+"kind": "shore",
+"lat": 52.60513,
+"lon": -128.59885,
+"route_nm": 2.8,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S434",
+"kind": "shore",
+"lat": 52.60493,
+"lon": -128.44283,
+"route_nm": 2.85,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S435",
+"kind": "shore",
+"lat": 52.60396,
+"lon": -128.51982,
+"route_nm": 0.12,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S436",
+"kind": "shore",
+"lat": 52.60393,
+"lon": -128.57967,
+"route_nm": 2.13,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S437",
+"kind": "shore",
+"lat": 52.60361,
+"lon": -128.51175,
+"route_nm": 0.37,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S438",
+"kind": "shore",
+"lat": 52.60292,
+"lon": -128.60184,
+"route_nm": 2.94,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S439",
+"kind": "shore",
+"lat": 52.60235,
+"lon": -128.58095,
+"route_nm": 2.18,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S440",
+"kind": "shore",
+"lat": 52.60162,
+"lon": -128.44378,
+"route_nm": 2.78,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S441",
+"kind": "shore",
+"lat": 52.60158,
+"lon": -128.59654,
+"route_nm": 2.75,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S442",
+"kind": "shore",
+"lat": 52.60072,
+"lon": -128.50862,
+"route_nm": 0.44,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S443",
+"kind": "shore",
+"lat": 52.60062,
+"lon": -128.58141,
+"route_nm": 2.21,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S444",
+"kind": "shore",
+"lat": 52.60053,
+"lon": -128.51913,
+"route_nm": 0.06,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S445",
+"kind": "shore",
+"lat": 52.60031,
+"lon": -128.59115,
+"route_nm": 2.56,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S446",
+"kind": "shore",
+"lat": 52.59917,
+"lon": -128.50777,
+"route_nm": 0.48,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S447",
+"kind": "shore",
+"lat": 52.59857,
+"lon": -128.58598,
+"route_nm": 2.38,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S448",
+"kind": "shore",
+"lat": 52.59827,
+"lon": -128.44392,
+"route_nm": 2.73,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S449",
+"kind": "shore",
+"lat": 52.59739,
+"lon": -128.51715,
+"route_nm": 0.23,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S450",
+"kind": "shore",
+"lat": 52.59618,
+"lon": -128.50449,
+"route_nm": 0.55,
+"sheet": "sheet18.jpg"
+},
+{
+"k": "S451",
+"kind": "shore",
+"lat": 52.5948,
+"lon": -128.44425,
+"route_nm": 2.66,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S452",
+"kind": "shore",
+"lat": 52.59386,
+"lon": -128.51658,
+"route_nm": 0.09,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S453",
+"kind": "shore",
+"lat": 52.5929,
+"lon": -128.52264,
+"route_nm": 0.14,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S454",
+"kind": "shore",
+"lat": 52.59245,
+"lon": -128.50257,
+"route_nm": 0.57,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S455",
+"kind": "shore",
+"lat": 52.59144,
+"lon": -128.4442,
+"route_nm": 2.59,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S456",
+"kind": "shore",
+"lat": 52.59096,
+"lon": -128.51378,
+"route_nm": 0.17,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S457",
+"kind": "shore",
+"lat": 52.5895,
+"lon": -128.5206,
+"route_nm": 0.13,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S458",
+"kind": "shore",
+"lat": 52.58886,
+"lon": -128.50084,
+"route_nm": 0.58,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S459",
+"kind": "shore",
+"lat": 52.58815,
+"lon": -128.44194,
+"route_nm": 2.41,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S460",
+"kind": "shore",
+"lat": 52.58737,
+"lon": -128.5137,
+"route_nm": 0.17,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S461",
+"kind": "shore",
+"lat": 52.58553,
+"lon": -128.49949,
+"route_nm": 0.58,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S462",
+"kind": "shore",
+"lat": 52.58479,
+"lon": -128.44239,
+"route_nm": 2.21,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S463",
+"kind": "shore",
+"lat": 52.58411,
+"lon": -128.51261,
+"route_nm": 0.11,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S464",
+"kind": "shore",
+"lat": 52.58223,
+"lon": -128.49761,
+"route_nm": 0.59,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S465",
+"kind": "shore",
+"lat": 52.58135,
+"lon": -128.44118,
+"route_nm": 2.02,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S466",
+"kind": "shore",
+"lat": 52.58042,
+"lon": -128.5122,
+"route_nm": 0.05,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S467",
+"kind": "shore",
+"lat": 52.57899,
+"lon": -128.49543,
+"route_nm": 0.61,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S468",
+"kind": "shore",
+"lat": 52.57791,
+"lon": -128.44013,
+"route_nm": 1.83,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S469",
+"kind": "shore",
+"lat": 52.57702,
+"lon": -128.51133,
+"route_nm": 0.06,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S470",
+"kind": "shore",
+"lat": 52.57538,
+"lon": -128.49418,
+"route_nm": 0.59,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S471",
+"kind": "shore",
+"lat": 52.57446,
+"lon": -128.43978,
+"route_nm": 1.63,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S472",
+"kind": "shore",
+"lat": 52.57395,
+"lon": -128.51805,
+"route_nm": 0.28,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S473",
+"kind": "shore",
+"lat": 52.57374,
+"lon": -128.50908,
+"route_nm": 0.13,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S474",
+"kind": "shore",
+"lat": 52.57182,
+"lon": -128.49289,
+"route_nm": 0.57,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S475",
+"kind": "shore",
+"lat": 52.57146,
+"lon": -128.51417,
+"route_nm": 0.19,
+"sheet": "sheet19.jpg"
+},
+{
+"k": "S476",
+"kind": "shore",
+"lat": 52.57107,
+"lon": -128.43906,
+"route_nm": 1.43,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S477",
+"kind": "shore",
+"lat": 52.57055,
+"lon": -128.5163,
+"route_nm": 0.27,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S478",
+"kind": "shore",
+"lat": 52.57054,
+"lon": -128.50719,
+"route_nm": 0.09,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S479",
+"kind": "shore",
+"lat": 52.56845,
+"lon": -128.49144,
+"route_nm": 0.56,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S480",
+"kind": "shore",
+"lat": 52.56771,
+"lon": -128.43731,
+"route_nm": 1.26,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S481",
+"kind": "shore",
+"lat": 52.56759,
+"lon": -128.5111,
+"route_nm": 0.16,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S482",
+"kind": "shore",
+"lat": 52.5673,
+"lon": -128.5141,
+"route_nm": 0.27,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S483",
+"kind": "shore",
+"lat": 52.56725,
+"lon": -128.5052,
+"route_nm": 0.05,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S484",
+"kind": "shore",
+"lat": 52.56512,
+"lon": -128.49021,
+"route_nm": 0.45,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S485",
+"kind": "shore",
+"lat": 52.56429,
+"lon": -128.43656,
+"route_nm": 1.08,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S486",
+"kind": "shore",
+"lat": 52.56411,
+"lon": -128.51086,
+"route_nm": 0.24,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S487",
+"kind": "shore",
+"lat": 52.56338,
+"lon": -128.50308,
+"route_nm": 0.06,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S488",
+"kind": "shore",
+"lat": 52.56277,
+"lon": -128.50673,
+"route_nm": 0.09,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S489",
+"kind": "shore",
+"lat": 52.56148,
+"lon": -128.48998,
+"route_nm": 0.3,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S490",
+"kind": "shore",
+"lat": 52.56114,
+"lon": -128.50763,
+"route_nm": 0.16,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S491",
+"kind": "shore",
+"lat": 52.5606,
+"lon": -128.43649,
+"route_nm": 0.88,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S492",
+"kind": "shore",
+"lat": 52.56031,
+"lon": -128.50062,
+"route_nm": 0.16,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S493",
+"kind": "shore",
+"lat": 52.55958,
+"lon": -128.50462,
+"route_nm": 0.2,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S494",
+"kind": "shore",
+"lat": 52.55804,
+"lon": -128.48983,
+"route_nm": 0.13,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S495",
+"kind": "shore",
+"lat": 52.55798,
+"lon": -128.50466,
+"route_nm": 0.28,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S496",
+"kind": "shore",
+"lat": 52.55716,
+"lon": -128.43659,
+"route_nm": 0.71,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S497",
+"kind": "shore",
+"lat": 52.55666,
+"lon": -128.49826,
+"route_nm": 0.14,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S498",
+"kind": "shore",
+"lat": 52.55545,
+"lon": -128.50081,
+"route_nm": 0.24,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S499",
+"kind": "shore",
+"lat": 52.55453,
+"lon": -128.48953,
+"route_nm": 0.08,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S500",
+"kind": "shore",
+"lat": 52.55449,
+"lon": -128.50287,
+"route_nm": 0.34,
+"sheet": "sheet20.jpg"
+},
+{
+"k": "S501",
+"kind": "shore",
+"lat": 52.55423,
+"lon": -128.43979,
+"route_nm": 0.5,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S502",
+"kind": "shore",
+"lat": 52.55113,
+"lon": -128.50062,
+"route_nm": 0.48,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S503",
+"kind": "shore",
+"lat": 52.55086,
+"lon": -128.44017,
+"route_nm": 0.35,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S504",
+"kind": "shore",
+"lat": 52.54827,
+"lon": -128.43671,
+"route_nm": 0.43,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S505",
+"kind": "shore",
+"lat": 52.54787,
+"lon": -128.49821,
+"route_nm": 0.56,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S506",
+"kind": "shore",
+"lat": 52.54768,
+"lon": -128.44217,
+"route_nm": 0.23,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S507",
+"kind": "shore",
+"lat": 52.54741,
+"lon": -128.43095,
+"route_nm": 0.64,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S508",
+"kind": "shore",
+"lat": 52.54616,
+"lon": -128.42551,
+"route_nm": 0.85,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S509",
+"kind": "shore",
+"lat": 52.54595,
+"lon": -128.42768,
+"route_nm": 0.77,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S510",
+"kind": "shore",
+"lat": 52.54516,
+"lon": -128.41961,
+"route_nm": 1.07,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S511",
+"kind": "shore",
+"lat": 52.54466,
+"lon": -128.43784,
+"route_nm": 0.43,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S512",
+"kind": "shore",
+"lat": 52.54413,
+"lon": -128.41429,
+"route_nm": 1.27,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S513",
+"kind": "shore",
+"lat": 52.54383,
+"lon": -128.43233,
+"route_nm": 0.64,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S514",
+"kind": "shore",
+"lat": 52.54342,
+"lon": -128.49633,
+"route_nm": 0.78,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S515",
+"kind": "shore",
+"lat": 52.54293,
+"lon": -128.40854,
+"route_nm": 1.49,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S516",
+"kind": "shore",
+"lat": 52.54264,
+"lon": -128.42545,
+"route_nm": 0.89,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S517",
+"kind": "shore",
+"lat": 52.54249,
+"lon": -128.44215,
+"route_nm": 0.29,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S518",
+"kind": "shore",
+"lat": 52.54189,
+"lon": -128.39678,
+"route_nm": 1.92,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S519",
+"kind": "shore",
+"lat": 52.54179,
+"lon": -128.40265,
+"route_nm": 1.71,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S520",
+"kind": "shore",
+"lat": 52.54139,
+"lon": -128.40657,
+"route_nm": 1.58,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S521",
+"kind": "shore",
+"lat": 52.54116,
+"lon": -128.41983,
+"route_nm": 1.11,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S522",
+"kind": "shore",
+"lat": 52.54098,
+"lon": -128.39054,
+"route_nm": 2.16,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S523",
+"kind": "shore",
+"lat": 52.54007,
+"lon": -128.41446,
+"route_nm": 1.31,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "S524",
+"kind": "shore",
+"lat": 52.54006,
+"lon": -128.4946,
+"route_nm": 0.92,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "F1",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.92972,
+"lon": -128.51442,
+"route_nm": 0.23,
+"sheet": "sheet21.jpg"
+},
+{
+"k": "F2",
+"kind": "natural=bay",
+"name": "Green Inlet",
+"lat": 52.92941,
+"lon": -128.4544,
+"route_nm": 2.4,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F3",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92907,
+"lon": -128.45034,
+"route_nm": 2.55,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F4",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92877,
+"lon": -128.45098,
+"route_nm": 2.53,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F7",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.9277,
+"lon": -128.45161,
+"route_nm": 2.5,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F10",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92652,
+"lon": -128.49646,
+"route_nm": 0.89,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F13",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92599,
+"lon": -128.49523,
+"route_nm": 0.93,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F14",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92549,
+"lon": -128.45415,
+"route_nm": 2.41,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F16",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92422,
+"lon": -128.46638,
+"route_nm": 1.97,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F17",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92401,
+"lon": -128.49105,
+"route_nm": 1.08,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F20",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92295,
+"lon": -128.52628,
+"route_nm": 0.23,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F21",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.92294,
+"lon": -128.52612,
+"route_nm": 0.22,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F22",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.9227,
+"lon": -128.48972,
+"route_nm": 1.13,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F23",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92267,
+"lon": -128.4692,
+"route_nm": 1.87,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F25",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92122,
+"lon": -128.48065,
+"route_nm": 1.45,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F26",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92116,
+"lon": -128.52569,
+"route_nm": 0.19,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F27",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.9211,
+"lon": -128.48086,
+"route_nm": 1.44,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F29",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.92075,
+"lon": -128.48396,
+"route_nm": 1.33,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F30",
+"kind": "leisure=nature_reserve",
+"name": "Green Inlet Marine Provincial Park",
+"lat": 52.92073,
+"lon": -128.48201,
+"route_nm": 1.4,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F31",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.92049,
+"lon": -128.43848,
+"route_nm": 2.98,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F32",
+"kind": "natural=bay",
+"name": "Horsefly Cove",
+"lat": 52.92047,
+"lon": -128.48158,
+"route_nm": 1.42,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F35",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91974,
+"lon": -128.43996,
+"route_nm": 2.92,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F36",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.91973,
+"lon": -128.48536,
+"route_nm": 1.28,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F37",
+"kind": "natural=bay",
+"name": "Horsefly Cove",
+"lat": 52.91967,
+"lon": -128.48112,
+"route_nm": 1.43,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F38",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.91932,
+"lon": -128.48047,
+"route_nm": 1.46,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F39",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91888,
+"lon": -128.45314,
+"route_nm": 2.45,
+"sheet": "sheet22.jpg"
+},
+{
+"k": "F40",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91888,
+"lon": -128.45314,
+"route_nm": 2.45,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F41",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91888,
+"lon": -128.45314,
+"route_nm": 2.45,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F42",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91886,
+"lon": -128.44927,
+"route_nm": 2.59,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F43",
+"kind": "natural=bay",
+"name": "Green Inlet",
+"lat": 52.91865,
+"lon": -128.46901,
+"route_nm": 1.87,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F44",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.91858,
+"lon": -128.48264,
+"route_nm": 1.38,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F45",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91835,
+"lon": -128.46543,
+"route_nm": 2.0,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F48",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.9162,
+"lon": -128.48742,
+"route_nm": 1.21,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F53",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91461,
+"lon": -128.47326,
+"route_nm": 1.72,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F54",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91457,
+"lon": -128.48402,
+"route_nm": 1.33,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F55",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91447,
+"lon": -128.47718,
+"route_nm": 1.58,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F56",
+"kind": "stream mouth",
+"name": "Oriental Creek",
+"lat": 52.91431,
+"lon": -128.47907,
+"route_nm": 1.51,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F58",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.9141,
+"lon": -128.4745,
+"route_nm": 1.68,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F59",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91346,
+"lon": -128.52592,
+"route_nm": 0.23,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F60",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.91321,
+"lon": -128.52557,
+"route_nm": 0.21,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F67",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.91143,
+"lon": -128.499,
+"route_nm": 0.79,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F68",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.91142,
+"lon": -128.5173,
+"route_nm": 0.12,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F79",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90594,
+"lon": -128.4992,
+"route_nm": 0.79,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F84",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90433,
+"lon": -128.52436,
+"route_nm": 0.16,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F85",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90426,
+"lon": -128.52558,
+"route_nm": 0.19,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F86",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90426,
+"lon": -128.52558,
+"route_nm": 0.19,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F87",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90423,
+"lon": -128.49635,
+"route_nm": 0.91,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F88",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.90423,
+"lon": -128.49635,
+"route_nm": 0.91,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F89",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.90346,
+"lon": -128.52348,
+"route_nm": 0.1,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F93",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.90018,
+"lon": -128.5222,
+"route_nm": 0.08,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F94",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.90018,
+"lon": -128.5222,
+"route_nm": 0.08,
+"sheet": "sheet23.jpg"
+},
+{
+"k": "F97",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.89764,
+"lon": -128.52549,
+"route_nm": 0.11,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F99",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8976,
+"lon": -128.50087,
+"route_nm": 0.8,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F100",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.89694,
+"lon": -128.50085,
+"route_nm": 0.82,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F101",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8962,
+"lon": -128.50081,
+"route_nm": 0.83,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F103",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.89535,
+"lon": -128.52817,
+"route_nm": 0.17,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F104",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.89455,
+"lon": -128.52064,
+"route_nm": 0.19,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F105",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.89377,
+"lon": -128.52774,
+"route_nm": 0.09,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F107",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.89282,
+"lon": -128.5008,
+"route_nm": 0.89,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F109",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.89277,
+"lon": -128.5,
+"route_nm": 0.92,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F110",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88983,
+"lon": -128.52748,
+"route_nm": 0.16,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F113",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88946,
+"lon": -128.52737,
+"route_nm": 0.14,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F115",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88915,
+"lon": -128.52836,
+"route_nm": 0.12,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F119",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88732,
+"lon": -128.53023,
+"route_nm": 0.1,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F122",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8871,
+"lon": -128.53005,
+"route_nm": 0.1,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F129",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88526,
+"lon": -128.54192,
+"route_nm": 0.49,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F130",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88526,
+"lon": -128.54192,
+"route_nm": 0.49,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F132",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88474,
+"lon": -128.53948,
+"route_nm": 0.4,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F133",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88436,
+"lon": -128.54009,
+"route_nm": 0.41,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F139",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.88332,
+"lon": -128.51052,
+"route_nm": 0.62,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F140",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.88332,
+"lon": -128.51052,
+"route_nm": 0.62,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F141",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.88331,
+"lon": -128.5104,
+"route_nm": 0.63,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F142",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.88331,
+"lon": -128.5104,
+"route_nm": 0.63,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F144",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88317,
+"lon": -128.52407,
+"route_nm": 0.15,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F151",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88146,
+"lon": -128.51235,
+"route_nm": 0.58,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F152",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.88146,
+"lon": -128.51206,
+"route_nm": 0.59,
+"sheet": "sheet24.jpg"
+},
+{
+"k": "F153",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.88111,
+"lon": -128.49443,
+"route_nm": 1.22,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F155",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8777,
+"lon": -128.51481,
+"route_nm": 0.59,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F158",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.87657,
+"lon": -128.54225,
+"route_nm": 0.42,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F161",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.875,
+"lon": -128.48515,
+"route_nm": 1.64,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F164",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.87481,
+"lon": -128.50536,
+"route_nm": 0.96,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F167",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.87373,
+"lon": -128.48738,
+"route_nm": 1.59,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F169",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.87356,
+"lon": -128.50467,
+"route_nm": 0.97,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F171",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.87334,
+"lon": -128.51603,
+"route_nm": 0.56,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F172",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.87328,
+"lon": -128.49864,
+"route_nm": 1.19,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F173",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.87328,
+"lon": -128.49864,
+"route_nm": 1.19,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F174",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.87295,
+"lon": -128.51634,
+"route_nm": 0.55,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F181",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.86883,
+"lon": -128.48905,
+"route_nm": 1.52,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F182",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.86883,
+"lon": -128.48904,
+"route_nm": 1.52,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F184",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.86859,
+"lon": -128.51694,
+"route_nm": 0.52,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F186",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8677,
+"lon": -128.51826,
+"route_nm": 0.46,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F187",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8674,
+"lon": -128.51903,
+"route_nm": 0.44,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F190",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.86585,
+"lon": -128.5327,
+"route_nm": 0.12,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F200",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.86329,
+"lon": -128.51771,
+"route_nm": 0.47,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F201",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86285,
+"lon": -128.51774,
+"route_nm": 0.47,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F202",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86276,
+"lon": -128.47772,
+"route_nm": 1.92,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F203",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.86266,
+"lon": -128.49422,
+"route_nm": 1.32,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F204",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86254,
+"lon": -128.5155,
+"route_nm": 0.55,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F205",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86254,
+"lon": -128.5155,
+"route_nm": 0.55,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F207",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86209,
+"lon": -128.49364,
+"route_nm": 1.34,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F210",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86079,
+"lon": -128.54279,
+"route_nm": 0.42,
+"sheet": "sheet25.jpg"
+},
+{
+"k": "F211",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86053,
+"lon": -128.469,
+"route_nm": 2.23,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F212",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.86033,
+"lon": -128.51916,
+"route_nm": 0.44,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F213",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8599,
+"lon": -128.51983,
+"route_nm": 0.42,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F214",
+"kind": "DAYMAR",
+"name": "",
+"lat": 52.85967,
+"lon": -128.48281,
+"route_nm": 1.74,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F216",
+"kind": "DAYMAR",
+"name": "",
+"lat": 52.85944,
+"lon": -128.48243,
+"route_nm": 1.76,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F219",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.85886,
+"lon": -128.54389,
+"route_nm": 0.43,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F224",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.85718,
+"lon": -128.5197,
+"route_nm": 0.46,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F227",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85633,
+"lon": -128.52116,
+"route_nm": 0.41,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F228",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85611,
+"lon": -128.48232,
+"route_nm": 1.79,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F229",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.85566,
+"lon": -128.48235,
+"route_nm": 1.8,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F230",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85563,
+"lon": -128.52058,
+"route_nm": 0.44,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F231",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85539,
+"lon": -128.52029,
+"route_nm": 0.46,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F232",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.85517,
+"lon": -128.48001,
+"route_nm": 1.89,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F233",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.85494,
+"lon": -128.52012,
+"route_nm": 0.47,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F243",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85264,
+"lon": -128.47679,
+"route_nm": 2.03,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F254",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.85025,
+"lon": -128.47358,
+"route_nm": 2.17,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F256",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84972,
+"lon": -128.54202,
+"route_nm": 0.25,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F257",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84967,
+"lon": -128.47405,
+"route_nm": 2.17,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F259",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84918,
+"lon": -128.47489,
+"route_nm": 2.14,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F260",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84918,
+"lon": -128.47489,
+"route_nm": 2.14,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F264",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84814,
+"lon": -128.45218,
+"route_nm": 2.96,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F265",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84814,
+"lon": -128.45218,
+"route_nm": 2.96,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F268",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84718,
+"lon": -128.45588,
+"route_nm": 2.84,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F270",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84608,
+"lon": -128.518,
+"route_nm": 0.65,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F271",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84586,
+"lon": -128.46957,
+"route_nm": 2.37,
+"sheet": "sheet26.jpg"
+},
+{
+"k": "F272",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.84576,
+"lon": -128.45454,
+"route_nm": 2.91,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F273",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.84545,
+"lon": -128.5184,
+"route_nm": 0.65,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F275",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.84239,
+"lon": -128.53656,
+"route_nm": 0.05,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F283",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83708,
+"lon": -128.54205,
+"route_nm": 0.13,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F284",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.8356,
+"lon": -128.51579,
+"route_nm": 0.8,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F285",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.83556,
+"lon": -128.51617,
+"route_nm": 0.79,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F286",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83455,
+"lon": -128.51612,
+"route_nm": 0.82,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F287",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83447,
+"lon": -128.54915,
+"route_nm": 0.38,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F288",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83447,
+"lon": -128.54915,
+"route_nm": 0.38,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F289",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83439,
+"lon": -128.54907,
+"route_nm": 0.38,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F291",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.83393,
+"lon": -128.51733,
+"route_nm": 0.79,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F293",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83369,
+"lon": -128.51732,
+"route_nm": 0.79,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F294",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83355,
+"lon": -128.5476,
+"route_nm": 0.31,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F296",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.83218,
+"lon": -128.54741,
+"route_nm": 0.29,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F300",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.82839,
+"lon": -128.46962,
+"route_nm": 2.53,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F301",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.82818,
+"lon": -128.46954,
+"route_nm": 2.54,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F302",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.8279,
+"lon": -128.4673,
+"route_nm": 2.62,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F303",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.82787,
+"lon": -128.5378,
+"route_nm": 0.12,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F305",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.8264,
+"lon": -128.54849,
+"route_nm": 0.29,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F306",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.8264,
+"lon": -128.54849,
+"route_nm": 0.29,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F310",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.82495,
+"lon": -128.5456,
+"route_nm": 0.21,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F311",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.82467,
+"lon": -128.46929,
+"route_nm": 2.58,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F317",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.82044,
+"lon": -128.46605,
+"route_nm": 2.73,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F319",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81938,
+"lon": -128.54535,
+"route_nm": 0.15,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F321",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81782,
+"lon": -128.52391,
+"route_nm": 0.64,
+"sheet": "sheet27.jpg"
+},
+{
+"k": "F324",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81533,
+"lon": -128.52373,
+"route_nm": 0.67,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F326",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81433,
+"lon": -128.5212,
+"route_nm": 0.76,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F327",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81266,
+"lon": -128.546,
+"route_nm": 0.16,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F328",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.81258,
+"lon": -128.53885,
+"route_nm": 0.15,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F329",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.81215,
+"lon": -128.54631,
+"route_nm": 0.19,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F332",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.8067,
+"lon": -128.54585,
+"route_nm": 0.18,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F342",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.79847,
+"lon": -128.54711,
+"route_nm": 0.2,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F343",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.79836,
+"lon": -128.52424,
+"route_nm": 0.64,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F344",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.79822,
+"lon": -128.52421,
+"route_nm": 0.64,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F345",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.79684,
+"lon": -128.54094,
+"route_nm": 0.06,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F350",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.79304,
+"lon": -128.54918,
+"route_nm": 0.24,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F355",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78849,
+"lon": -128.55093,
+"route_nm": 0.27,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F358",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78772,
+"lon": -128.48026,
+"route_nm": 2.29,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F359",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78772,
+"lon": -128.48026,
+"route_nm": 2.29,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F362",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7868,
+"lon": -128.48044,
+"route_nm": 2.29,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F365",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78569,
+"lon": -128.47969,
+"route_nm": 2.33,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F369",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.78409,
+"lon": -128.48351,
+"route_nm": 2.2,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F370",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.78398,
+"lon": -128.4817,
+"route_nm": 2.27,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F373",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78363,
+"lon": -128.53195,
+"route_nm": 0.46,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F376",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7831,
+"lon": -128.55524,
+"route_nm": 0.39,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F379",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78194,
+"lon": -128.48759,
+"route_nm": 2.07,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F380",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78192,
+"lon": -128.48664,
+"route_nm": 2.1,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F381",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78171,
+"lon": -128.48823,
+"route_nm": 2.05,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F383",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78122,
+"lon": -128.48054,
+"route_nm": 2.33,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F385",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78017,
+"lon": -128.46596,
+"route_nm": 2.86,
+"sheet": "sheet28.jpg"
+},
+{
+"k": "F386",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.78012,
+"lon": -128.4627,
+"route_nm": 2.98,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F389",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77882,
+"lon": -128.46625,
+"route_nm": 2.86,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F390",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77799,
+"lon": -128.53445,
+"route_nm": 0.43,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F394",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77669,
+"lon": -128.48764,
+"route_nm": 2.11,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F396",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77647,
+"lon": -128.48106,
+"route_nm": 2.34,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F398",
+"kind": "natural=bay",
+"name": "Work Bay",
+"lat": 52.77553,
+"lon": -128.48413,
+"route_nm": 2.24,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F399",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77548,
+"lon": -128.53452,
+"route_nm": 0.43,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F400",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.77512,
+"lon": -128.54735,
+"route_nm": 0.11,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F405",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77275,
+"lon": -128.49029,
+"route_nm": 2.04,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F406",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77246,
+"lon": -128.55836,
+"route_nm": 0.42,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F407",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77246,
+"lon": -128.55836,
+"route_nm": 0.42,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F408",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.77238,
+"lon": -128.49075,
+"route_nm": 2.02,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F410",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.77207,
+"lon": -128.49058,
+"route_nm": 2.03,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F411",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.771,
+"lon": -128.55721,
+"route_nm": 0.38,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F413",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.77032,
+"lon": -128.55693,
+"route_nm": 0.35,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F416",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.76889,
+"lon": -128.55832,
+"route_nm": 0.38,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F418",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76784,
+"lon": -128.47465,
+"route_nm": 2.64,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F419",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.76735,
+"lon": -128.47975,
+"route_nm": 2.46,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F420",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76622,
+"lon": -128.49238,
+"route_nm": 2.02,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F421",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76596,
+"lon": -128.49102,
+"route_nm": 2.07,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F424",
+"kind": "place=island",
+"name": "Sarah Island",
+"lat": 52.76266,
+"lon": -128.503,
+"route_nm": 1.66,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F425",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76254,
+"lon": -128.56112,
+"route_nm": 0.45,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F427",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7621,
+"lon": -128.4896,
+"route_nm": 2.14,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F428",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76165,
+"lon": -128.53958,
+"route_nm": 0.36,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F429",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76088,
+"lon": -128.56137,
+"route_nm": 0.44,
+"sheet": "sheet29.jpg"
+},
+{
+"k": "F432",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76053,
+"lon": -128.53591,
+"route_nm": 0.49,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F433",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.76053,
+"lon": -128.53591,
+"route_nm": 0.49,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F436",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.75943,
+"lon": -128.54011,
+"route_nm": 0.34,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F443",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75584,
+"lon": -128.56204,
+"route_nm": 0.42,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F444",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75571,
+"lon": -128.4856,
+"route_nm": 2.33,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F445",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.75565,
+"lon": -128.55512,
+"route_nm": 0.17,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F446",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.75564,
+"lon": -128.5403,
+"route_nm": 0.36,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F447",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75456,
+"lon": -128.48538,
+"route_nm": 2.35,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F448",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75451,
+"lon": -128.54005,
+"route_nm": 0.38,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F452",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75269,
+"lon": -128.53726,
+"route_nm": 0.51,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F453",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75269,
+"lon": -128.53726,
+"route_nm": 0.51,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F457",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75165,
+"lon": -128.58856,
+"route_nm": 1.36,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F458",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75103,
+"lon": -128.5617,
+"route_nm": 0.38,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F460",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75084,
+"lon": -128.59064,
+"route_nm": 1.43,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F461",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.75039,
+"lon": -128.54289,
+"route_nm": 0.31,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F463",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75,
+"lon": -128.59644,
+"route_nm": 1.63,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F464",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.75,
+"lon": -128.58545,
+"route_nm": 1.24,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F465",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7499,
+"lon": -128.58684,
+"route_nm": 1.29,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F468",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.74902,
+"lon": -128.56206,
+"route_nm": 0.39,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F469",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74879,
+"lon": -128.59279,
+"route_nm": 1.5,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F471",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.74829,
+"lon": -128.5425,
+"route_nm": 0.34,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F473",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74744,
+"lon": -128.59389,
+"route_nm": 1.53,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F474",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74744,
+"lon": -128.5418,
+"route_nm": 0.36,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F475",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.74701,
+"lon": -128.54243,
+"route_nm": 0.34,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F476",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74661,
+"lon": -128.59514,
+"route_nm": 1.58,
+"sheet": "sheet30.jpg"
+},
+{
+"k": "F477",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74661,
+"lon": -128.59514,
+"route_nm": 1.58,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F481",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.745,
+"lon": -128.48433,
+"route_nm": 2.45,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F483",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74381,
+"lon": -128.59094,
+"route_nm": 1.41,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F484",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.74349,
+"lon": -128.58003,
+"route_nm": 1.01,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F488",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.74283,
+"lon": -128.54297,
+"route_nm": 0.33,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F491",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74239,
+"lon": -128.54102,
+"route_nm": 0.4,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F493",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7421,
+"lon": -128.57733,
+"route_nm": 0.92,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F495",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74112,
+"lon": -128.56523,
+"route_nm": 0.48,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F496",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74108,
+"lon": -128.56665,
+"route_nm": 0.53,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F497",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74108,
+"lon": -128.56665,
+"route_nm": 0.53,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F498",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74091,
+"lon": -128.54154,
+"route_nm": 0.4,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F499",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.74072,
+"lon": -128.57665,
+"route_nm": 0.88,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F502",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73988,
+"lon": -128.48476,
+"route_nm": 2.45,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F503",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.73969,
+"lon": -128.56442,
+"route_nm": 0.43,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F504",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73965,
+"lon": -128.5897,
+"route_nm": 1.35,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F505",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73965,
+"lon": -128.48466,
+"route_nm": 2.46,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F510",
+"kind": "natural=bay",
+"name": "Cougar Bay",
+"lat": 52.73911,
+"lon": -128.58488,
+"route_nm": 1.17,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F511",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73837,
+"lon": -128.48454,
+"route_nm": 2.47,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F512",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.73717,
+"lon": -128.55671,
+"route_nm": 0.18,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F517",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73392,
+"lon": -128.54354,
+"route_nm": 0.35,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F520",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73266,
+"lon": -128.56758,
+"route_nm": 0.53,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F521",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.73153,
+"lon": -128.57811,
+"route_nm": 0.9,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F522",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.73142,
+"lon": -128.57511,
+"route_nm": 0.79,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F526",
+"kind": "seamark:type=calling-in_point",
+"name": "",
+"lat": 52.73,
+"lon": -128.55829,
+"route_nm": 0.18,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F527",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72997,
+"lon": -128.58745,
+"route_nm": 1.23,
+"sheet": "sheet31.jpg"
+},
+{
+"k": "F528",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72995,
+"lon": -128.54506,
+"route_nm": 0.31,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F532",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.7261,
+"lon": -128.47998,
+"route_nm": 2.68,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F533",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72571,
+"lon": -128.54323,
+"route_nm": 0.39,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F534",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72547,
+"lon": -128.54292,
+"route_nm": 0.4,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F535",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.72525,
+"lon": -128.54359,
+"route_nm": 0.38,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F537",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72364,
+"lon": -128.47924,
+"route_nm": 2.72,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F538",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72351,
+"lon": -128.48112,
+"route_nm": 2.65,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F539",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.72351,
+"lon": -128.48112,
+"route_nm": 2.65,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F542",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.7222,
+"lon": -128.54369,
+"route_nm": 0.39,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F543",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.72218,
+"lon": -128.57392,
+"route_nm": 0.71,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F545",
+"kind": "MARCUL",
+"name": "",
+"lat": 52.72031,
+"lon": -128.57372,
+"route_nm": 0.71,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F549",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.71816,
+"lon": -128.54527,
+"route_nm": 0.35,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F551",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.71587,
+"lon": -128.54494,
+"route_nm": 0.37,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F553",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.71401,
+"lon": -128.57887,
+"route_nm": 0.86,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F554",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.71361,
+"lon": -128.58104,
+"route_nm": 0.94,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F556",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.71283,
+"lon": -128.54456,
+"route_nm": 0.39,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F558",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.71161,
+"lon": -128.47665,
+"route_nm": 2.86,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F560",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.7106,
+"lon": -128.54944,
+"route_nm": 0.27,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F561",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.71049,
+"lon": -128.54523,
+"route_nm": 0.4,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F563",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.71008,
+"lon": -128.54466,
+"route_nm": 0.41,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F570",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.70818,
+"lon": -128.4759,
+"route_nm": 2.88,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F572",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.70785,
+"lon": -128.58031,
+"route_nm": 0.91,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F573",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.70781,
+"lon": -128.55414,
+"route_nm": 0.04,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F574",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.70781,
+"lon": -128.55414,
+"route_nm": 0.04,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F576",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.70701,
+"lon": -128.58031,
+"route_nm": 0.91,
+"sheet": "sheet32.jpg"
+},
+{
+"k": "F577",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.70677,
+"lon": -128.5514,
+"route_nm": 0.15,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F578",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.70648,
+"lon": -128.5536,
+"route_nm": 0.09,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F585",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.70433,
+"lon": -128.55211,
+"route_nm": 0.18,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F589",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.70156,
+"lon": -128.54912,
+"route_nm": 0.22,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F592",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.70029,
+"lon": -128.47833,
+"route_nm": 2.69,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F594",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69988,
+"lon": -128.47865,
+"route_nm": 2.67,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F596",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.69959,
+"lon": -128.54966,
+"route_nm": 0.17,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F602",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6971,
+"lon": -128.48062,
+"route_nm": 2.55,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F606",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6955,
+"lon": -128.5753,
+"route_nm": 0.77,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F607",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6955,
+"lon": -128.54941,
+"route_nm": 0.19,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F613",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6948,
+"lon": -128.57807,
+"route_nm": 0.87,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F614",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6948,
+"lon": -128.57807,
+"route_nm": 0.87,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F621",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69418,
+"lon": -128.54927,
+"route_nm": 0.14,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F623",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6925,
+"lon": -128.54066,
+"route_nm": 0.41,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F624",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.69242,
+"lon": -128.54742,
+"route_nm": 0.16,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F625",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69207,
+"lon": -128.54447,
+"route_nm": 0.27,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F626",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.69175,
+"lon": -128.54421,
+"route_nm": 0.28,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F627",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.69168,
+"lon": -128.54121,
+"route_nm": 0.37,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F628",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.69134,
+"lon": -128.54168,
+"route_nm": 0.34,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F629",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69117,
+"lon": -128.58314,
+"route_nm": 1.1,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F630",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69117,
+"lon": -128.58314,
+"route_nm": 1.1,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F631",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.69017,
+"lon": -128.48767,
+"route_nm": 2.19,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F632",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6901,
+"lon": -128.57175,
+"route_nm": 0.74,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F635",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68963,
+"lon": -128.48811,
+"route_nm": 2.17,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F636",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.68954,
+"lon": -128.48759,
+"route_nm": 2.18,
+"sheet": "sheet33.jpg"
+},
+{
+"k": "F637",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68953,
+"lon": -128.53784,
+"route_nm": 0.43,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F638",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68909,
+"lon": -128.5823,
+"route_nm": 1.12,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F639",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.68891,
+"lon": -128.54567,
+"route_nm": 0.14,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F640",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.68891,
+"lon": -128.54567,
+"route_nm": 0.14,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F641",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.68891,
+"lon": -128.54567,
+"route_nm": 0.14,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F642",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.68891,
+"lon": -128.54567,
+"route_nm": 0.14,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F646",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.68691,
+"lon": -128.58045,
+"route_nm": 1.09,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F649",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.68588,
+"lon": -128.5795,
+"route_nm": 1.08,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F650",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68565,
+"lon": -128.53719,
+"route_nm": 0.38,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F651",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68515,
+"lon": -128.58025,
+"route_nm": 1.12,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F656",
+"kind": "natural=bay",
+"name": "Brown Cove",
+"lat": 52.68374,
+"lon": -128.57764,
+"route_nm": 1.06,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F659",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6829,
+"lon": -128.57942,
+"route_nm": 1.14,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F662",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.68188,
+"lon": -128.49007,
+"route_nm": 1.97,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F664",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.68019,
+"lon": -128.53436,
+"route_nm": 0.4,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F665",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67917,
+"lon": -128.53432,
+"route_nm": 0.4,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F671",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67748,
+"lon": -128.58151,
+"route_nm": 1.3,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F672",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67744,
+"lon": -128.4938,
+"route_nm": 1.76,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F673",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.67731,
+"lon": -128.54915,
+"route_nm": 0.19,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F674",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.67731,
+"lon": -128.54915,
+"route_nm": 0.19,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F678",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6766,
+"lon": -128.56608,
+"route_nm": 0.78,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F679",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67655,
+"lon": -128.49706,
+"route_nm": 1.64,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F680",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67655,
+"lon": -128.49706,
+"route_nm": 1.64,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F682",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67621,
+"lon": -128.59749,
+"route_nm": 1.88,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F683",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67621,
+"lon": -128.59749,
+"route_nm": 1.88,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F685",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67604,
+"lon": -128.49441,
+"route_nm": 1.72,
+"sheet": "sheet34.jpg"
+},
+{
+"k": "F686",
+"kind": "MARCUL",
+"name": "",
+"lat": 52.67592,
+"lon": -128.57708,
+"route_nm": 1.18,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F689",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67499,
+"lon": -128.547,
+"route_nm": 0.14,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F691",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.67446,
+"lon": -128.53378,
+"route_nm": 0.34,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F692",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.67446,
+"lon": -128.53378,
+"route_nm": 0.34,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F693",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.67446,
+"lon": -128.53378,
+"route_nm": 0.34,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F694",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.67446,
+"lon": -128.53378,
+"route_nm": 0.34,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F696",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67405,
+"lon": -128.59894,
+"route_nm": 1.97,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F698",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67388,
+"lon": -128.59698,
+"route_nm": 1.9,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F700",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67368,
+"lon": -128.59611,
+"route_nm": 1.88,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F702",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67367,
+"lon": -128.5874,
+"route_nm": 1.57,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F704",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67286,
+"lon": -128.53211,
+"route_nm": 0.35,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F705",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67267,
+"lon": -128.59896,
+"route_nm": 1.99,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F706",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.67196,
+"lon": -128.5535,
+"route_nm": 0.42,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F707",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67151,
+"lon": -128.56003,
+"route_nm": 0.65,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F709",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.67104,
+"lon": -128.55725,
+"route_nm": 0.57,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F712",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6697,
+"lon": -128.53192,
+"route_nm": 0.34,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F713",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66947,
+"lon": -128.55918,
+"route_nm": 0.67,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F716",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66843,
+"lon": -128.60901,
+"route_nm": 2.41,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F718",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66803,
+"lon": -128.57544,
+"route_nm": 1.25,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F719",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66795,
+"lon": -128.57564,
+"route_nm": 1.26,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F721",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66721,
+"lon": -128.58323,
+"route_nm": 1.53,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F722",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.667,
+"lon": -128.5902,
+"route_nm": 1.78,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F723",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66697,
+"lon": -128.58964,
+"route_nm": 1.76,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F725",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6651,
+"lon": -128.61553,
+"route_nm": 2.7,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F731",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66379,
+"lon": -128.55969,
+"route_nm": 0.75,
+"sheet": "sheet35.jpg"
+},
+{
+"k": "F732",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66362,
+"lon": -128.56754,
+"route_nm": 1.03,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F733",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66357,
+"lon": -128.60386,
+"route_nm": 2.32,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F734",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66356,
+"lon": -128.56132,
+"route_nm": 0.81,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F735",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66354,
+"lon": -128.55939,
+"route_nm": 0.74,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F736",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66312,
+"lon": -128.52822,
+"route_nm": 0.37,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F737",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66312,
+"lon": -128.52822,
+"route_nm": 0.37,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F738",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66296,
+"lon": -128.57483,
+"route_nm": 1.3,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F739",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6629,
+"lon": -128.60494,
+"route_nm": 2.37,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F740",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6627,
+"lon": -128.62002,
+"route_nm": 2.9,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F741",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.66244,
+"lon": -128.62008,
+"route_nm": 2.9,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F742",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6624,
+"lon": -128.61631,
+"route_nm": 2.77,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F743",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66225,
+"lon": -128.53005,
+"route_nm": 0.3,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F745",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.66167,
+"lon": -128.52598,
+"route_nm": 0.45,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F749",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65956,
+"lon": -128.56219,
+"route_nm": 0.89,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F750",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65935,
+"lon": -128.5,
+"route_nm": 1.33,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F752",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65924,
+"lon": -128.49983,
+"route_nm": 1.34,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F753",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65896,
+"lon": -128.52967,
+"route_nm": 0.27,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F755",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65871,
+"lon": -128.60691,
+"route_nm": 2.49,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F756",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65838,
+"lon": -128.61826,
+"route_nm": 2.9,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F758",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6581,
+"lon": -128.61804,
+"route_nm": 2.9,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F760",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65773,
+"lon": -128.61316,
+"route_nm": 2.73,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F761",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65763,
+"lon": -128.61132,
+"route_nm": 2.66,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F762",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65744,
+"lon": -128.54107,
+"route_nm": 0.16,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F763",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65726,
+"lon": -128.50028,
+"route_nm": 1.3,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F764",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65718,
+"lon": -128.6178,
+"route_nm": 2.9,
+"sheet": "sheet36.jpg"
+},
+{
+"k": "F765",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6568,
+"lon": -128.54486,
+"route_nm": 0.3,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F766",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65647,
+"lon": -128.6103,
+"route_nm": 2.64,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F767",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65643,
+"lon": -128.6109,
+"route_nm": 2.66,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F770",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65581,
+"lon": -128.61724,
+"route_nm": 2.9,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F771",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65575,
+"lon": -128.57282,
+"route_nm": 1.32,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F772",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65565,
+"lon": -128.61834,
+"route_nm": 2.94,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F774",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65549,
+"lon": -128.61621,
+"route_nm": 2.86,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F775",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65546,
+"lon": -128.52882,
+"route_nm": 0.26,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F776",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65491,
+"lon": -128.50176,
+"route_nm": 1.22,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F779",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65429,
+"lon": -128.61885,
+"route_nm": 2.97,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F780",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65422,
+"lon": -128.5649,
+"route_nm": 1.05,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F781",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.65412,
+"lon": -128.52755,
+"route_nm": 0.29,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F784",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.65246,
+"lon": -128.5648,
+"route_nm": 1.07,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F790",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64962,
+"lon": -128.56622,
+"route_nm": 1.15,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F792",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64914,
+"lon": -128.58524,
+"route_nm": 1.83,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F793",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64904,
+"lon": -128.56589,
+"route_nm": 1.14,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F795",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64877,
+"lon": -128.50409,
+"route_nm": 1.05,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F796",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64874,
+"lon": -128.56558,
+"route_nm": 1.14,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F797",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64855,
+"lon": -128.61763,
+"route_nm": 2.99,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F798",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64855,
+"lon": -128.61763,
+"route_nm": 2.99,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F799",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64851,
+"lon": -128.58285,
+"route_nm": 1.75,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F801",
+"kind": "natural=bay",
+"name": "McRae Cove",
+"lat": 52.64806,
+"lon": -128.58191,
+"route_nm": 1.73,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F803",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64722,
+"lon": -128.53832,
+"route_nm": 0.2,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F805",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64602,
+"lon": -128.56629,
+"route_nm": 1.19,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F806",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64515,
+"lon": -128.56647,
+"route_nm": 1.21,
+"sheet": "sheet37.jpg"
+},
+{
+"k": "F807",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64484,
+"lon": -128.52057,
+"route_nm": 0.42,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F808",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64419,
+"lon": -128.58504,
+"route_nm": 1.88,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F809",
+"kind": "building",
+"name": "",
+"lat": 52.64361,
+"lon": -128.52426,
+"route_nm": 0.28,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F810",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64351,
+"lon": -128.5893,
+"route_nm": 2.04,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F813",
+"kind": "place=isolated_dwelling",
+"name": "Boat Bluff",
+"lat": 52.64344,
+"lon": -128.52418,
+"route_nm": 0.28,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F814",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64339,
+"lon": -128.56955,
+"route_nm": 1.34,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F815",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64338,
+"lon": -128.56788,
+"route_nm": 1.28,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F816",
+"kind": "building",
+"name": "",
+"lat": 52.64338,
+"lon": -128.52387,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F817",
+"kind": "landuse=residential",
+"name": "",
+"lat": 52.64336,
+"lon": -128.52393,
+"route_nm": 0.29,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F818",
+"kind": "landuse=industrial",
+"name": "",
+"lat": 52.64335,
+"lon": -128.52409,
+"route_nm": 0.29,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F819",
+"kind": "building",
+"name": "Relief Keeper",
+"lat": 52.64333,
+"lon": -128.52406,
+"route_nm": 0.29,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F820",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64327,
+"lon": -128.56848,
+"route_nm": 1.31,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F821",
+"kind": "building",
+"name": "",
+"lat": 52.64324,
+"lon": -128.52432,
+"route_nm": 0.28,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F822",
+"kind": "building",
+"name": "",
+"lat": 52.64323,
+"lon": -128.52356,
+"route_nm": 0.31,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F823",
+"kind": "building",
+"name": "Principal Keeper",
+"lat": 52.64322,
+"lon": -128.52374,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F824",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.64317,
+"lon": -128.52429,
+"route_nm": 0.28,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F825",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64317,
+"lon": -128.50783,
+"route_nm": 0.85,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F826",
+"kind": "building",
+"name": "",
+"lat": 52.64313,
+"lon": -128.52403,
+"route_nm": 0.29,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F827",
+"kind": "building",
+"name": "",
+"lat": 52.6431,
+"lon": -128.52419,
+"route_nm": 0.29,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F828",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.64309,
+"lon": -128.52393,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F829",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.64307,
+"lon": -128.52389,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F830",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.64305,
+"lon": -128.52386,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F831",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.64303,
+"lon": -128.52382,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F832",
+"kind": "man_made=lighthouse",
+"name": "",
+"lat": 52.64293,
+"lon": -128.52375,
+"route_nm": 0.3,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F833",
+"kind": "landuse=industrial",
+"name": "Boat Bluff",
+"lat": 52.64293,
+"lon": -128.52363,
+"route_nm": 0.31,
+"sheet": "sheet38.jpg"
+},
+{
+"k": "F834",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64292,
+"lon": -128.56892,
+"route_nm": 1.33,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F835",
+"kind": "man_made=lighthouse",
+"name": "Boat Bluff Lighthouse",
+"lat": 52.64292,
+"lon": -128.52375,
+"route_nm": 0.3,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F836",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.64292,
+"lon": -128.52371,
+"route_nm": 0.31,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F837",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.64292,
+"lon": -128.52371,
+"route_nm": 0.31,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F838",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.64292,
+"lon": -128.52371,
+"route_nm": 0.31,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F839",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.64292,
+"lon": -128.52371,
+"route_nm": 0.31,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F840",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64262,
+"lon": -128.58944,
+"route_nm": 2.06,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F841",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64227,
+"lon": -128.59104,
+"route_nm": 2.12,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F845",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.64185,
+"lon": -128.58584,
+"route_nm": 1.94,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F846",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64177,
+"lon": -128.53791,
+"route_nm": 0.25,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F848",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64155,
+"lon": -128.59053,
+"route_nm": 2.11,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F849",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64135,
+"lon": -128.58363,
+"route_nm": 1.87,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F850",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.64123,
+"lon": -128.53762,
+"route_nm": 0.26,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F851",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.64119,
+"lon": -128.59004,
+"route_nm": 2.1,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F855",
+"kind": "natural=bay",
+"name": "Jorgensen Harbour",
+"lat": 52.63984,
+"lon": -128.58683,
+"route_nm": 2.01,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F856",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.63983,
+"lon": -128.58621,
+"route_nm": 1.98,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F857",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.63972,
+"lon": -128.57087,
+"route_nm": 1.44,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F859",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.63933,
+"lon": -128.58891,
+"route_nm": 2.09,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F860",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.63842,
+"lon": -128.44799,
+"route_nm": 2.95,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F862",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6383,
+"lon": -128.58956,
+"route_nm": 2.12,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F863",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6382,
+"lon": -128.58995,
+"route_nm": 2.14,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F865",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.63544,
+"lon": -128.58576,
+"route_nm": 2.02,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F866",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.63526,
+"lon": -128.53502,
+"route_nm": 0.24,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F868",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.63482,
+"lon": -128.58609,
+"route_nm": 2.05,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F873",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.63258,
+"lon": -128.58838,
+"route_nm": 2.16,
+"sheet": "sheet39.jpg"
+},
+{
+"k": "F875",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.63224,
+"lon": -128.5773,
+"route_nm": 1.76,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F876",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62961,
+"lon": -128.58418,
+"route_nm": 2.01,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F878",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62905,
+"lon": -128.51337,
+"route_nm": 0.51,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F879",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62789,
+"lon": -128.58782,
+"route_nm": 2.16,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F881",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62739,
+"lon": -128.59213,
+"route_nm": 2.32,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F882",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62703,
+"lon": -128.59413,
+"route_nm": 2.39,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F884",
+"kind": "building",
+"name": "",
+"lat": 52.62696,
+"lon": -128.53781,
+"route_nm": 0.39,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F885",
+"kind": "stream mouth",
+"name": "Baron Creek",
+"lat": 52.62682,
+"lon": -128.5318,
+"route_nm": 0.19,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F886",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62676,
+"lon": -128.53511,
+"route_nm": 0.3,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F887",
+"kind": "stream mouth",
+"name": "Baron Creek",
+"lat": 52.62676,
+"lon": -128.53511,
+"route_nm": 0.3,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F888",
+"kind": "stream mouth",
+"name": "Baron Creek",
+"lat": 52.62674,
+"lon": -128.53495,
+"route_nm": 0.29,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F889",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62674,
+"lon": -128.53495,
+"route_nm": 0.29,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F890",
+"kind": "stream mouth",
+"name": "Baron Creek",
+"lat": 52.6267,
+"lon": -128.53401,
+"route_nm": 0.26,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F891",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6267,
+"lon": -128.53401,
+"route_nm": 0.26,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F892",
+"kind": "place=island",
+"name": "Jane Island",
+"lat": 52.62666,
+"lon": -128.51814,
+"route_nm": 0.34,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F893",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62665,
+"lon": -128.59321,
+"route_nm": 2.36,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F895",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62661,
+"lon": -128.59177,
+"route_nm": 2.31,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F896",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62582,
+"lon": -128.52246,
+"route_nm": 0.18,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F899",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62503,
+"lon": -128.5937,
+"route_nm": 2.39,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F902",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62473,
+"lon": -128.59422,
+"route_nm": 2.42,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F905",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62439,
+"lon": -128.59504,
+"route_nm": 2.45,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F906",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.62339,
+"lon": -128.57942,
+"route_nm": 1.9,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F907",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.62329,
+"lon": -128.57959,
+"route_nm": 1.91,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F908",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6211,
+"lon": -128.52956,
+"route_nm": 0.16,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F912",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.61853,
+"lon": -128.58014,
+"route_nm": 1.97,
+"sheet": "sheet40.jpg"
+},
+{
+"k": "F913",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.6183,
+"lon": -128.51528,
+"route_nm": 0.33,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F914",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.6183,
+"lon": -128.51528,
+"route_nm": 0.33,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F915",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.6183,
+"lon": -128.51528,
+"route_nm": 0.33,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F917",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.61741,
+"lon": -128.5943,
+"route_nm": 2.49,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F918",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.616,
+"lon": -128.59324,
+"route_nm": 2.47,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F921",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.61506,
+"lon": -128.44714,
+"route_nm": 2.73,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F923",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.61379,
+"lon": -128.59252,
+"route_nm": 2.46,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F924",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6133,
+"lon": -128.52713,
+"route_nm": 0.22,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F925",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.61309,
+"lon": -128.44388,
+"route_nm": 2.84,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F926",
+"kind": "natural=bay",
+"name": "Mary Cove",
+"lat": 52.6129,
+"lon": -128.44046,
+"route_nm": 2.97,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F927",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.61277,
+"lon": -128.44427,
+"route_nm": 2.83,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F928",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.61192,
+"lon": -128.52607,
+"route_nm": 0.17,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F929",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.61188,
+"lon": -128.52609,
+"route_nm": 0.17,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F931",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.61171,
+"lon": -128.52623,
+"route_nm": 0.17,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F932",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.61132,
+"lon": -128.5792,
+"route_nm": 2.01,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F933",
+"kind": "amenity=ferry_terminal",
+"name": "Klemtu",
+"lat": 52.61127,
+"lon": -128.52579,
+"route_nm": 0.15,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F934",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.61111,
+"lon": -128.52584,
+"route_nm": 0.15,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F935",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.61098,
+"lon": -128.52578,
+"route_nm": 0.15,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F936",
+"kind": "landuse=industrial",
+"name": "",
+"lat": 52.61044,
+"lon": -128.52586,
+"route_nm": 0.15,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F937",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.61037,
+"lon": -128.51847,
+"route_nm": 0.13,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F938",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.61037,
+"lon": -128.51847,
+"route_nm": 0.13,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F939",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.61037,
+"lon": -128.51847,
+"route_nm": 0.13,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F940",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.61037,
+"lon": -128.51847,
+"route_nm": 0.13,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F941",
+"kind": "harbour=yes",
+"name": "Klemtu Ferry Port",
+"lat": 52.61029,
+"lon": -128.52533,
+"route_nm": 0.13,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F943",
+"kind": "tourism=artwork",
+"name": "Welcom pole",
+"lat": 52.61017,
+"lon": -128.52559,
+"route_nm": 0.15,
+"sheet": "sheet41.jpg"
+},
+{
+"k": "F944",
+"kind": "building",
+"name": "Waiting building",
+"lat": 52.61005,
+"lon": -128.52555,
+"route_nm": 0.15,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F945",
+"kind": "amenity=parking",
+"name": "",
+"lat": 52.60968,
+"lon": -128.52576,
+"route_nm": 0.16,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F946",
+"kind": "building",
+"name": "",
+"lat": 52.60936,
+"lon": -128.52555,
+"route_nm": 0.16,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F947",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60899,
+"lon": -128.59315,
+"route_nm": 2.54,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F949",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60885,
+"lon": -128.5802,
+"route_nm": 2.09,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F950",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60789,
+"lon": -128.59385,
+"route_nm": 2.58,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F952",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60739,
+"lon": -128.59421,
+"route_nm": 2.6,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F953",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60718,
+"lon": -128.52448,
+"route_nm": 0.15,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F955",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6061,
+"lon": -128.58073,
+"route_nm": 2.16,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F956",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60584,
+"lon": -128.52524,
+"route_nm": 0.14,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F957",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60576,
+"lon": -128.52539,
+"route_nm": 0.15,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F958",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60559,
+"lon": -128.60328,
+"route_nm": 2.95,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F959",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60536,
+"lon": -128.60117,
+"route_nm": 2.88,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F960",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60535,
+"lon": -128.58881,
+"route_nm": 2.45,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F962",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60482,
+"lon": -128.59911,
+"route_nm": 2.82,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F963",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.60478,
+"lon": -128.60058,
+"route_nm": 2.87,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F964",
+"kind": "landuse=quarry",
+"name": "",
+"lat": 52.60427,
+"lon": -128.5256,
+"route_nm": 0.18,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F966",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60359,
+"lon": -128.58004,
+"route_nm": 2.14,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F967",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.60359,
+"lon": -128.51995,
+"route_nm": 0.14,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F968",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.60359,
+"lon": -128.51995,
+"route_nm": 0.14,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F969",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.6032,
+"lon": -128.59117,
+"route_nm": 2.55,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F970",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.6029,
+"lon": -128.51319,
+"route_nm": 0.31,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F971",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60272,
+"lon": -128.4418,
+"route_nm": 2.87,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F972",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60267,
+"lon": -128.57981,
+"route_nm": 2.14,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F973",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60267,
+"lon": -128.44287,
+"route_nm": 2.83,
+"sheet": "sheet42.jpg"
+},
+{
+"k": "F974",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.60264,
+"lon": -128.44156,
+"route_nm": 2.87,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F977",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6021,
+"lon": -128.59905,
+"route_nm": 2.84,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F979",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60187,
+"lon": -128.58124,
+"route_nm": 2.2,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F980",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.6016,
+"lon": -128.59566,
+"route_nm": 2.72,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F982",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60078,
+"lon": -128.58113,
+"route_nm": 2.2,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F983",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60067,
+"lon": -128.59296,
+"route_nm": 2.63,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F984",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60042,
+"lon": -128.5849,
+"route_nm": 2.34,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F985",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.60036,
+"lon": -128.58169,
+"route_nm": 2.22,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F986",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.59999,
+"lon": -128.59153,
+"route_nm": 2.58,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F988",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.59925,
+"lon": -128.5852,
+"route_nm": 2.35,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F991",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.59889,
+"lon": -128.58274,
+"route_nm": 2.26,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F993",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.59852,
+"lon": -128.58622,
+"route_nm": 2.39,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F996",
+"kind": "building",
+"name": "",
+"lat": 52.5982,
+"lon": -128.52481,
+"route_nm": 0.2,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F997",
+"kind": "LNDMRK",
+"name": "",
+"lat": 52.59812,
+"lon": -128.52148,
+"route_nm": 0.14,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F998",
+"kind": "building",
+"name": "",
+"lat": 52.59785,
+"lon": -128.52438,
+"route_nm": 0.21,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F999",
+"kind": "landuse=quarry",
+"name": "",
+"lat": 52.59739,
+"lon": -128.525,
+"route_nm": 0.24,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1000",
+"kind": "building",
+"name": "",
+"lat": 52.59696,
+"lon": -128.52248,
+"route_nm": 0.22,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1001",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59688,
+"lon": -128.52211,
+"route_nm": 0.22,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1002",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59627,
+"lon": -128.52189,
+"route_nm": 0.2,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1003",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59598,
+"lon": -128.52185,
+"route_nm": 0.18,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1004",
+"kind": "building",
+"name": "",
+"lat": 52.59547,
+"lon": -128.52183,
+"route_nm": 0.16,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1005",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.59532,
+"lon": -128.524,
+"route_nm": 0.21,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1006",
+"kind": "building",
+"name": "",
+"lat": 52.59527,
+"lon": -128.52219,
+"route_nm": 0.16,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1007",
+"kind": "building",
+"name": "",
+"lat": 52.59526,
+"lon": -128.52261,
+"route_nm": 0.17,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1008",
+"kind": "building",
+"name": "",
+"lat": 52.59515,
+"lon": -128.5236,
+"route_nm": 0.19,
+"sheet": "sheet43.jpg"
+},
+{
+"k": "F1009",
+"kind": "HRBFAC",
+"name": "",
+"lat": 52.59501,
+"lon": -128.52254,
+"route_nm": 0.16,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1011",
+"kind": "building",
+"name": "",
+"lat": 52.59498,
+"lon": -128.52231,
+"route_nm": 0.15,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1012",
+"kind": "building",
+"name": "",
+"lat": 52.59492,
+"lon": -128.52275,
+"route_nm": 0.16,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1013",
+"kind": "building",
+"name": "Kitasoo Seafoods",
+"lat": 52.59489,
+"lon": -128.52187,
+"route_nm": 0.13,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1014",
+"kind": "building",
+"name": "",
+"lat": 52.59484,
+"lon": -128.52349,
+"route_nm": 0.18,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1015",
+"kind": "landuse=industrial",
+"name": "",
+"lat": 52.59482,
+"lon": -128.52268,
+"route_nm": 0.16,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1016",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.59475,
+"lon": -128.52178,
+"route_nm": 0.13,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1017",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59464,
+"lon": -128.52151,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1018",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.59454,
+"lon": -128.52251,
+"route_nm": 0.14,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1019",
+"kind": "building",
+"name": "",
+"lat": 52.59446,
+"lon": -128.52206,
+"route_nm": 0.13,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1020",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.59443,
+"lon": -128.52154,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1021",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59441,
+"lon": -128.52162,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1022",
+"kind": "building",
+"name": "",
+"lat": 52.59436,
+"lon": -128.52343,
+"route_nm": 0.17,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1023",
+"kind": "building",
+"name": "",
+"lat": 52.59436,
+"lon": -128.52183,
+"route_nm": 0.12,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1024",
+"kind": "harbour=fuel",
+"name": "",
+"lat": 52.59433,
+"lon": -128.52158,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1025",
+"kind": "building",
+"name": "",
+"lat": 52.59422,
+"lon": -128.52276,
+"route_nm": 0.14,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1026",
+"kind": "building",
+"name": "",
+"lat": 52.59417,
+"lon": -128.52354,
+"route_nm": 0.17,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1027",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59417,
+"lon": -128.52152,
+"route_nm": 0.1,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1028",
+"kind": "building",
+"name": "Kitasoo Band Store",
+"lat": 52.59413,
+"lon": -128.52225,
+"route_nm": 0.12,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1029",
+"kind": "building",
+"name": "",
+"lat": 52.59407,
+"lon": -128.52283,
+"route_nm": 0.14,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1030",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59405,
+"lon": -128.52195,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1032",
+"kind": "building",
+"name": "",
+"lat": 52.59401,
+"lon": -128.52186,
+"route_nm": 0.11,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1033",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59393,
+"lon": -128.52179,
+"route_nm": 0.1,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1034",
+"kind": "BUAARE",
+"name": "",
+"lat": 52.59391,
+"lon": -128.52571,
+"route_nm": 0.25,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1035",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.5939,
+"lon": -128.5218,
+"route_nm": 0.1,
+"sheet": "sheet44.jpg"
+},
+{
+"k": "F1036",
+"kind": "building",
+"name": "",
+"lat": 52.59388,
+"lon": -128.5225,
+"route_nm": 0.13,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1037",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.59387,
+"lon": -128.51414,
+"route_nm": 0.18,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1038",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59382,
+"lon": -128.52176,
+"route_nm": 0.1,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1039",
+"kind": "building",
+"name": "",
+"lat": 52.59363,
+"lon": -128.52316,
+"route_nm": 0.15,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1041",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.5936,
+"lon": -128.52216,
+"route_nm": 0.12,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1042",
+"kind": "building",
+"name": "",
+"lat": 52.59346,
+"lon": -128.5235,
+"route_nm": 0.16,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1043",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59333,
+"lon": -128.52192,
+"route_nm": 0.11,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1044",
+"kind": "building",
+"name": "",
+"lat": 52.59326,
+"lon": -128.52475,
+"route_nm": 0.21,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1045",
+"kind": "building",
+"name": "",
+"lat": 52.59319,
+"lon": -128.52345,
+"route_nm": 0.16,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1046",
+"kind": "building",
+"name": "",
+"lat": 52.59315,
+"lon": -128.52492,
+"route_nm": 0.22,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1047",
+"kind": "building",
+"name": "",
+"lat": 52.59311,
+"lon": -128.52302,
+"route_nm": 0.15,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1048",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.59302,
+"lon": -128.50308,
+"route_nm": 0.57,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1049",
+"kind": "building",
+"name": "",
+"lat": 52.59301,
+"lon": -128.52363,
+"route_nm": 0.17,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1050",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.59301,
+"lon": -128.52271,
+"route_nm": 0.14,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1051",
+"kind": "building",
+"name": "",
+"lat": 52.59299,
+"lon": -128.52524,
+"route_nm": 0.23,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1052",
+"kind": "building",
+"name": "",
+"lat": 52.59286,
+"lon": -128.52546,
+"route_nm": 0.24,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1053",
+"kind": "building",
+"name": "",
+"lat": 52.59284,
+"lon": -128.52462,
+"route_nm": 0.21,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1054",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.59283,
+"lon": -128.52243,
+"route_nm": 0.13,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1055",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59276,
+"lon": -128.52304,
+"route_nm": 0.15,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1056",
+"kind": "building",
+"name": "",
+"lat": 52.59274,
+"lon": -128.52401,
+"route_nm": 0.19,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1057",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59272,
+"lon": -128.5222,
+"route_nm": 0.13,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1058",
+"kind": "building",
+"name": "",
+"lat": 52.5927,
+"lon": -128.52564,
+"route_nm": 0.25,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1059",
+"kind": "building",
+"name": "",
+"lat": 52.59269,
+"lon": -128.52488,
+"route_nm": 0.22,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1061",
+"kind": "building",
+"name": "",
+"lat": 52.59262,
+"lon": -128.5242,
+"route_nm": 0.2,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1062",
+"kind": "PILPNT",
+"name": "",
+"lat": 52.59257,
+"lon": -128.52311,
+"route_nm": 0.16,
+"sheet": "sheet45.jpg"
+},
+{
+"k": "F1063",
+"kind": "landuse=residential",
+"name": "",
+"lat": 52.59255,
+"lon": -128.52448,
+"route_nm": 0.21,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1064",
+"kind": "building",
+"name": "",
+"lat": 52.5925,
+"lon": -128.52505,
+"route_nm": 0.23,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1065",
+"kind": "PILPNT",
+"name": "",
+"lat": 52.59249,
+"lon": -128.52298,
+"route_nm": 0.16,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1066",
+"kind": "building",
+"name": "",
+"lat": 52.59245,
+"lon": -128.52583,
+"route_nm": 0.26,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1067",
+"kind": "amenity=ferry_terminal",
+"name": "Klemtu",
+"lat": 52.59243,
+"lon": -128.52197,
+"route_nm": 0.13,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1069",
+"kind": "building",
+"name": "",
+"lat": 52.59239,
+"lon": -128.5252,
+"route_nm": 0.24,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1070",
+"kind": "building",
+"name": "",
+"lat": 52.59235,
+"lon": -128.52465,
+"route_nm": 0.22,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1071",
+"kind": "building",
+"name": "",
+"lat": 52.59222,
+"lon": -128.52481,
+"route_nm": 0.23,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1072",
+"kind": "building",
+"name": "",
+"lat": 52.59221,
+"lon": -128.52553,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1073",
+"kind": "PILPNT",
+"name": "",
+"lat": 52.5922,
+"lon": -128.52232,
+"route_nm": 0.14,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1074",
+"kind": "building",
+"name": "",
+"lat": 52.59203,
+"lon": -128.52497,
+"route_nm": 0.23,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1075",
+"kind": "MARCUL",
+"name": "",
+"lat": 52.59198,
+"lon": -128.52204,
+"route_nm": 0.14,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1076",
+"kind": "stream mouth",
+"name": "Klemtu Creek",
+"lat": 52.59175,
+"lon": -128.52512,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1077",
+"kind": "natural=wetland",
+"name": "",
+"lat": 52.59174,
+"lon": -128.52356,
+"route_nm": 0.2,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1078",
+"kind": "building",
+"name": "",
+"lat": 52.59135,
+"lon": -128.52497,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1079",
+"kind": "building",
+"name": "",
+"lat": 52.59116,
+"lon": -128.52483,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1081",
+"kind": "natural=bay",
+"name": "Trout Bay",
+"lat": 52.591,
+"lon": -128.52199,
+"route_nm": 0.19,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1083",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.59063,
+"lon": -128.52271,
+"route_nm": 0.22,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1084",
+"kind": "building",
+"name": "Long House",
+"lat": 52.59059,
+"lon": -128.51982,
+"route_nm": 0.13,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1085",
+"kind": "BUISGL",
+"name": "",
+"lat": 52.59055,
+"lon": -128.51961,
+"route_nm": 0.12,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1087",
+"kind": "building",
+"name": "",
+"lat": 52.59048,
+"lon": -128.52352,
+"route_nm": 0.24,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1089",
+"kind": "building",
+"name": "",
+"lat": 52.59041,
+"lon": -128.52366,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1090",
+"kind": "SLCONS",
+"name": "",
+"lat": 52.5903,
+"lon": -128.5237,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1091",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.59029,
+"lon": -128.5238,
+"route_nm": 0.25,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1092",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.59028,
+"lon": -128.52349,
+"route_nm": 0.24,
+"sheet": "sheet46.jpg"
+},
+{
+"k": "F1093",
+"kind": "building",
+"name": "",
+"lat": 52.59023,
+"lon": -128.52361,
+"route_nm": 0.24,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1094",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.59022,
+"lon": -128.52344,
+"route_nm": 0.24,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1095",
+"kind": "PONTON",
+"name": "",
+"lat": 52.59021,
+"lon": -128.52334,
+"route_nm": 0.23,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1098",
+"kind": "PONTON",
+"name": "",
+"lat": 52.58967,
+"lon": -128.52099,
+"route_nm": 0.14,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1099",
+"kind": "PONTON",
+"name": "",
+"lat": 52.58956,
+"lon": -128.52073,
+"route_nm": 0.13,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1100",
+"kind": "building",
+"name": "",
+"lat": 52.58927,
+"lon": -128.51972,
+"route_nm": 0.09,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1101",
+"kind": "building",
+"name": "",
+"lat": 52.58925,
+"lon": -128.52016,
+"route_nm": 0.11,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1102",
+"kind": "building",
+"name": "",
+"lat": 52.58906,
+"lon": -128.51952,
+"route_nm": 0.08,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1103",
+"kind": "building",
+"name": "",
+"lat": 52.58898,
+"lon": -128.52001,
+"route_nm": 0.1,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1104",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.58891,
+"lon": -128.51903,
+"route_nm": 0.07,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1105",
+"kind": "building",
+"name": "",
+"lat": 52.58879,
+"lon": -128.51957,
+"route_nm": 0.09,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1106",
+"kind": "natural=wetland",
+"name": "",
+"lat": 52.58878,
+"lon": -128.52208,
+"route_nm": 0.18,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1107",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.58877,
+"lon": -128.51938,
+"route_nm": 0.08,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1108",
+"kind": "building",
+"name": "",
+"lat": 52.58864,
+"lon": -128.51995,
+"route_nm": 0.1,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1110",
+"kind": "building",
+"name": "",
+"lat": 52.58861,
+"lon": -128.52039,
+"route_nm": 0.12,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1111",
+"kind": "building",
+"name": "",
+"lat": 52.58859,
+"lon": -128.51922,
+"route_nm": 0.08,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1112",
+"kind": "building",
+"name": "",
+"lat": 52.58855,
+"lon": -128.52059,
+"route_nm": 0.13,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1113",
+"kind": "building",
+"name": "",
+"lat": 52.58851,
+"lon": -128.51975,
+"route_nm": 0.1,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1114",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58842,
+"lon": -128.52352,
+"route_nm": 0.23,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1116",
+"kind": "building",
+"name": "",
+"lat": 52.58837,
+"lon": -128.52259,
+"route_nm": 0.2,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1117",
+"kind": "building",
+"name": "",
+"lat": 52.58836,
+"lon": -128.52232,
+"route_nm": 0.19,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1118",
+"kind": "building",
+"name": "",
+"lat": 52.58834,
+"lon": -128.52107,
+"route_nm": 0.15,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1119",
+"kind": "building",
+"name": "",
+"lat": 52.58832,
+"lon": -128.52045,
+"route_nm": 0.13,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1120",
+"kind": "building",
+"name": "",
+"lat": 52.58831,
+"lon": -128.52017,
+"route_nm": 0.12,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1121",
+"kind": "building",
+"name": "",
+"lat": 52.58829,
+"lon": -128.52131,
+"route_nm": 0.16,
+"sheet": "sheet47.jpg"
+},
+{
+"k": "F1122",
+"kind": "building",
+"name": "",
+"lat": 52.58827,
+"lon": -128.52184,
+"route_nm": 0.18,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1123",
+"kind": "building",
+"name": "",
+"lat": 52.58821,
+"lon": -128.52095,
+"route_nm": 0.15,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1124",
+"kind": "building",
+"name": "",
+"lat": 52.58813,
+"lon": -128.51998,
+"route_nm": 0.12,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1125",
+"kind": "building",
+"name": "",
+"lat": 52.5881,
+"lon": -128.52124,
+"route_nm": 0.16,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1126",
+"kind": "building",
+"name": "",
+"lat": 52.58808,
+"lon": -128.52039,
+"route_nm": 0.13,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1127",
+"kind": "building",
+"name": "",
+"lat": 52.58804,
+"lon": -128.52164,
+"route_nm": 0.17,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1128",
+"kind": "place=town",
+"name": "Klemtu",
+"lat": 52.58803,
+"lon": -128.52081,
+"route_nm": 0.15,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1129",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58802,
+"lon": -128.44074,
+"route_nm": 2.41,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1130",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58802,
+"lon": -128.44074,
+"route_nm": 2.41,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1131",
+"kind": "building",
+"name": "",
+"lat": 52.58799,
+"lon": -128.52085,
+"route_nm": 0.15,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1133",
+"kind": "stream mouth",
+"name": "Kitasoo Creek",
+"lat": 52.58795,
+"lon": -128.52341,
+"route_nm": 0.24,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1134",
+"kind": "building",
+"name": "",
+"lat": 52.58793,
+"lon": -128.5201,
+"route_nm": 0.13,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1135",
+"kind": "building",
+"name": "",
+"lat": 52.58791,
+"lon": -128.52196,
+"route_nm": 0.19,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1136",
+"kind": "building",
+"name": "",
+"lat": 52.58784,
+"lon": -128.52159,
+"route_nm": 0.18,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1138",
+"kind": "building",
+"name": "",
+"lat": 52.58775,
+"lon": -128.52001,
+"route_nm": 0.13,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1139",
+"kind": "building",
+"name": "",
+"lat": 52.58771,
+"lon": -128.5197,
+"route_nm": 0.12,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1140",
+"kind": "amenity=parking",
+"name": "",
+"lat": 52.58769,
+"lon": -128.52077,
+"route_nm": 0.16,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1141",
+"kind": "building",
+"name": "",
+"lat": 52.58768,
+"lon": -128.52244,
+"route_nm": 0.21,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1142",
+"kind": "building",
+"name": "",
+"lat": 52.58766,
+"lon": -128.52004,
+"route_nm": 0.14,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1143",
+"kind": "amenity=post_office",
+"name": "Klemtu",
+"lat": 52.58764,
+"lon": -128.5204,
+"route_nm": 0.15,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1144",
+"kind": "amenity=post_office",
+"name": "Klemtu",
+"lat": 52.58764,
+"lon": -128.52037,
+"route_nm": 0.15,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1145",
+"kind": "BUISGL",
+"name": "",
+"lat": 52.58762,
+"lon": -128.52082,
+"route_nm": 0.16,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1146",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58761,
+"lon": -128.44124,
+"route_nm": 2.38,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1147",
+"kind": "building",
+"name": "",
+"lat": 52.5876,
+"lon": -128.52148,
+"route_nm": 0.18,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1148",
+"kind": "building",
+"name": "",
+"lat": 52.58759,
+"lon": -128.52201,
+"route_nm": 0.2,
+"sheet": "sheet48.jpg"
+},
+{
+"k": "F1152",
+"kind": "building",
+"name": "",
+"lat": 52.58748,
+"lon": -128.52139,
+"route_nm": 0.18,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1153",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.58743,
+"lon": -128.52194,
+"route_nm": 0.2,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1154",
+"kind": "building",
+"name": "",
+"lat": 52.58742,
+"lon": -128.52017,
+"route_nm": 0.15,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1155",
+"kind": "building",
+"name": "",
+"lat": 52.58738,
+"lon": -128.52196,
+"route_nm": 0.2,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1156",
+"kind": "building",
+"name": "",
+"lat": 52.58738,
+"lon": -128.52085,
+"route_nm": 0.17,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1157",
+"kind": "building",
+"name": "",
+"lat": 52.58731,
+"lon": -128.5224,
+"route_nm": 0.22,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1158",
+"kind": "building",
+"name": "",
+"lat": 52.5873,
+"lon": -128.52128,
+"route_nm": 0.18,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1159",
+"kind": "building",
+"name": "",
+"lat": 52.58726,
+"lon": -128.5194,
+"route_nm": 0.14,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1160",
+"kind": "PONTON",
+"name": "",
+"lat": 52.5872,
+"lon": -128.5183,
+"route_nm": 0.12,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1161",
+"kind": "building",
+"name": "",
+"lat": 52.58719,
+"lon": -128.51993,
+"route_nm": 0.15,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1162",
+"kind": "man_made=pier",
+"name": "",
+"lat": 52.58719,
+"lon": -128.51832,
+"route_nm": 0.12,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1163",
+"kind": "building",
+"name": "",
+"lat": 52.58715,
+"lon": -128.5206,
+"route_nm": 0.17,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1164",
+"kind": "building",
+"name": "",
+"lat": 52.58714,
+"lon": -128.52234,
+"route_nm": 0.22,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1165",
+"kind": "building",
+"name": "",
+"lat": 52.58714,
+"lon": -128.52197,
+"route_nm": 0.21,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1166",
+"kind": "building",
+"name": "",
+"lat": 52.58713,
+"lon": -128.52116,
+"route_nm": 0.19,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1167",
+"kind": "tourism=hotel",
+"name": "Spirit Bear Lodge",
+"lat": 52.58699,
+"lon": -128.51881,
+"route_nm": 0.14,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1168",
+"kind": "building",
+"name": "",
+"lat": 52.58698,
+"lon": -128.5211,
+"route_nm": 0.19,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1169",
+"kind": "place=square",
+"name": "",
+"lat": 52.58694,
+"lon": -128.51962,
+"route_nm": 0.16,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1170",
+"kind": "building",
+"name": "",
+"lat": 52.58691,
+"lon": -128.52231,
+"route_nm": 0.23,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1171",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.58691,
+"lon": -128.52051,
+"route_nm": 0.18,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1173",
+"kind": "building",
+"name": "",
+"lat": 52.58689,
+"lon": -128.52191,
+"route_nm": 0.22,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1174",
+"kind": "building",
+"name": "",
+"lat": 52.58682,
+"lon": -128.52054,
+"route_nm": 0.18,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1176",
+"kind": "building",
+"name": "",
+"lat": 52.58679,
+"lon": -128.52098,
+"route_nm": 0.2,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1177",
+"kind": "building",
+"name": "",
+"lat": 52.58678,
+"lon": -128.52189,
+"route_nm": 0.22,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1178",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58654,
+"lon": -128.44107,
+"route_nm": 2.32,
+"sheet": "sheet49.jpg"
+},
+{
+"k": "F1179",
+"kind": "building",
+"name": "",
+"lat": 52.5865,
+"lon": -128.52049,
+"route_nm": 0.2,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1180",
+"kind": "building",
+"name": "",
+"lat": 52.58644,
+"lon": -128.51886,
+"route_nm": 0.16,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1182",
+"kind": "ROADWY",
+"name": "",
+"lat": 52.58636,
+"lon": -128.51923,
+"route_nm": 0.17,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1183",
+"kind": "landuse=residential",
+"name": "",
+"lat": 52.58635,
+"lon": -128.51962,
+"route_nm": 0.18,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1185",
+"kind": "building",
+"name": "",
+"lat": 52.58625,
+"lon": -128.51934,
+"route_nm": 0.17,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1186",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.58616,
+"lon": -128.44148,
+"route_nm": 2.3,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1187",
+"kind": "building",
+"name": "",
+"lat": 52.58615,
+"lon": -128.5208,
+"route_nm": 0.21,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1188",
+"kind": "building",
+"name": "",
+"lat": 52.58612,
+"lon": -128.5185,
+"route_nm": 0.14,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1189",
+"kind": "building",
+"name": "",
+"lat": 52.5861,
+"lon": -128.51921,
+"route_nm": 0.16,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1191",
+"kind": "building",
+"name": "",
+"lat": 52.58595,
+"lon": -128.51907,
+"route_nm": 0.15,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1192",
+"kind": "building",
+"name": "",
+"lat": 52.58594,
+"lon": -128.52008,
+"route_nm": 0.18,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1193",
+"kind": "building",
+"name": "",
+"lat": 52.58593,
+"lon": -128.5185,
+"route_nm": 0.13,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1194",
+"kind": "building",
+"name": "",
+"lat": 52.58587,
+"lon": -128.51949,
+"route_nm": 0.16,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1195",
+"kind": "leisure=pitch",
+"name": "",
+"lat": 52.58583,
+"lon": -128.52069,
+"route_nm": 0.2,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1196",
+"kind": "building",
+"name": "",
+"lat": 52.58578,
+"lon": -128.51838,
+"route_nm": 0.12,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1197",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58575,
+"lon": -128.49947,
+"route_nm": 0.58,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1198",
+"kind": "building",
+"name": "",
+"lat": 52.5857,
+"lon": -128.5189,
+"route_nm": 0.14,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1200",
+"kind": "building",
+"name": "",
+"lat": 52.58569,
+"lon": -128.52306,
+"route_nm": 0.28,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1201",
+"kind": "building",
+"name": "",
+"lat": 52.58565,
+"lon": -128.51911,
+"route_nm": 0.15,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1202",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58565,
+"lon": -128.5,
+"route_nm": 0.56,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1203",
+"kind": "building",
+"name": "",
+"lat": 52.58561,
+"lon": -128.51821,
+"route_nm": 0.11,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1204",
+"kind": "building",
+"name": "",
+"lat": 52.58547,
+"lon": -128.51922,
+"route_nm": 0.15,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1205",
+"kind": "building",
+"name": "",
+"lat": 52.5853,
+"lon": -128.51912,
+"route_nm": 0.14,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1206",
+"kind": "building",
+"name": "",
+"lat": 52.58529,
+"lon": -128.5186,
+"route_nm": 0.12,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1207",
+"kind": "building",
+"name": "",
+"lat": 52.58521,
+"lon": -128.5188,
+"route_nm": 0.13,
+"sheet": "sheet50.jpg"
+},
+{
+"k": "F1208",
+"kind": "building",
+"name": "",
+"lat": 52.58511,
+"lon": -128.5179,
+"route_nm": 0.09,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1209",
+"kind": "building",
+"name": "",
+"lat": 52.5851,
+"lon": -128.52163,
+"route_nm": 0.23,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1210",
+"kind": "building",
+"name": "",
+"lat": 52.58508,
+"lon": -128.52095,
+"route_nm": 0.2,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1211",
+"kind": "building",
+"name": "",
+"lat": 52.58503,
+"lon": -128.51774,
+"route_nm": 0.09,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1212",
+"kind": "building",
+"name": "",
+"lat": 52.585,
+"lon": -128.51828,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1214",
+"kind": "building",
+"name": "",
+"lat": 52.5848,
+"lon": -128.51869,
+"route_nm": 0.12,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1215",
+"kind": "building",
+"name": "",
+"lat": 52.5847,
+"lon": -128.51829,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1218",
+"kind": "building",
+"name": "",
+"lat": 52.58438,
+"lon": -128.51822,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1219",
+"kind": "building",
+"name": "",
+"lat": 52.5843,
+"lon": -128.51755,
+"route_nm": 0.08,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1220",
+"kind": "building",
+"name": "",
+"lat": 52.5842,
+"lon": -128.51814,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1221",
+"kind": "building",
+"name": "",
+"lat": 52.58414,
+"lon": -128.51746,
+"route_nm": 0.08,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1222",
+"kind": "building",
+"name": "",
+"lat": 52.58402,
+"lon": -128.51803,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1223",
+"kind": "building",
+"name": "",
+"lat": 52.58397,
+"lon": -128.51726,
+"route_nm": 0.08,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1224",
+"kind": "building",
+"name": "",
+"lat": 52.58386,
+"lon": -128.51786,
+"route_nm": 0.1,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1227",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58343,
+"lon": -128.51241,
+"route_nm": 0.14,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1228",
+"kind": "SILTNK",
+"name": "",
+"lat": 52.58314,
+"lon": -128.52053,
+"route_nm": 0.21,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1229",
+"kind": "building",
+"name": "",
+"lat": 52.58312,
+"lon": -128.52062,
+"route_nm": 0.21,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1235",
+"kind": "place=island",
+"name": "Cone Island",
+"lat": 52.58155,
+"lon": -128.50448,
+"route_nm": 0.34,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1236",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.58076,
+"lon": -128.51656,
+"route_nm": 0.11,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1238",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.57848,
+"lon": -128.44049,
+"route_nm": 1.86,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1244",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57695,
+"lon": -128.44054,
+"route_nm": 1.77,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1249",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.57601,
+"lon": -128.44049,
+"route_nm": 1.71,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1252",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57477,
+"lon": -128.51744,
+"route_nm": 0.24,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1253",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57473,
+"lon": -128.49424,
+"route_nm": 0.57,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1254",
+"kind": "natural=wetland",
+"name": "",
+"lat": 52.57415,
+"lon": -128.54337,
+"route_nm": 1.15,
+"sheet": "sheet51.jpg"
+},
+{
+"k": "F1256",
+"kind": "natural=bay",
+"name": "Clothes Bay",
+"lat": 52.57392,
+"lon": -128.51715,
+"route_nm": 0.25,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1257",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57378,
+"lon": -128.51959,
+"route_nm": 0.33,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1258",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57378,
+"lon": -128.51959,
+"route_nm": 0.33,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1259",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57365,
+"lon": -128.50901,
+"route_nm": 0.12,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1260",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57355,
+"lon": -128.49365,
+"route_nm": 0.57,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1264",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.57328,
+"lon": -128.51638,
+"route_nm": 0.25,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1267",
+"kind": "natural=bay",
+"name": "Clothes Bay",
+"lat": 52.5731,
+"lon": -128.51634,
+"route_nm": 0.25,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1268",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57303,
+"lon": -128.51803,
+"route_nm": 0.3,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1270",
+"kind": "natural=bay",
+"name": "Klemtu Anchorage",
+"lat": 52.57251,
+"lon": -128.51456,
+"route_nm": 0.21,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1272",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5718,
+"lon": -128.43903,
+"route_nm": 1.47,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1273",
+"kind": "place=islet",
+"name": "Observation Islet",
+"lat": 52.57157,
+"lon": -128.51245,
+"route_nm": 0.13,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1274",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.57148,
+"lon": -128.51351,
+"route_nm": 0.16,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1276",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57088,
+"lon": -128.51694,
+"route_nm": 0.29,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1277",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57072,
+"lon": -128.49237,
+"route_nm": 0.56,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1278",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.57063,
+"lon": -128.51604,
+"route_nm": 0.26,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1279",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57055,
+"lon": -128.51741,
+"route_nm": 0.31,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1280",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.57055,
+"lon": -128.51741,
+"route_nm": 0.31,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1284",
+"kind": "place=island",
+"name": "Star Island",
+"lat": 52.57007,
+"lon": -128.51267,
+"route_nm": 0.16,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1285",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.56965,
+"lon": -128.50656,
+"route_nm": 0.14,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1288",
+"kind": "ACHARE",
+"name": "",
+"lat": 52.56917,
+"lon": -128.51366,
+"route_nm": 0.23,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1289",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.56899,
+"lon": -128.51157,
+"route_nm": 0.19,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1290",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.56855,
+"lon": -128.49167,
+"route_nm": 0.55,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1293",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.56787,
+"lon": -128.51123,
+"route_nm": 0.17,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1294",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.56753,
+"lon": -128.43733,
+"route_nm": 1.25,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1295",
+"kind": "place=islet",
+"name": "Stockade Islets",
+"lat": 52.56718,
+"lon": -128.51035,
+"route_nm": 0.13,
+"sheet": "sheet52.jpg"
+},
+{
+"k": "F1299",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.56667,
+"lon": -128.50966,
+"route_nm": 0.11,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1303",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.56583,
+"lon": -128.50473,
+"route_nm": 0.11,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1304",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5654,
+"lon": -128.50893,
+"route_nm": 0.14,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1306",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.56455,
+"lon": -128.51177,
+"route_nm": 0.25,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1310",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5625,
+"lon": -128.43569,
+"route_nm": 0.99,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1311",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5625,
+"lon": -128.43569,
+"route_nm": 0.99,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1312",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.56235,
+"lon": -128.5074,
+"route_nm": 0.11,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1313",
+"kind": "man_made=tower",
+"name": "",
+"lat": 52.56171,
+"lon": -128.56862,
+"route_nm": 2.25,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1314",
+"kind": "building",
+"name": "",
+"lat": 52.56165,
+"lon": -128.56877,
+"route_nm": 2.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1315",
+"kind": "landuse=industrial",
+"name": "",
+"lat": 52.56162,
+"lon": -128.56881,
+"route_nm": 2.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1316",
+"kind": "building",
+"name": "",
+"lat": 52.56158,
+"lon": -128.5689,
+"route_nm": 2.27,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1317",
+"kind": "man_made=storage_tank",
+"name": "",
+"lat": 52.56155,
+"lon": -128.56882,
+"route_nm": 2.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1321",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55961,
+"lon": -128.50207,
+"route_nm": 0.19,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1324",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55913,
+"lon": -128.50637,
+"route_nm": 0.24,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1326",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55906,
+"lon": -128.4902,
+"route_nm": 0.2,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1327",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55905,
+"lon": -128.50522,
+"route_nm": 0.23,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1329",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55804,
+"lon": -128.48983,
+"route_nm": 0.13,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1330",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55784,
+"lon": -128.43477,
+"route_nm": 0.78,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1331",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55784,
+"lon": -128.43477,
+"route_nm": 0.78,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1332",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55781,
+"lon": -128.43672,
+"route_nm": 0.73,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1338",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55646,
+"lon": -128.43733,
+"route_nm": 0.66,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1339",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55615,
+"lon": -128.50251,
+"route_nm": 0.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1341",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5554,
+"lon": -128.50277,
+"route_nm": 0.29,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1342",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55499,
+"lon": -128.50059,
+"route_nm": 0.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1345",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5548,
+"lon": -128.49998,
+"route_nm": 0.26,
+"sheet": "sheet53.jpg"
+},
+{
+"k": "F1346",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55474,
+"lon": -128.50312,
+"route_nm": 0.33,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1347",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55466,
+"lon": -128.49085,
+"route_nm": 0.08,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1348",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55457,
+"lon": -128.49068,
+"route_nm": 0.08,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1349",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55377,
+"lon": -128.43978,
+"route_nm": 0.47,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1351",
+"kind": "seamark:type=calling-in_point",
+"name": "",
+"lat": 52.55319,
+"lon": -128.47099,
+"route_nm": 0.13,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1353",
+"kind": "BCNSPP",
+"name": "",
+"lat": 52.55297,
+"lon": -128.49,
+"route_nm": 0.17,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1354",
+"kind": "LIGHTS",
+"name": "",
+"lat": 52.55297,
+"lon": -128.49,
+"route_nm": 0.17,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1355",
+"kind": "man_made=lighthouse",
+"name": "",
+"lat": 52.55291,
+"lon": -128.49035,
+"route_nm": 0.17,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1359",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55048,
+"lon": -128.5,
+"route_nm": 0.49,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1360",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.55048,
+"lon": -128.49995,
+"route_nm": 0.49,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1363",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.55036,
+"lon": -128.44143,
+"route_nm": 0.3,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1366",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54922,
+"lon": -128.49935,
+"route_nm": 0.52,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1368",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54899,
+"lon": -128.49954,
+"route_nm": 0.54,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1370",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54873,
+"lon": -128.5,
+"route_nm": 0.56,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1372",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54861,
+"lon": -128.43659,
+"route_nm": 0.44,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1375",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54831,
+"lon": -128.43561,
+"route_nm": 0.47,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1378",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54786,
+"lon": -128.44032,
+"route_nm": 0.3,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1379",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54778,
+"lon": -128.4335,
+"route_nm": 0.55,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1381",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54685,
+"lon": -128.42432,
+"route_nm": 0.88,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1382",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54685,
+"lon": -128.42432,
+"route_nm": 0.88,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1383",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54646,
+"lon": -128.42375,
+"route_nm": 0.91,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1384",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54599,
+"lon": -128.42506,
+"route_nm": 0.86,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1385",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54598,
+"lon": -128.42384,
+"route_nm": 0.91,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1386",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54587,
+"lon": -128.4282,
+"route_nm": 0.75,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1389",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54475,
+"lon": -128.41835,
+"route_nm": 1.12,
+"sheet": "sheet54.jpg"
+},
+{
+"k": "F1390",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5446,
+"lon": -128.4039,
+"route_nm": 1.64,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1391",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5446,
+"lon": -128.4039,
+"route_nm": 1.64,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1392",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54446,
+"lon": -128.43499,
+"route_nm": 0.53,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1393",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54431,
+"lon": -128.4362,
+"route_nm": 0.5,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1394",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54411,
+"lon": -128.43841,
+"route_nm": 0.42,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1397",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54375,
+"lon": -128.49649,
+"route_nm": 0.76,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1398",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54349,
+"lon": -128.42951,
+"route_nm": 0.74,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1399",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54319,
+"lon": -128.42893,
+"route_nm": 0.76,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1400",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54301,
+"lon": -128.42817,
+"route_nm": 0.79,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1401",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54284,
+"lon": -128.40835,
+"route_nm": 1.5,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1403",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54282,
+"lon": -128.42637,
+"route_nm": 0.86,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1404",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54239,
+"lon": -128.44189,
+"route_nm": 0.3,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1406",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5422,
+"lon": -128.40831,
+"route_nm": 1.51,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1407",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.5422,
+"lon": -128.39812,
+"route_nm": 1.87,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1408",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54212,
+"lon": -128.40442,
+"route_nm": 1.65,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1411",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5419,
+"lon": -128.49552,
+"route_nm": 0.84,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1412",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5416,
+"lon": -128.40234,
+"route_nm": 1.73,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1414",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.5414,
+"lon": -128.42123,
+"route_nm": 1.05,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1417",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54108,
+"lon": -128.42169,
+"route_nm": 1.04,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1418",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54087,
+"lon": -128.38962,
+"route_nm": 2.19,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1419",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54082,
+"lon": -128.39864,
+"route_nm": 1.87,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1421",
+"kind": "stream mouth",
+"name": "",
+"lat": 52.54062,
+"lon": -128.49487,
+"route_nm": 0.89,
+"sheet": "sheet55.jpg"
+},
+{
+"k": "F1422",
+"kind": "SBDARE",
+"name": "",
+"lat": 52.54023,
+"lon": -128.39763,
+"route_nm": 1.91,
+"sheet": "sheet55.jpg"
+}
+]
