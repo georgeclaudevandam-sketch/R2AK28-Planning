@@ -96,6 +96,7 @@ def level(kn, country):
 
 
 HOURS = 61 * 24   # June 1 00:00 to July 31 24:00, Pacific daylight time (UTC-7)
+KNOTS = (10, 15)   # lighter cutoffs also worked out, for crews who stop well before small craft strength
 MERGE_H, MIN_H = 6, 2   # hours at small craft or more, with gaps up to MERGE_H, make one event; events shorter than MIN_H are dropped
 
 
@@ -110,12 +111,13 @@ def era5(lat, lon, year):
     return [None if x is None else round(x, 1) for x in v[:HOURS]] + [None] * max(0, HOURS - len(v))
 
 
-def events(hourly, country, scale=1.0):
-    """[[start hour, hours, level]] of runs at small craft or more (level = highest reached)."""
+def events(hourly, country, scale=1.0, base=None):
+    """[[start hour, hours, level]] of runs at small craft or more (level = highest reached), or at `base` kn or more if given
+    (level 0 there for a run that never reached small craft)."""
     out, cur, gap = [], None, 0
     for h, x in enumerate(hourly):
         lv = level(x * scale, country) if x is not None else 0
-        if lv:
+        if (x is not None and x * scale >= base) if base else lv:
             if cur and h - cur[1] <= MERGE_H:
                 cur[1] = h; cur[2] = max(cur[2], lv)
             else:
@@ -313,12 +315,14 @@ def observed(name, point):
     return rec, src
 
 
-def stats(ev_by_year, hourly_by_year, country, scale):
-    """Likelihood, frequency and duration of events at small craft or more (sc) and gale or more (gale)."""
+def stats(ev_by_year, hourly_by_year, country, scale, base=None):
+    """Likelihood, frequency and duration of events at small craft or more (sc), gale or more (gale) and storm; with `base`, of the
+    events at `base` kn or more alone (as "sc")."""
     yrs = sorted(ev_by_year)
     n = len(yrs)
     s = {}
-    for key, lv in (("sc", 1), ("gale", 2), ("storm", 3)):
+    at = (lambda x, lv: x * scale >= base) if base else (lambda x, lv: level(x * scale, country) >= lv)
+    for key, lv in ((("sc", 0),) if base else (("sc", 1), ("gale", 2), ("storm", 3))):
         evs = [(y, e) for y in yrs for e in ev_by_year[y] if e[2] >= lv]
         dur = [e[1] for _, e in evs]
         # chance of at least one such event starting in a 16-day stretch, over every 16-day stretch of June-July
@@ -328,14 +332,14 @@ def stats(ev_by_year, hourly_by_year, country, scale):
             for d0 in range(0, 61 - 16 + 1):
                 tot += 1; hit += any(d0 * 24 <= h < (d0 + 16) * 24 for h in st)
         days = [len({(e[0] + k) // 24 for e in ev_by_year[y] if e[2] >= lv for k in range(e[1])}) for y in yrs]
-        hrs = sum(sum(1 for x in hourly_by_year[y] if x is not None and level(x * scale, country) >= lv) for y in yrs)
+        hrs = sum(sum(1 for x in hourly_by_year[y] if x is not None and at(x, lv)) for y in yrs)
         s[key] = {"events_per_jj": round(len(evs) / n, 2), "days_per_jj": round(sum(days) / n, 1), "share_of_hours_pct": round(100 * hrs / (n * HOURS), 2),
                   "p_in_16_days": round(hit / tot, 3) if tot else None, "years_with_any_pct": round(100 * sum(d > 0 for d in days) / n),
                   "dur_h": {"p25": pct(dur, 25), "median": pct(dur, 50), "p75": pct(dur, 75), "p90": pct(dur, 90), "max": max(dur) if dur else None},
                   "longest_by_days": {"<12 h": sum(d < 12 for d in dur), "12-24 h": sum(12 <= d < 24 for d in dur), "1-2 days": sum(24 <= d < 48 for d in dur),
                                       "2-3 days": sum(48 <= d < 72 for d in dur), "3+ days": sum(d >= 72 for d in dur)},
                   "by_decade_events": {f"{d}-{d + 9}": round(sum(1 for y, _ in evs if d <= y < d + 10) / max(1, sum(1 for y in yrs if d <= y < d + 10)), 2) for d in range(Y0, Y1 + 1, 10)},
-                  "by_half_month_share_pct": {lab: round(100 * sum(1 for y in yrs for h in range(a * 24, b * 24) if hourly_by_year[y][h] is not None and level(hourly_by_year[y][h] * scale, country) >= lv)
+                  "by_half_month_share_pct": {lab: round(100 * sum(1 for y in yrs for h in range(a * 24, b * 24) if hourly_by_year[y][h] is not None and at(hourly_by_year[y][h], lv))
                                                         / (n * (b - a) * 24), 2) for lab, a, b in (("Jun 1-15", 0, 15), ("Jun 16-30", 15, 30), ("Jul 1-15", 30, 45), ("Jul 16-31", 45, 61))}}
     return s
 
@@ -467,8 +471,20 @@ def main():
         s["best_source"] = bsrc; s["best_years"] = f"{min(best)}-{max(best)} ({len(best)} years)"
         s["best"] = s["observed"] if bsrc == "observed" else s.get("buoy_observed") if bsrc.startswith("buoy") \
             else s["nws_issued_2005_on"] if bsrc.startswith("NWS") else s["corrected"]
+        s["best"] = dict(s["best"])
+        # lighter cutoffs (10 and 15 kn) from the same hourly record; warnings issued carry no wind, so there the station, else ERA5
+        if bsrc.startswith("NWS"):
+            kh, ks, ksrc = (oh, 1.0, "observed") if "observed" in s else (hourly, scale, "ERA5")
+        else:
+            kh, ks, ksrc = bh, (scale if bsrc.startswith("ERA5") else 1.0), bsrc
+        kev = {}
+        for kn in KNOTS:
+            kev[kn] = {y: events(kh[y], cc, ks, kn) for y in sorted(kh)}
+            s["best"][f"k{kn}"] = stats(kev[kn], kh, cc, ks, kn)["sc"]
+        s["best_k_source"] = ksrc
         summary.append(s)
-        out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "source": bsrc, "years": {str(y): e for y, e in best.items()}})
+        out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "source": bsrc, "years": {str(y): e for y, e in best.items()},
+                       "k_source": ksrc, **{f"k{kn}": {str(y): e for y, e in kev[kn].items()} for kn in KNOTS}})
         for y in sorted(set(best) | set(ev)):
             r = {"area": name, "year": y}
             for tag, E, Hs in (("best", best, bh), ("era5", ev, hourly)):
@@ -489,10 +505,11 @@ def main():
                 f"of hours at small craft strength or more (gaps up to {MERGE_H} h merged, at least {MIN_H} h); its level is the highest it reached. "
                 "corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). "
                 "buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. "
-                "Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
+                "Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. best.k10 and best.k15: the same for runs at 10 and 15 kn or more, from best_k_source (the station record where best is the warnings issued). Times Pacific daylight time.",
         "generated": gen, "areas": summary}, indent=1))
     (OUT / "events.json").write_text(json.dumps({
-        "note": "Per area and year, June-July events at small craft strength or more: [start hour after June 1 00:00 PDT, hours, level 1 small craft / 2 gale / 3 storm]. "
+        "note": "Per area and year, June-July events at small craft strength or more: [start hour after June 1 00:00 PDT, hours, level 1 small craft / 2 gale / 3 storm]; "
+                "k10 and k15: runs at 10 and 15 kn or more (level 0 if under small craft), from k_source. "
                 "From scripts/storm_history.py: each area's best record (source).", "generated": gen, "y0": Y0, "y1": Y1, "areas": out_ev}, separators=(",", ":")))
     log("done")
 
