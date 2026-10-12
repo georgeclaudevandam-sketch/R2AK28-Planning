@@ -256,6 +256,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
           <label for="wstart">Row from<input id="wstart" type="time" value="05:00"></label>
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
+          <label for="rowW" title="Steady power each rower puts into the oar handle; sets the calorie counts">Power per rower (W)<input id="rowW" type="number" min="40" max="300" step="5" value="110"></label>
         </div>
         <div class="row" style="align-items:flex-end">
           <label for="hullFt-r" style="flex:1">Hull length (waterline, monohull)<input id="hullFt-r" type="range" min="20" max="60" step="1" value="24"></label>
@@ -416,8 +417,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH", "docksOn"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, docksOn: true, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "rowW", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH", "docksOn"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, rowW: 110, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, docksOn: true, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -1207,25 +1208,15 @@ function keyMark(m) {
 const hullSpeed = (ft) => 1.34 * Math.sqrt(ft);
 
 // ---------- crew energy
-// Seven aboard (six rowing, one coxing, all rotating), each a 200 lb athletic rower. Calories come from the power the boat
-// needs at the planned speed through the water: hull resistance (skin friction by the ITTC 1957 line on a wetted area
-// estimated from the displacement, plus wave-making from the Froude number) with 15% for wind, chop and fouling, delivered
-// through oars at 65% propulsive efficiency by muscle at 22% net efficiency (the calories above resting). Non-active calories
-// are each person's resting burn (Mifflin-St Jeor: 200 lb, 6 ft, age 35) times 1.3 for coxing, camp and light work, all day.
-const CREW = { n: 7, rowers: 6, lb: 200, boatLb: 1400 };   // boat 800 lb plus food, water and gear 600 lb
-const OAR_EFF = 0.65, MUSCLE_EFF = 0.22, SEA_ALLOW = 1.15;
-const REST_KCAL_DAY = (10 * (200 / 2.2046) + 6.25 * 183 - 5 * 35 + 5) * 1.3;   // per person: about 2,450 kcal
-const WAVE_CR = [[0.1, 0], [0.15, 0.0002], [0.2, 0.0006], [0.25, 0.0015], [0.3, 0.004], [0.35, 0.009], [0.4, 0.02], [0.45, 0.035], [0.5, 0.05]];
-function boatWatts(kn, ft) {   // effective (tow-rope) power in watts
-  const v = kn * 0.5144, L = ft * 0.3048, kg = (CREW.n * CREW.lb + CREW.boatLb) / 2.2046, vol = kg / 1025;
-  if (v <= 0) return 0;
-  const S = 2.6 * Math.sqrt(vol * L), Re = v * L / 1.19e-6, Cf = 0.075 / (Math.log10(Re) - 2) ** 2;
-  const fn = v / Math.sqrt(9.81 * L); let cr = WAVE_CR[WAVE_CR.length - 1][1];
-  for (let i = 1; i < WAVE_CR.length; i++) if (fn <= WAVE_CR[i][0]) { const [a, ca] = WAVE_CR[i - 1], [b, cb] = WAVE_CR[i]; cr = ca + (cb - ca) * (Math.max(fn, a) - a) / (b - a); break; }
-  return (0.5 * 1025 * v * v * S * Cf * 1.1 + kg * 9.81 * cr) * v * SEA_ALLOW;
-}
-// rowing calories an hour for the whole crew (above resting), at a speed through the water
-const rowKcalH = (kn, ft) => (boatWatts(kn, ft) / OAR_EFF / MUSCLE_EFF) * 3600 / 4184;
+// Seven aboard (six rowing, one coxing, all rotating), each a 90 kg (200 lb) athletic rower. Rowing calories come from the
+// power each rower puts into the oar handle (a setting: 100-120 W is a steady all-day effort for a fit rower), turned into food
+// energy by muscle at 22% net efficiency (the calories above resting). Non-active calories are each person's resting burn
+// (Mifflin-St Jeor: 90 kg, 183 cm, age 35) times 1.3 for coxing, camp and light work, all day.
+const CREW = { n: 7, rowers: 6, kg: 90 };
+const MUSCLE_EFF = 0.22;
+const REST_KCAL_DAY = (10 * 90 + 6.25 * 183 - 5 * 35 + 5) * 1.3;   // per person: about 2,450 kcal
+// rowing calories an hour for the whole crew (above resting)
+const rowKcalH = () => CREW.rowers * (state.rowW / MUSCLE_EFF) * 3600 / 4184;
 // hours rowed on a track between two times (moving segments only)
 function rowedH(track, a, b) {
   let h = 0;
@@ -1234,7 +1225,7 @@ function rowedH(track, a, b) {
 }
 // crew calories between two times: rowing (both stages) and non-active (everyone, all day)
 function crewKcal(P, a, b) {
-  const ft = state.hullFt, row = rowedH(P.r1.track, a, b) * rowKcalH(P.v1, ft) + rowedH(P.r2.track, a, b) * rowKcalH(P.v2, ft);
+  const row = (rowedH(P.r1.track, a, b) + rowedH(P.r2.track, a, b)) * rowKcalH();
   return { row, rest: CREW.n * REST_KCAL_DAY * Math.max(0, b - a) / (24 * H) };
 }
 const kcal = (k) => Math.round(k).toLocaleString("en-US");
@@ -1582,10 +1573,10 @@ function renderPlanner() {
     out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td class="num">${(pb - pa).toFixed(0)}</td><td class="num">${((pb - pa) * 1.852).toFixed(0)}</td><td class="num">${kcal(e.row)}</td><td class="num">${kcal(e.rest)}</td><td class="num">${kcal((e.row + e.rest) / CREW.n)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
     d = addDays(d, 1);
   }
-  const nDays = (r2.finish - P.s1) / (24 * H), rowW = boatWatts(P.v2, state.hullFt) / OAR_EFF / CREW.rowers;
+  const nDays = (r2.finish - P.s1) / (24 * H);
   $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th class="num">nm</th><th class="num">km</th><th class="num" title="Calories burned rowing, whole crew, above resting">Rowing kcal</th><th class="num" title="Resting burn plus coxing, camp and light work, whole crew">Non-active kcal</th><th class="num" title="Both, per person (the crew rotates seats)">kcal each</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>
     <tfoot><tr><th>Race</th><th class="num">${(ch.stage1.total + ch.stage2.total).toFixed(0)}</th><th class="num">${((ch.stage1.total + ch.stage2.total) * 1.852).toFixed(0)}</th><th class="num">${kcal(eRow)}</th><th class="num">${kcal(eRest)}</th><th class="num">${kcal((eRow + eRest) / CREW.n)}</th><th>${kcal((eRow + eRest) / CREW.n / nDays)} kcal a day each</th></tr></tfoot>`;
-  $("kcal-note").innerHTML = `Calories: ${CREW.n} aboard (${CREW.rowers} rowing, 1 coxing, rotating), each ${CREW.lb} lb; boat, food, water and gear ${CREW.boatLb} lb. At ${P.v2.toFixed(2)} kn through the water the ${state.hullFt} ft hull needs about ${Math.round(boatWatts(P.v2, state.hullFt))} W, which is about ${Math.round(rowW)} W at each oar handle and ${kcal(rowKcalH(P.v2, state.hullFt) / CREW.rowers)} kcal an hour for each rower above resting. Non-active is resting burn times 1.3 for coxing, camp and light work, ${kcal(REST_KCAL_DAY)} kcal a day each. Estimates from a hull resistance model, not measured; wind, waves and cold add more.`;
+  $("kcal-note").innerHTML = `Calories: ${CREW.n} aboard (${CREW.rowers} rowing, 1 coxing, rotating), each ${CREW.kg} kg. Each rower puts ${state.rowW} W into the oar handle while rowing (set above), which at 22% muscle efficiency is ${kcal(rowKcalH() / CREW.rowers)} kcal an hour above resting; rotating seats, each person rows ${CREW.rowers} hours in ${CREW.n}. Non-active is resting burn times 1.3 for coxing, camp and light work, ${kcal(REST_KCAL_DAY)} kcal a day each. Estimates, not measured; cold and rough water add more.`;
 
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
@@ -2311,7 +2302,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("docksOn").checked = state.docksOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("rowW").value = state.rowW; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("docksOn").checked = state.docksOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 
@@ -2578,6 +2569,7 @@ async function main() {
   $("s2d").addEventListener("change", (e) => { if (e.target.value) { state.s2d = e.target.value; changed(); } });
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
+  $("rowW").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 40 && v <= 300) { state.rowW = v; changed(); } });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
   ["hullFt", "hullFt-r"].forEach((id) => $(id).addEventListener("input", (e) => {
     const v = parseFloat(e.target.value); if (!(v >= 20 && v <= 60)) return;
