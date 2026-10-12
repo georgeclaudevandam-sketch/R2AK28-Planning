@@ -786,14 +786,17 @@ function fieldAt(ch, pos, t) {
 // stream along the track at a position and time, + = with you. Close to a current station its tables rule; moving away they
 // hand over to the ocean model, which covers the open water between stations. Where neither model has water, the station's
 // stream fades out as before.
-function streamAt(ch, pos, t) {
+function stationStream(ch, pos, t) {   // the station tables' share: { st: stream, trust: 0-1 }
   let sw = 0, sv = 0, bw = 0, trust = 0;
   for (const z of zonesFor(ch)) {
     const d = Math.abs(pos - z.along), f = d <= z.core ? 1 : d >= z.r ? 0 : (z.r - d) / (z.r - z.core), w = z.k * f;
     if (w <= 0) continue;
     sw += w; sv += w * zoneStream(ch, z, pos, t); if (w > bw) bw = w; if (f > trust) trust = f;
   }
-  const st = sw ? (sv / sw) * bw : 0, fld = fieldAt(ch, pos, t);
+  return { st: sw ? (sv / sw) * bw : 0, trust };
+}
+function streamAt(ch, pos, t) {
+  const { st, trust } = stationStream(ch, pos, t), fld = fieldAt(ch, pos, t);
   return fld == null ? st : trust * st + (1 - trust) * fld;
 }
 // Rowing simulator in 10-minute steps with the stream. win = fixed daily window; otherwise it rows, up to `hours` in each
@@ -1655,7 +1658,7 @@ async function loadFlow() {
       const k = idx[jj * g.nLon + i + di]; if (k < 0 || cw <= 0) continue; e += cw * U[k]; n += cw * V[k]; w += cw; }
     return w > 0.05 ? [e / w, n / w] : null;
   }
-  return { setT, at };
+  return { setT, at, wet };
 }
 // ---------- navigation lights: flashed on their real rhythm in real time (always lit, whatever the map time), from
 // data/lights.json (OpenSeaMap seamark tags). A light's phases are built from its exact sequence where mapped ("0.5+(3.5)":
@@ -1797,6 +1800,29 @@ const FlowLayer = L.Layer.extend({
     map.off("movestart zoomstart", this._pause, this); map.off("moveend zoomend resize", this._reset, this);
     this.canvas.remove();
   },
+  // The stream the planner rows in: within 3 nm of a route the station tables take over near their stations (Dodd, Seymour,
+  // Johnstone, Grenville...) along the route's heading, and where the ocean models have no water (the narrow channels) the
+  // planner's along-route stream is drawn along the route's heading. Elsewhere the models' grid as it is.
+  _route(lat, lon) {
+    const P = LAST_PLAN; if (!P) return null;
+    if (this._rP !== P) { this._rP = P; this._rc = new Map(); }
+    const key = Math.round(lat * 600) * 1e6 + Math.round(lon * 400);   // about a tenth of a mile
+    if (this._rc.has(key)) return this._rc.get(key);
+    let best = null;
+    for (const ch of [P.ch.stage1, P.ch.stage2]) { const q = projectSeg(ch, [lat, lon]); if (q.d <= 3 && (!best || q.d < best.d)) best = { ch, pos: q.along, d: q.d }; }
+    if (best) { const h = trackHeading(best.ch, best.pos); best.e = Math.sin(h); best.n = Math.cos(h); }
+    this._rc.set(key, best); return best;
+  },
+  _at(lat, lon) {
+    const f = this.field; if (!f.wet(lat, lon)) return null;
+    const m = f.at(lat, lon), r = this._route(lat, lon); if (!r) return m;
+    const { st, trust } = stationStream(r.ch, r.pos, state.t);
+    if (m) return trust > 0 ? [m[0] * (1 - trust) + st * trust * r.e, m[1] * (1 - trust) + st * trust * r.n] : m;
+    if (r.d > 1) return null;   // side inlets off the route: nothing to say about them
+    const fld = fieldAt(r.ch, r.pos, state.t); if (fld == null && !trust) return null;
+    const a = fld == null ? st : trust * st + (1 - trust) * fld;
+    return [a * r.e, a * r.n];
+  },
   _loop() { const go = () => { if (!this.running) return; this._step(); this.raf = requestAnimationFrame(go); }; this.raf = requestAnimationFrame(go); },
   _pause() { this.paused = true; if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h); },
   _reset() {
@@ -1819,7 +1845,7 @@ const FlowLayer = L.Layer.extend({
   },
   _spawn(p, initial) {
     p.ok = false;
-    for (let tries = 0; tries < 30; tries++) { p.x = Math.random() * this.w; p.y = Math.random() * this.h; if (this.field.at(this.lat(p.y), this.lon(p.x))) { p.ok = true; break; } }
+    for (let tries = 0; tries < 30; tries++) { p.x = Math.random() * this.w; p.y = Math.random() * this.h; if (this._at(this.lat(p.y), this.lon(p.x))) { p.ok = true; break; } }
     p.age = initial ? Math.random() * 3 : 0; p.max = 2 + Math.random() * 3;
     return p;
   },
@@ -1834,7 +1860,7 @@ const FlowLayer = L.Layer.extend({
     for (const p of this.parts) {
       p.age += dt;
       if (p.age > p.max || !p.ok) { this._spawn(p); continue; }
-      const v = f.at(this.lat(p.y), this.lon(p.x)); if (!v) { this._spawn(p); continue; }
+      const v = this._at(this.lat(p.y), this.lon(p.x)); if (!v) { this._spawn(p); continue; }
       const kn = Math.hypot(v[0], v[1]), nx = p.x + v[0] * k, ny = p.y - v[1] * k;
       let b = 0; while (b < FLOW_BREAKS.length && kn >= FLOW_BREAKS[b]) b++;
       buckets[b].push(p.x, p.y, nx, ny); p.x = nx; p.y = ny;
