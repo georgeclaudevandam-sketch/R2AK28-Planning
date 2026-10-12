@@ -1,6 +1,6 @@
 {
- "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else the NWS warnings issued (Clarence Strait, 2005 on), else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
- "generated": "2026-10-12T08:22Z",
+ "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else the NWS warnings issued (Clarence Strait, 2005 on), else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. best.k10 and best.k15: the same for runs at 10 and 15 kn or more, from best_k_source (the station record where best is the warnings issued). Times Pacific daylight time.",
+ "generated": "2026-10-12T13:06Z",
  "areas": [
   {
    "area": "Juan de Fuca Strait - east entrance",
@@ -448,8 +448,77 @@
     ],
     "years": 43,
     "first": 1976,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 34.56,
+     "days_per_jj": 49.3,
+     "share_of_hours_pct": 37.04,
+     "p_in_16_days": 0.991,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 11,
+      "p75": 21,
+      "p90": 40,
+      "max": 130
+     },
+     "longest_by_days": {
+      "<12 h": 780,
+      "12-24 h": 355,
+      "1-2 days": 238,
+      "2-3 days": 77,
+      "3+ days": 36
+     },
+     "by_decade_events": {
+      "1976-1985": 40.88,
+      "1986-1995": 30.6,
+      "1996-2005": 33.4,
+      "2006-2015": 34.0,
+      "2016-2025": 33.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 37.58,
+      "Jun 16-30": 38.9,
+      "Jul 1-15": 37.93,
+      "Jul 16-31": 33.96
+     }
+    },
+    "k15": {
+     "events_per_jj": 22.44,
+     "days_per_jj": 28.1,
+     "share_of_hours_pct": 13.93,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 8,
+      "p75": 14,
+      "p90": 25,
+      "max": 59
+     },
+     "longest_by_days": {
+      "<12 h": 633,
+      "12-24 h": 225,
+      "1-2 days": 100,
+      "2-3 days": 7,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 25.88,
+      "1986-1995": 20.4,
+      "1996-2005": 23.2,
+      "2006-2015": 21.8,
+      "2016-2025": 20.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 14.5,
+      "Jun 16-30": 15.01,
+      "Jul 1-15": 14.33,
+      "Jul 16-31": 12.0
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Haro Strait",
@@ -897,8 +966,77 @@
     ],
     "years": 29,
     "first": 1997,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 43.45,
+     "days_per_jj": 52.0,
+     "share_of_hours_pct": 32.25,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 9,
+      "p75": 16,
+      "p90": 32,
+      "max": 84
+     },
+     "longest_by_days": {
+      "<12 h": 775,
+      "12-24 h": 303,
+      "1-2 days": 146,
+      "2-3 days": 33,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 43.67,
+      "2006-2015": 44.6,
+      "2016-2025": 42.1
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 30.95,
+      "Jun 16-30": 32.5,
+      "Jul 1-15": 32.1,
+      "Jul 16-31": 33.36
+     }
+    },
+    "k15": {
+     "events_per_jj": 22.0,
+     "days_per_jj": 23.3,
+     "share_of_hours_pct": 8.64,
+     "p_in_16_days": 0.977,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 9,
+      "p90": 12,
+      "max": 43
+     },
+     "longest_by_days": {
+      "<12 h": 551,
+      "12-24 h": 77,
+      "1-2 days": 10,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 24.0,
+      "2006-2015": 20.1,
+      "2016-2025": 22.1
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.83,
+      "Jun 16-30": 8.36,
+      "Jul 1-15": 8.1,
+      "Jul 16-31": 9.24
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Strait of Georgia - south of Nanaimo",
@@ -1458,8 +1596,77 @@
     ],
     "years": 32,
     "first": 1994,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 39.59,
+     "days_per_jj": 54.0,
+     "share_of_hours_pct": 44.89,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 7,
+      "median": 12,
+      "p75": 23,
+      "p90": 42,
+      "max": 203
+     },
+     "longest_by_days": {
+      "<12 h": 586,
+      "12-24 h": 371,
+      "1-2 days": 212,
+      "2-3 days": 57,
+      "3+ days": 41
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 38.5,
+      "1996-2005": 38.8,
+      "2006-2015": 38.4,
+      "2016-2025": 41.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 45.96,
+      "Jun 16-30": 41.2,
+      "Jul 1-15": 45.54,
+      "Jul 16-31": 46.74
+     }
+    },
+    "k15": {
+     "events_per_jj": 28.31,
+     "days_per_jj": 34.4,
+     "share_of_hours_pct": 20.77,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 8,
+      "p75": 13,
+      "p90": 26,
+      "max": 152
+     },
+     "longest_by_days": {
+      "<12 h": 637,
+      "12-24 h": 168,
+      "1-2 days": 59,
+      "2-3 days": 25,
+      "3+ days": 17
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 31.0,
+      "1996-2005": 30.0,
+      "2006-2015": 27.4,
+      "2016-2025": 27.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 20.56,
+      "Jun 16-30": 16.66,
+      "Jul 1-15": 21.88,
+      "Jul 16-31": 23.79
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Strait of Georgia - north of Nanaimo",
@@ -2021,8 +2228,77 @@
     ],
     "years": 35,
     "first": 1976,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 38.2,
+     "days_per_jj": 56.6,
+     "share_of_hours_pct": 50.44,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 14,
+      "p75": 32,
+      "p90": 52,
+      "max": 190
+     },
+     "longest_by_days": {
+      "<12 h": 569,
+      "12-24 h": 342,
+      "1-2 days": 265,
+      "2-3 days": 97,
+      "3+ days": 64
+     },
+     "by_decade_events": {
+      "1976-1985": 33.25,
+      "1986-1995": 36.0,
+      "1996-2005": 37.8,
+      "2006-2015": 38.2,
+      "2016-2025": 40.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 54.23,
+      "Jun 16-30": 50.16,
+      "Jul 1-15": 48.57,
+      "Jul 16-31": 48.91
+     }
+    },
+    "k15": {
+     "events_per_jj": 38.26,
+     "days_per_jj": 46.2,
+     "share_of_hours_pct": 26.13,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 27,
+      "max": 89
+     },
+     "longest_by_days": {
+      "<12 h": 872,
+      "12-24 h": 303,
+      "1-2 days": 141,
+      "2-3 days": 19,
+      "3+ days": 4
+     },
+     "by_decade_events": {
+      "1976-1985": 21.75,
+      "1986-1995": 41.0,
+      "1996-2005": 39.6,
+      "2006-2015": 40.7,
+      "2016-2025": 40.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 30.48,
+      "Jun 16-30": 25.72,
+      "Jul 1-15": 25.27,
+      "Jul 16-31": 23.24
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Johnstone Strait",
@@ -2468,8 +2744,77 @@
     ],
     "years": 25,
     "first": 2000,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 23.96,
+     "days_per_jj": 59.1,
+     "share_of_hours_pct": 69.31,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 16,
+      "p75": 52,
+      "p90": 122,
+      "max": 562
+     },
+     "longest_by_days": {
+      "<12 h": 231,
+      "12-24 h": 112,
+      "1-2 days": 97,
+      "2-3 days": 50,
+      "3+ days": 109
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 24.0,
+      "2006-2015": 24.6,
+      "2016-2025": 23.22
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 62.41,
+      "Jun 16-30": 64.96,
+      "Jul 1-15": 72.17,
+      "Jul 16-31": 77.19
+     }
+    },
+    "k15": {
+     "events_per_jj": 27.28,
+     "days_per_jj": 52.6,
+     "share_of_hours_pct": 53.13,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 14,
+      "p75": 37,
+      "p90": 83,
+      "max": 316
+     },
+     "longest_by_days": {
+      "<12 h": 267,
+      "12-24 h": 190,
+      "1-2 days": 98,
+      "2-3 days": 52,
+      "3+ days": 75
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 27.0,
+      "2006-2015": 25.8,
+      "2016-2025": 29.11
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 45.57,
+      "Jun 16-30": 48.4,
+      "Jul 1-15": 56.7,
+      "Jul 16-31": 61.3
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Queen Charlotte Strait",
@@ -2919,8 +3264,77 @@
     ],
     "years": 48,
     "first": 1976,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 39.54,
+     "days_per_jj": 49.4,
+     "share_of_hours_pct": 34.5,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 9,
+      "p75": 16,
+      "p90": 35,
+      "max": 202
+     },
+     "longest_by_days": {
+      "<12 h": 1164,
+      "12-24 h": 448,
+      "1-2 days": 179,
+      "2-3 days": 69,
+      "3+ days": 38
+     },
+     "by_decade_events": {
+      "1976-1985": 39.4,
+      "1986-1995": 36.7,
+      "1996-2005": 41.44,
+      "2006-2015": 38.3,
+      "2016-2025": 42.33
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 36.67,
+      "Jun 16-30": 33.11,
+      "Jul 1-15": 34.67,
+      "Jul 16-31": 33.63
+     }
+    },
+    "k15": {
+     "events_per_jj": 20.29,
+     "days_per_jj": 24.0,
+     "share_of_hours_pct": 12.72,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 13,
+      "p90": 23,
+      "max": 144
+     },
+     "longest_by_days": {
+      "<12 h": 684,
+      "12-24 h": 198,
+      "1-2 days": 79,
+      "2-3 days": 11,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 19.6,
+      "1986-1995": 19.6,
+      "1996-2005": 18.56,
+      "2006-2015": 22.7,
+      "2016-2025": 20.89
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 15.53,
+      "Jun 16-30": 11.24,
+      "Jul 1-15": 13.11,
+      "Jul 16-31": 11.12
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Queen Charlotte Sound - eastern half",
@@ -3474,8 +3888,77 @@
       "Jul 1-15": 0.0,
       "Jul 16-31": 0.0
      }
+    },
+    "k10": {
+     "events_per_jj": 23.0,
+     "days_per_jj": 44.0,
+     "share_of_hours_pct": 39.58,
+     "p_in_16_days": 0.862,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 7,
+      "median": 18,
+      "p75": 39,
+      "p90": 67,
+      "max": 249
+     },
+     "longest_by_days": {
+      "<12 h": 243,
+      "12-24 h": 149,
+      "1-2 days": 146,
+      "2-3 days": 67,
+      "3+ days": 62
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 28.0,
+      "1996-2005": 24.0,
+      "2006-2015": 22.22,
+      "2016-2025": 20.38
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 43.01,
+      "Jun 16-30": 37.13,
+      "Jul 1-15": 37.31,
+      "Jul 16-31": 40.8
+     }
+    },
+    "k15": {
+     "events_per_jj": 15.41,
+     "days_per_jj": 23.9,
+     "share_of_hours_pct": 15.73,
+     "p_in_16_days": 0.862,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 6,
+      "median": 12,
+      "p75": 23,
+      "p90": 45,
+      "max": 183
+     },
+     "longest_by_days": {
+      "<12 h": 222,
+      "12-24 h": 114,
+      "1-2 days": 74,
+      "2-3 days": 25,
+      "3+ days": 12
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 15.0,
+      "1996-2005": 16.88,
+      "2006-2015": 16.44,
+      "2016-2025": 13.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 20.4,
+      "Jun 16-30": 12.56,
+      "Jul 1-15": 13.88,
+      "Jul 16-31": 16.07
+     }
     }
-   }
+   },
+   "best_k_source": "buoy 46204"
   },
   {
    "area": "Central Coast from McInnes Island to Pine Island",
@@ -3927,8 +4410,77 @@
     ],
     "years": 43,
     "first": 1976,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 22.58,
+     "days_per_jj": 26.9,
+     "share_of_hours_pct": 17.34,
+     "p_in_16_days": 0.775,
+     "years_with_any_pct": 98,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 14,
+      "p90": 27,
+      "max": 154
+     },
+     "longest_by_days": {
+      "<12 h": 643,
+      "12-24 h": 224,
+      "1-2 days": 69,
+      "2-3 days": 17,
+      "3+ days": 18
+     },
+     "by_decade_events": {
+      "1976-1985": 31.5,
+      "1986-1995": 36.0,
+      "1996-2005": 50.0,
+      "2006-2015": 4.33,
+      "2016-2025": 2.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 18.88,
+      "Jun 16-30": 18.94,
+      "Jul 1-15": 15.88,
+      "Jul 16-31": 15.76
+     }
+    },
+    "k15": {
+     "events_per_jj": 10.88,
+     "days_per_jj": 12.9,
+     "share_of_hours_pct": 6.64,
+     "p_in_16_days": 0.557,
+     "years_with_any_pct": 58,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 12,
+      "p90": 20,
+      "max": 81
+     },
+     "longest_by_days": {
+      "<12 h": 345,
+      "12-24 h": 85,
+      "1-2 days": 31,
+      "2-3 days": 5,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 16.0,
+      "1986-1995": 20.4,
+      "1996-2005": 22.5,
+      "2006-2015": 0.11,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.8,
+      "Jun 16-30": 7.37,
+      "Jul 1-15": 5.83,
+      "Jul 16-31": 5.63
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Inside channels, Finlayson to Grenville (no forecast area)",
@@ -4374,8 +4926,77 @@
     ],
     "years": 8,
     "first": 1994,
-    "last": 2001
-   }
+    "last": 2001,
+    "k10": {
+     "events_per_jj": 16.62,
+     "days_per_jj": 16.1,
+     "share_of_hours_pct": 6.63,
+     "p_in_16_days": 0.932,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 4,
+      "p75": 7,
+      "p90": 12,
+      "max": 16
+     },
+     "longest_by_days": {
+      "<12 h": 119,
+      "12-24 h": 14,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 12.5,
+      "1996-2005": 18.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.85,
+      "Jun 16-30": 7.43,
+      "Jul 1-15": 6.08,
+      "Jul 16-31": 5.27
+     }
+    },
+    "k15": {
+     "events_per_jj": 3.75,
+     "days_per_jj": 3.8,
+     "share_of_hours_pct": 1.2,
+     "p_in_16_days": 0.554,
+     "years_with_any_pct": 88,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 6,
+      "p90": 10,
+      "max": 12
+     },
+     "longest_by_days": {
+      "<12 h": 29,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 2.5,
+      "1996-2005": 4.17,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 1.08,
+      "Jun 16-30": 0.83,
+      "Jul 1-15": 1.35,
+      "Jul 16-31": 1.5
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Hecate Strait - southern half",
@@ -4819,8 +5440,77 @@
       "Jul 1-15": 0.0,
       "Jul 16-31": 0.0
      }
+    },
+    "k10": {
+     "events_per_jj": 22.13,
+     "days_per_jj": 43.1,
+     "share_of_hours_pct": 39.53,
+     "p_in_16_days": 0.854,
+     "years_with_any_pct": 87,
+     "dur_h": {
+      "p25": 8,
+      "median": 20,
+      "p75": 38,
+      "p90": 68,
+      "max": 300
+     },
+     "longest_by_days": {
+      "<12 h": 221,
+      "12-24 h": 162,
+      "1-2 days": 178,
+      "2-3 days": 63,
+      "3+ days": 62
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 29.0,
+      "1996-2005": 26.9,
+      "2006-2015": 23.89,
+      "2016-2025": 12.78
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 41.67,
+      "Jun 16-30": 38.08,
+      "Jul 1-15": 37.63,
+      "Jul 16-31": 40.65
+     }
+    },
+    "k15": {
+     "events_per_jj": 15.23,
+     "days_per_jj": 25.3,
+     "share_of_hours_pct": 18.48,
+     "p_in_16_days": 0.844,
+     "years_with_any_pct": 87,
+     "dur_h": {
+      "p25": 6,
+      "median": 13,
+      "p75": 28,
+      "p90": 48,
+      "max": 158
+     },
+     "longest_by_days": {
+      "<12 h": 208,
+      "12-24 h": 130,
+      "1-2 days": 86,
+      "2-3 days": 31,
+      "3+ days": 17
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 13.67,
+      "1996-2005": 16.9,
+      "2006-2015": 19.67,
+      "2016-2025": 9.44
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 21.08,
+      "Jun 16-30": 15.56,
+      "Jul 1-15": 15.49,
+      "Jul 16-31": 21.56
+     }
     }
-   }
+   },
+   "best_k_source": "buoy 46185"
   },
   {
    "area": "Hecate Strait - northern half",
@@ -5380,8 +6070,77 @@
     ],
     "years": 22,
     "first": 2004,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 26.55,
+     "days_per_jj": 53.9,
+     "share_of_hours_pct": 55.62,
+     "p_in_16_days": 0.984,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 9,
+      "median": 20,
+      "p75": 45,
+      "p90": 83,
+      "max": 240
+     },
+     "longest_by_days": {
+      "<12 h": 194,
+      "12-24 h": 130,
+      "1-2 days": 124,
+      "2-3 days": 66,
+      "3+ days": 70
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 29.5,
+      "2006-2015": 23.9,
+      "2016-2025": 28.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 58.52,
+      "Jun 16-30": 56.99,
+      "Jul 1-15": 53.74,
+      "Jul 16-31": 53.39
+     }
+    },
+    "k15": {
+     "events_per_jj": 23.86,
+     "days_per_jj": 39.1,
+     "share_of_hours_pct": 30.51,
+     "p_in_16_days": 0.982,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 7,
+      "median": 13,
+      "p75": 29,
+      "p90": 51,
+      "max": 205
+     },
+     "longest_by_days": {
+      "<12 h": 238,
+      "12-24 h": 121,
+      "1-2 days": 111,
+      "2-3 days": 34,
+      "3+ days": 21
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 23.0,
+      "2006-2015": 23.7,
+      "2016-2025": 24.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 36.62,
+      "Jun 16-30": 28.61,
+      "Jul 1-15": 31.07,
+      "Jul 16-31": 26.04
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Dixon Entrance east",
@@ -5949,8 +6708,77 @@
     ],
     "years": 37,
     "first": 1989,
-    "last": 2025
-   }
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 37.22,
+     "days_per_jj": 47.3,
+     "share_of_hours_pct": 32.17,
+     "p_in_16_days": 0.995,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 10,
+      "p75": 17,
+      "p90": 37,
+      "max": 169
+     },
+     "longest_by_days": {
+      "<12 h": 807,
+      "12-24 h": 344,
+      "1-2 days": 149,
+      "2-3 days": 44,
+      "3+ days": 33
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 36.43,
+      "1996-2005": 44.2,
+      "2006-2015": 35.8,
+      "2016-2025": 32.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 38.57,
+      "Jun 16-30": 31.98,
+      "Jul 1-15": 30.44,
+      "Jul 16-31": 27.96
+     }
+    },
+    "k15": {
+     "events_per_jj": 20.76,
+     "days_per_jj": 25.1,
+     "share_of_hours_pct": 12.91,
+     "p_in_16_days": 0.974,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 14,
+      "p90": 22,
+      "max": 94
+     },
+     "longest_by_days": {
+      "<12 h": 514,
+      "12-24 h": 181,
+      "1-2 days": 56,
+      "2-3 days": 12,
+      "3+ days": 5
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 22.71,
+      "1996-2005": 23.8,
+      "2006-2015": 22.3,
+      "2016-2025": 14.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 18.18,
+      "Jun 16-30": 12.17,
+      "Jul 1-15": 11.58,
+      "Jul 16-31": 9.9
+     }
+    }
+   },
+   "best_k_source": "observed"
   },
   {
    "area": "Clarence Strait (PKZ036)",
@@ -6494,8 +7322,77 @@
       "Jul 1-15": 0.0,
       "Jul 16-31": 0.0
      }
+    },
+    "k10": {
+     "events_per_jj": 6.25,
+     "days_per_jj": 6.4,
+     "share_of_hours_pct": 2.19,
+     "p_in_16_days": 0.649,
+     "years_with_any_pct": 92,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 8,
+      "p90": 10,
+      "max": 20
+     },
+     "longest_by_days": {
+      "<12 h": 69,
+      "12-24 h": 6,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 8.0,
+      "2016-2025": 5.67
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.4,
+      "Jun 16-30": 2.43,
+      "Jul 1-15": 1.6,
+      "Jul 16-31": 1.39
+     }
+    },
+    "k15": {
+     "events_per_jj": 0.58,
+     "days_per_jj": 0.6,
+     "share_of_hours_pct": 0.15,
+     "p_in_16_days": 0.125,
+     "years_with_any_pct": 42,
+     "dur_h": {
+      "p25": 2,
+      "median": 3,
+      "p75": 5,
+      "p90": 5,
+      "max": 5
+     },
+     "longest_by_days": {
+      "<12 h": 7,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.67,
+      "2016-2025": 0.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.25,
+      "Jul 1-15": 0.19,
+      "Jul 16-31": 0.17
+     }
     }
-   }
+   },
+   "best_k_source": "observed"
   }
  ]
 }
