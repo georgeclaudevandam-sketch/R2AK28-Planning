@@ -446,18 +446,22 @@ def main():
             if nw is not None:
                 byy = {y: [[h, d, lv] for yy, h, d, lv in nw if yy == y] for y in range(2005, Y1 + 1)}
                 s["nws_issued_2005_on"] = stats(byy, {y: [None] * HOURS for y in byy}, cc, 1.0)
-        # the record used for the area: its stations' observations, else the buoy, else the NWS warnings issued, else ERA5
+        # the record used for the area: the NWS warnings issued (Alaska), else its stations' observations (unless the buoy has the longer
+        # record and the stations under 15 years), else the buoy, else ERA5
         ob = obs.get(name)
         if ob and len(ob["years"]) >= 8:
             oh = {int(y): v for y, v in ob["years"].items()}
-            best, bsrc, bh = {y: events(v, cc) for y, v in oh.items()}, "observed", oh
+            oev = {y: events(v, cc) for y, v in oh.items()}
             st = sorted(set(ob["src"].values()))
-            s["observed"] = {**stats(best, oh, cc, 1.0), "stations": st, "years": len(oh), "first": min(oh), "last": max(oh)}
-        elif bd and "buoy_observed" in s and len(bev) >= 15:
-            best, bsrc, bh = bev, f"buoy {buoy}", {y: bd[y] for y in bev}
-        elif "nws_issued_2005_on" in s:
-            # no station record: the warnings actually issued for the zone beat ERA5, which is far too smooth in inside waters
+            s["observed"] = {**stats(oev, oh, cc, 1.0), "stations": st, "years": len(oh), "first": min(oh), "last": max(oh)}
+        bev = bev if bd and "buoy_observed" in s else {}
+        if "nws_issued_2005_on" in s:
+            # in Alaska the warnings actually issued for the zone: the one NDBC station near the route reads far lighter
             best, bsrc, bh = byy, "NWS warnings issued", {y: [None] * HOURS for y in byy}
+        elif "observed" in s and (len(oh) >= 15 or len(bev) < len(oh)):
+            best, bsrc, bh = oev, "observed", oh
+        elif len(bev) >= 8:
+            best, bsrc, bh = bev, f"buoy {buoy}", {y: bd[y] for y in bev}
         else:
             best, bsrc, bh = ev, "ERA5" + (" (scaled)" if scale != 1.0 else ""), hourly
         s["best_source"] = bsrc; s["best_years"] = f"{min(best)}-{max(best)} ({len(best)} years)"
