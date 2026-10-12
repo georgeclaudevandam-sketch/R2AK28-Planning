@@ -1371,25 +1371,30 @@ function renderPaceDir() {
   paceDir.setLatLng(b.ll);
   if (paceDir._html !== html) { paceDir.setIcon(L.divIcon({ className: "pace-dir", html, iconSize: null, iconAnchor: [-20, -16] })); paceDir._html = html; }
 }
-// ---------- speed gauges: a dial from 0 to GAUGE_MAX kn over 240 degrees, the needle and the value in the middle
-const GAUGE_MAX = 12;
-const gaugeAng = (kn) => (-120 + 240 * Math.min(1, Math.max(0, kn / GAUGE_MAX))) * Math.PI / 180;
+// ---------- speed gauges: a dial over 240 degrees whose full scale is the hull speed (1.34 x sqrt(waterline ft)), the needle
+// and the value in the middle; over ground with a fair stream can beat hull speed, so that needle stops at full scale
+const gaugeAng = (kn, max) => (-120 + 240 * Math.min(1, Math.max(0, kn / max))) * Math.PI / 180;
 const gaugeXY = (a, r) => [50 + r * Math.sin(a), 50 - r * Math.cos(a)];
 function gaugeSvg(id, label) {
-  const arc = (r) => { const [x0, y0] = gaugeXY(gaugeAng(0), r), [x1, y1] = gaugeXY(gaugeAng(GAUGE_MAX), r); return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 1 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
-  let ticks = "";
-  for (let k = 0; k <= GAUGE_MAX; k += 2) { const a = gaugeAng(k), [x0, y0] = gaugeXY(a, 37), [x1, y1] = gaugeXY(a, 43), [tx, ty] = gaugeXY(a, 30);
-    ticks += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"/><text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}">${k}</text>`; }
-  return `<figure class="gauge" id="${id}"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="g-arc" d="${arc(43)}"/><g class="g-ticks">${ticks}</g><line class="g-hull" hidden/>` +
+  return `<figure class="gauge" id="${id}"><svg viewBox="0 0 100 100" aria-hidden="true"><g class="g-scale"></g>` +
     `<line class="g-needle" x1="50" y1="50" x2="50" y2="14"/><circle cx="50" cy="50" r="4"/><text class="g-val" x="50" y="88">–</text></svg><figcaption>${label}</figcaption></figure>`;
 }
-function setGauge(id, kn, hull) {
+function gaugeScale(max) {
+  const arc = (r) => { const [x0, y0] = gaugeXY(gaugeAng(0, max), r), [x1, y1] = gaugeXY(gaugeAng(max, max), r); return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 1 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
+  const step = max > 8 ? 2 : 1;
+  let ticks = "";
+  for (let k = 0; k <= max + 1e-6; k += step) { const a = gaugeAng(k, max), [x0, y0] = gaugeXY(a, 37), [x1, y1] = gaugeXY(a, 43), [tx, ty] = gaugeXY(a, 30);
+    ticks += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"/>` + (max - k < step * 0.6 && max - k > 1e-6 ? "" : `<text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}">${k}</text>`); }
+  const a = gaugeAng(max, max), [x0, y0] = gaugeXY(a, 34), [x1, y1] = gaugeXY(a, 46), [tx, ty] = gaugeXY(a, 27);
+  return `<path class="g-arc" d="${arc(43)}"/><g class="g-ticks">${ticks}<text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}">${max.toFixed(1)}</text></g>` +
+    `<line class="g-hull" x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"><title>hull speed ${max.toFixed(2)} kn</title></line>`;
+}
+function setGauge(id, kn, max) {
   const g = document.getElementById(id); if (!g) return;
-  const n = g.querySelector(".g-needle"), v = g.querySelector(".g-val"), [x, y] = gaugeXY(gaugeAng(kn || 0), 36);
+  if (g._max !== max) { g.querySelector(".g-scale").innerHTML = gaugeScale(max); g._max = max; }
+  const n = g.querySelector(".g-needle"), v = g.querySelector(".g-val"), [x, y] = gaugeXY(gaugeAng(kn || 0, max), 36);
   n.setAttribute("x2", x.toFixed(1)); n.setAttribute("y2", y.toFixed(1)); n.style.opacity = kn == null ? 0.3 : 1;
   v.textContent = kn == null ? "–" : `${kn.toFixed(1)} kn`;
-  const h = g.querySelector(".g-hull");
-  if (hull != null) { const a = gaugeAng(hull), [x0, y0] = gaugeXY(a, 34), [x1, y1] = gaugeXY(a, 46); h.setAttribute("x1", x0.toFixed(1)); h.setAttribute("y1", y0.toFixed(1)); h.setAttribute("x2", x1.toFixed(1)); h.setAttribute("y2", y1.toFixed(1)); h.removeAttribute("hidden"); h.innerHTML = `<title>hull speed ${hull.toFixed(2)} kn</title>`; }
 }
 function renderSun() {
   if (!map) return;
@@ -1417,7 +1422,7 @@ function renderSun() {
     $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn` : "0";
     { const e = crewKcal(P, P.s1, Math.min(Math.max(t, P.s1), P.r2.finish)), dayA = Math.max(P.s1, dayStart(t)), ed = crewKcal(P, dayA, Math.min(Math.max(t, dayA), P.r2.finish));
       $("pb-kcal").textContent = t < P.s1 ? "–" : `${kcal(e.row + e.rest)} crew (rowing ${kcal(e.row)}) · today ${kcal(ed.row + ed.rest)}`; }
-    setGauge("g-stw", b ? stw : null, hullSpeed(state.hullFt)); setGauge("g-sog", b ? (moving ? Math.max(0, stw + (cur || 0)) : 0) : null);
+    const vH = hullSpeed(state.hullFt); setGauge("g-stw", b ? stw : null, vH); setGauge("g-sog", b ? (moving ? Math.max(0, stw + (cur || 0)) : 0) : null, vH);
   }
   if (mini) { if (b) miniBoat.setLatLng(b.ll).addTo(mini); else miniBoat.remove(); }
   if (PACE.length) renderPace();
@@ -1623,9 +1628,11 @@ function sunTimes(ll, t) {   // [sunrise, sunset] on the local day containing t 
   const cross = (a, b, down) => { for (let i = 0; i < 14; i++) { const m = (a + b) / 2; if (isDark(m, ll) === down) b = m; else a = m; } return (a + b) / 2; };
   return [cross(T - 12 * H, T, false), cross(T, T + 12 * H, true)];
 }
-// Chart strips for paper: the day's route cut into pages of chart at about 1:110,000 (12 x 13.3 nm, the letter page less its
-// header), each one a single export of the CHS chart for that box (NOAA in US waters, clipped at the border), with the
-// route, each hour's planned position, the gates, stops and camp, and the other past campsites drawn over it.
+// Chart strips for paper: the day's route cut into charts at about 1:110,000, 12 nm across: a full page (12 x 13.3 nm) where
+// the route runs north-south, a half page (12 x 6.3 nm, two to a page) where a stretch fits one. Each is a single export of the
+// CHS chart for that box (NOAA in US waters, clipped at the border) with the route, each hour's planned position, the gates,
+// and every landing drawn over it. Breaks, camp and other landings get callout boxes on a leader line, placed on land where
+// the shoreline mask allows and never over the route or its water near by; each chart has its own legend.
 // what kind of place a stop is, short enough to label a chart: beach, float, marina, BC Marine Trail campsite, a past team's camp
 function siteType(x) {
   const l = x.landing;
@@ -1633,76 +1640,158 @@ function siteType(x) {
   return x.dock ? "dock" : `past camp, ${x.teams} team${x.teams > 1 ? "s" : ""}`;
 }
 const chartLabel = (x) => { const n = x.landing && x.landing.name; return siteType(x) + (n ? ": " + (n.length > 26 ? n.slice(0, 25) + "…" : n) : ""); };
-const STRIP_W = 12, STRIP_H = 13.3, STRIP_PX = [1500, 1663];
+const siteKind = (x) => (x.landing && x.landing.dock) || x.dock ? "dk" : x.landing ? "ld" : "pc";
+const STRIP_W = 12, STRIP_FULL = 13.3, STRIP_HALF = 6.3, STRIP_PXW = 1500;   // nm across, nm tall, px across (125 px a nm)
+const PRINT_TEXT = 0.85;   // chart text (soundings, names) for print: smaller than on screen
 const merc = (ll) => { const R = 6378137, r = Math.PI / 180; return [R * ll[1] * r, R * Math.log(Math.tan(Math.PI / 4 + ll[0] * r / 2))]; };
-function chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine) {
-  // greedy along the route: each page takes as much route as fits in its box, less 1 nm each side
-  const pts = []; for (let a = p0; a < p1; a += 0.2) pts.push([a, pointAt(c, a)]); pts.push([p1, pointAt(c, p1)]);
-  const boxes = []; let i = 0;
-  while (i < pts.length - 1) {
+const unmerc = ([x, y]) => { const R = 6378137, r = Math.PI / 180; return [(2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) / r, x / R / r]; };
+// the shoreline mask (1 = water) used by the flow lines, loaded once for the print page
+let PRINT_MASK = null;
+async function loadPrintMask() {
+  if (PRINT_MASK) return PRINT_MASK;
+  const m = { lat1: 55.5, dlat: 0.002, lon0: -131.9, dlon: 0.0032127758646809893 };
+  const img = new Image(); img.src = "data/water_mask.png"; await img.decode();
+  const w = img.naturalWidth, h = img.naturalHeight, cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const cx = cv.getContext("2d", { willReadFrequently: true }); cx.drawImage(img, 0, 0);
+  const px = cx.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h); for (let i = 0; i < a.length; i++) a[i] = px[i * 4] > 127 ? 1 : 0;
+  return (PRINT_MASK = { wet: (lat, lon) => { const j = Math.round((m.lat1 - lat) / m.dlat), i = Math.round((lon - m.lon0) / m.dlon); return j >= 0 && i >= 0 && j < h && i < w ? a[j * w + i] === 1 : true; } });
+}
+function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
+  // what each chart must show: the route, plus the way in and out of each break and camp
+  const pts = []; for (let a = p0; a < p1; a += 0.2) pts.push([a, [pointAt(c, a)]]); pts.push([p1, [pointAt(c, p1)]]);
+  marks.forEach((k) => { if (!k.site) return; const extra = [k.site.ll, ...(k.site.pin || []), ...(k.site.pout || [])]; let best = 0;
+    pts.forEach((q, i) => { if (Math.abs(q[0] - k.at) < Math.abs(pts[best][0] - k.at)) best = i; }); pts[best][1].push(...extra); });
+  // greedy along the route: as much route as fits, less 1 nm each side; a half page when the stretch fits one about as well
+  const reach = (i, Hn) => {
     let lo = [90, 180], hi = [-90, -180], j = i;
     for (; j < pts.length; j++) {
-      const ll = pts[j][1], l2 = [Math.min(lo[0], ll[0]), Math.min(lo[1], ll[1])], h2 = [Math.max(hi[0], ll[0]), Math.max(hi[1], ll[1])];
+      let l2 = lo.slice(), h2 = hi.slice();
+      pts[j][1].forEach((ll) => { l2 = [Math.min(l2[0], ll[0]), Math.min(l2[1], ll[1])]; h2 = [Math.max(h2[0], ll[0]), Math.max(h2[1], ll[1])]; });
       const k = Math.cos(((l2[0] + h2[0]) / 2) * Math.PI / 180);
-      if (j > i + 1 && ((h2[1] - l2[1]) * 60 * k > STRIP_W - 2 || (h2[0] - l2[0]) * 60 > STRIP_H - 2)) break;
+      if (j > i + 1 && ((h2[1] - l2[1]) * 60 * k > STRIP_W - 2 || (h2[0] - l2[0]) * 60 > Hn - 2)) break;
       lo = l2; hi = h2;
     }
-    boxes.push({ a: pts[i][0], b: pts[j - 1][0], mid: [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2] });
-    i = j - 1;
+    return { j, mid: [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2] };
+  };
+  const boxes = []; let i = 0;
+  while (i < pts.length - 1) {
+    const f = reach(i, STRIP_FULL), h = reach(i, STRIP_HALF), half = h.j >= pts.length || pts[h.j - 1][0] - pts[i][0] >= 0.75 * (pts[f.j - 1][0] - pts[i][0]);
+    const r = half ? h : f;
+    boxes.push({ a: pts[i][0], b: pts[r.j - 1][0], mid: r.mid, Hn: half ? STRIP_HALF : STRIP_FULL });
+    i = r.j - 1;
   }
-  const hours = []; for (let t = Math.ceil(t0 / H) * H; t <= t1; t += H) { const p = posAt(rec.track, t); hours.push([t, p]); }
-  return boxes.map((bx, n) => {
-    // the box in web mercator metres: nm on the ground stretch by 1/cos(lat) on the projection
-    const [cx, cy] = merc(bx.mid), m = 1852 / Math.cos(bx.mid[0] * Math.PI / 180), w = STRIP_W * m, h = STRIP_H * m;
-    const x0 = cx - w / 2, y1 = cy + h / 2, [PW, PH] = STRIP_PX;
+  const hours = []; for (let t = Math.ceil(t0 / H) * H; t <= t1; t += H) hours.push([t, posAt(rec.track, t)]);
+  const wet = PRINT_MASK ? PRINT_MASK.wet : () => false;
+  const svgs = boxes.map((bx, n) => {
+    const PW = STRIP_PXW, PH = Math.round(PW * bx.Hn / STRIP_W);
+    const [cx, cy] = merc(bx.mid), m = 1852 / Math.cos(bx.mid[0] * Math.PI / 180), w = STRIP_W * m, h = bx.Hn * m, x0 = cx - w / 2, y1 = cy + h / 2;
     const xy = (ll) => { const [x, y] = merc(ll); return [((x - x0) / w) * PW, ((y1 - y) / h) * PH]; };
+    const toLL = (x, y) => unmerc([x0 + (x / PW) * w, y1 - (y / PH) * h]);
     const inside = ([x, y]) => x > -20 && y > -20 && x < PW + 20 && y < PH + 20;
-    const q = (svc, show, dpi, text) => `${svc}/export?${new URLSearchParams({ bbox: [x0, cy - h / 2, cx + w / 2, y1].join(","), bboxSR: "3857", imageSR: "3857", size: `${PW},${PH}`, dpi: String(dpi), format: "png32", transparent: "true", layers: show, f: "image", display_params: chartDisplay(text) })}`;
+    const q = (svc, show) => `${svc}/export?${new URLSearchParams({ bbox: [x0, cy - h / 2, cx + w / 2, y1].join(","), bboxSR: "3857", imageSR: "3857", size: `${PW},${PH}`, dpi: "200", format: "png32", transparent: "true", layers: show, f: "image", display_params: chartDisplay(PRINT_TEXT) })}`;
+    // land from the shoreline mask under the chart: shows the coast even where a chart image fails to load
+    let land = "";
+    if (PRINT_MASK) {
+      const cw = Math.round(PW / 5), chh = Math.round(PH / 5), cv = document.createElement("canvas"); cv.width = cw; cv.height = chh;
+      const g = cv.getContext("2d"), im = g.createImageData(cw, chh);
+      for (let yy = 0; yy < chh; yy++) for (let xx = 0; xx < cw; xx++) { const [la, lo] = toLL(xx * 5 + 2.5, yy * 5 + 2.5); if (!wet(la, lo)) { const o = (yy * cw + xx) * 4; im.data[o] = 236; im.data[o + 1] = 226; im.data[o + 2] = 190; im.data[o + 3] = 255; } }
+      g.putImageData(im, 0, 0); land = `<image href="${cv.toDataURL("image/png")}" width="${PW}" height="${PH}" preserveAspectRatio="none" style="image-rendering:pixelated"/>`;
+    }
     const us = [US_WATERS.wa, US_WATERS.ak].map((poly) => "M" + poly.map((ll) => xy(ll).map((v) => v.toFixed(0)).join(" ")).join(" L") + " Z").join(" ");
-    const line = []; for (let a = Math.max(0, bx.a - 6); a <= Math.min(c.total, bx.b + 6); a += 0.1) line.push(xy(pointAt(c, a)).map((v) => v.toFixed(1)).join(","));
-    // labels never overprint each other: try right of the symbol, then left; a place label with no room is left off (the
-    // symbol still shows its type by shape and colour). Plan marks go first, then hours, mile ticks and other landings.
-    const taken = [], FS = { mkl: 28, al: 19, nm: 22 };
-    const free = (r) => r[0] > 0 && r[2] < PW && r[1] > 0 && r[3] < PH && !taken.some((o) => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
-    const lbl = (x, y, t, cls) => {
-      const fs = FS[cls] || 26, w = t.length * fs * 0.56, top = y + 9 - fs * 0.85, bot = y + 9 + fs * 0.25;
-      const R = [x + 14, top, x + 14 + w, bot], Lf = [x - 14 - w, top, x - 14, bot];
-      const side = free(R) ? "r" : free(Lf) ? "l" : cls === "al" || cls === "nm" ? null : x > PW - w - 20 ? "l" : "r";
-      if (!side) return "";
-      taken.push(side === "r" ? R : Lf);
-      return `<text x="${(side === "r" ? x + 14 : x - 14).toFixed(0)}" y="${(y + 9).toFixed(0)}"${side === "l" ? ' text-anchor="end"' : ""} class="${cls || ""}">${esc(t)}</text>`;
+    const routePx = []; for (let a = Math.max(0, bx.a - 8); a <= Math.min(c.total, bx.b + 8); a += 0.05) routePx.push(xy(pointAt(c, a)));
+    const line = routePx.filter(inside).length ? routePx.map((v) => v.map((z) => z.toFixed(1)).join(",")).join(" ") : "";
+    const paths = marks.filter((k) => k.site && (k.site.pin || k.site.pout)).map((k) => [k.site.pin || [], k.site.pout || []].map((p) => p.length > 1 ? `<polyline points="${p.map((ll) => xy(ll).map((z) => z.toFixed(1)).join(",")).join(" ")}" class="rt2"/>` : "").join("")).join("");
+    // space already used: boxes never overlap each other, the legend, the route or anything marked on it
+    const taken = [], hit = (r) => taken.some((o) => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
+    const nearRoute = (r, pad) => routePx.some(([x, y]) => x > r[0] - pad && x < r[2] + pad && y > r[1] - pad && y < r[3] + pad);
+    // legend in the corner the route stays furthest from
+    const LW = 300, LH = 318, corners = [[16, 16], [PW - LW - 16, 16], [16, PH - LH - 16], [PW - LW - 16, PH - LH - 16]];
+    const lc = corners.map(([x, y]) => [x, y, routePx.filter(([a, b]) => a > x - 40 && a < x + LW + 40 && b > y - 40 && b < y + LH + 40).length]).sort((a, b) => a[2] - b[2])[0];
+    const LEG = [lc[0], lc[1], lc[0] + LW, lc[1] + LH]; taken.push(LEG);
+    const lbl = (x, y, t, cls, force) => {
+      const fs = cls === "nm" ? 22 : 24, wd = t.length * fs * 0.56, top = y + 8 - fs * 0.85, bot = y + 8 + fs * 0.25;
+      for (const [R, anchor, tx] of [[[x + 13, top, x + 13 + wd, bot], "", x + 13], [[x - 13 - wd, top, x - 13, bot], ' text-anchor="end"', x - 13]])
+        if (R[0] > 0 && R[2] < PW && !hit(R)) { taken.push(R); return `<text x="${tx.toFixed(0)}" y="${(y + 8).toFixed(0)}"${anchor} class="${cls || ""}">${esc(t)}</text>`; }
+      return force ? (x + 13 + wd > PW ? `<text x="${(x - 13).toFixed(0)}" y="${(y + 8).toFixed(0)}" text-anchor="end" class="${cls || ""}">${esc(t)}</text>` : `<text x="${(x + 13).toFixed(0)}" y="${(y + 8).toFixed(0)}" class="${cls || ""}">${esc(t)}</text>`) : "";
     };
-    const dot = (x, y, r) => taken.push([x - r, y - r, x + r, y + r]);
     const mkP = marks.map((k) => [xy(k.ll), k]).filter(([v]) => inside(v));
-    mkP.forEach(([[x, y]]) => dot(x, y, 12));
     const hrP = hours.filter(([, p]) => p >= bx.a - 0.5 && p <= bx.b + 0.5).map(([t, p]) => [xy(pointAt(c, p)), t]);
-    hrP.forEach(([[x, y]]) => dot(x, y, 9));
-    const mk = mkP.map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>${lbl(x, y, k.label, "mkl")}`);
-    const hrs = hrP.map(([[x, y], t]) => `<circle cx="${x}" cy="${y}" r="8" class="hr"/>${lbl(x, y, fmtT.format(t))}`);
-    const ticks = []; for (let a = Math.ceil(bx.a / 5) * 5; a <= bx.b; a += 5) { const [x, y] = xy(pointAt(c, a)); ticks.push(`<circle cx="${x}" cy="${y}" r="5" class="tk"/>${lbl(x, y - 24, a + " nm", "nm")}`); }
-    // every other place to land in the box, for a break or in an emergency: triangle a beach or campsite, circle a dock or float
     const used = marks.filter((k) => k.site).map((k) => k.site.ll);
     const altP = (c._camps || []).filter((x) => x.a > bx.a - 8 && x.a < bx.b + 8 && !used.some((u) => nmBetween(u, x.ll) < 0.05)).map((x) => [xy(x.ll), x]).filter(([v]) => inside(v))
-      .sort((a, b) => (a[1].o || 0) - (b[1].o || 0));   // nearest the route labelled first
-    altP.forEach(([[x, y]]) => dot(x, y, 9));
-    const alt = altP.map(([[x, y], s]) => ((s.landing && s.landing.dock) || s.dock ? `<circle cx="${x}" cy="${y}" r="9" class="alt dk"/>` : `<path d="M${x} ${y - 11} L${x + 10} ${y + 7} L${x - 10} ${y + 7} Z" class="alt${s.landing ? "" : " pc"}"/>`) + lbl(x, y - 4, chartLabel(s), "al"));
-    return `<section class="strip"><header><h1>${esc(title)} · chart ${n + 1} of ${boxes.length}</h1><p>nm ${bx.a.toFixed(0)} to ${bx.b.toFixed(0)} of the stage · about 1:110,000, north up, each page ${STRIP_W} nm across · circles: the planned position each hour; squares: gates (orange), breaks (blue) and camp (red); triangles: beaches and campsites (green a mapped landing, orange a past team's camp), blue circles: docks, floats and marinas, each labelled with its type, for a break or in an emergency</p></header>
-      <svg viewBox="0 0 ${PW} ${PH}" class="chart"><defs><clipPath id="us${title.length}_${n}"><path d="${us}"/></clipPath></defs><rect width="${PW}" height="${PH}" class="sea"/>
-      <image href="${q(CHS_SVC, "show:0,1,2,3,4,5,6,7,9,12", 200, 1.3)}" width="${PW}" height="${PH}"/>
-      <image href="${q(NOAA_SVC, "show:0,1,2,3,4,5,6,7", 200, 1.3)}" width="${PW}" height="${PH}" clip-path="url(#us${title.length}_${n})"/>
-      <polyline points="${line.join(" ")}" class="rt"/>${ticks.join("")}${alt.join("")}${hrs.join("")}${mk.join("")}
-      <rect width="${PW}" height="${PH}" class="frame"/><rect x="20" y="${PH - 50}" width="${(PW / STRIP_W) * 2}" height="10" class="sb"/><text x="20" y="${PH - 60}" class="nm">2 nm</text></svg>
-      <footer><b>${esc(planLine)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`;
+      .sort((a, b) => (a[1].o || 0) - (b[1].o || 0));
+    [...mkP, ...hrP, ...altP].forEach(([[x, y]]) => taken.push([x - 12, y - 12, x + 12, y + 12]));
+    const sym = (x, y, k) => k === "dk" ? `<circle cx="${x}" cy="${y}" r="9" class="alt dk"/>` : `<path d="M${x} ${y - 11} L${x + 10} ${y + 7} L${x - 10} ${y + 7} Z" class="alt ${k}"/>`;
+    // gate names and the hour times go beside their symbols
+    const gates = mkP.filter(([, k]) => k.cls === "gate" || k.cls === "go").map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>${lbl(x, y, k.label, "mkl", true)}`);
+    const hrs = hrP.map(([[x, y], t]) => `<circle cx="${x}" cy="${y}" r="8" class="hr"/>${lbl(x, y, fmtT.format(t), "", true)}`);
+    const ticks = []; for (let a = Math.ceil(bx.a / 5) * 5; a <= bx.b; a += 5) { const [x, y] = xy(pointAt(c, a)); ticks.push(`<circle cx="${x}" cy="${y}" r="5" class="tk"/>${lbl(x, y - 22, a + " nm", "nm")}`); }
+    // callouts: breaks and camp first (with times), then the other landings nearest the route while there is room
+    const callout = (x, y, lines, cls, must) => {
+      const fs = 19, lh = 23, bw = Math.max(...lines.map((s, i) => s.length * (i ? fs : fs + 2) * 0.56)) + 16, bh = lines.length * lh + 10;
+      let best = null;
+      for (const r of [70, 110, 160, 230, 320, 440]) for (let k = 0; k < 16; k++) {
+        const an = (k / 16) * 2 * Math.PI, bx0 = x + Math.cos(an) * r - bw / 2, by0 = y + Math.sin(an) * r - bh / 2, R = [bx0, by0, bx0 + bw, by0 + bh];
+        if (R[0] < 4 || R[1] < 4 || R[2] > PW - 4 || R[3] > PH - 4 || hit(R) || nearRoute(R, 45)) continue;
+        // the leader runs from the symbol to the nearest point of the box; it should not cross the route
+        const ex = Math.max(R[0], Math.min(x, R[2])), ey = Math.max(R[1], Math.min(y, R[3]));
+        let cross = 0; for (let s = 0.15; s < 0.95; s += 0.1) { const px = x + (ex - x) * s, py = y + (ey - y) * s; if (routePx.some(([a, b]) => Math.abs(a - px) < 10 && Math.abs(b - py) < 10)) cross++; }
+        let wetN = 0; for (let u = 0; u <= 4; u++) for (let v = 0; v <= 2; v++) { const [la, lo] = toLL(R[0] + (bw * u) / 4, R[1] + (bh * v) / 2); if (wet(la, lo)) wetN++; }
+        const score = r + wetN * 40 + cross * 400;
+        if (!best || score < best.score) best = { score, R, ex, ey };
+      }
+      if (!best || (!must && best.score > 900)) return "";
+      taken.push(best.R);
+      const [bx0, by0] = best.R;
+      return `<line x1="${x}" y1="${y}" x2="${best.ex.toFixed(0)}" y2="${best.ey.toFixed(0)}" class="ld ${cls}"/><rect x="${bx0.toFixed(0)}" y="${by0.toFixed(0)}" width="${bw.toFixed(0)}" height="${bh}" rx="5" class="co ${cls}"/>` +
+        lines.map((s, i) => `<text x="${(bx0 + 8).toFixed(0)}" y="${(by0 + 5 + lh * (i + 1) - 6).toFixed(0)}" class="ct${i ? "" : " b"}">${esc(s)}</text>`).join("");
+    };
+    const stops = mkP.filter(([, k]) => k.cls === "stop" || k.cls === "end").map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>` + callout(x, y, k.info, k.cls, true));
+    // the other landings: campsites, beaches and past camps get a callout, and docks only when named, nearest the route first and
+    // at most 10 a chart; the rest keep their symbol (its shape and colour say what it is)
+    let nCo = 0;
+    const alts = altP.map(([[x, y], s]) => { const k = siteKind(s), want = (k !== "dk" || (s.landing && s.landing.name)) && nCo < 10;
+      const co = want ? callout(x, y, [chartLabel(s), `${s.o.toFixed(1)} nm off route at nm ${s.a.toFixed(0)}`], "al", false) : ""; if (co) nCo++; return sym(x, y, k) + co; });
+    const lg = (k, y) => `<g transform="translate(${LEG[0] + 14} ${LEG[1] + y})">${k}</g>`;
+    const legend = `<rect x="${LEG[0]}" y="${LEG[1]}" width="${LW}" height="${LH}" rx="6" class="lg"/>` + [
+      [`<line x1="0" y1="0" x2="34" y2="0" class="rt" style="stroke-width:7"/>`, "Planned route"],
+      [`<line x1="0" y1="0" x2="34" y2="0" class="rt2"/>`, "Way in and out of a stop"],
+      [`<circle cx="17" cy="0" r="8" class="hr"/>`, "Position each hour"],
+      [`<rect x="6" y="-11" width="22" height="22" class="mk gate"/>`, "Tidal gate"],
+      [`<rect x="6" y="-11" width="22" height="22" class="mk stop"/>`, "Planned break"],
+      [`<rect x="6" y="-11" width="22" height="22" class="mk end"/>`, "Camp or start"],
+      [`<path d="M17 -11 L27 7 L7 7 Z" class="alt ld"/>`, "Beach or campsite"],
+      [`<path d="M17 -11 L27 7 L7 7 Z" class="alt pc"/>`, "Past team's camp"],
+      [`<circle cx="17" cy="0" r="9" class="alt dk"/>`, "Dock, float or marina"],
+    ].map(([g, t], k) => lg(`${g}<text x="46" y="7" class="lt">${t}</text>`, 26 + k * 29)).join("") +
+      lg(`<rect x="0" y="0" width="${PW / STRIP_W}" height="9" class="sb"/><rect x="${PW / STRIP_W / 2}" y="0" width="${PW / STRIP_W / 2}" height="9" fill="#fff" stroke="#000" stroke-width="2"/><text x="${PW / STRIP_W + 12}" y="10" class="lt">1 nm</text>`, LH - 30);
+    return { half: bx.Hn === STRIP_HALF, html: `<div class="cv"><h2 class="ch">${esc(title)} · chart ${n + 1} of ${boxes.length} · nm ${bx.a.toFixed(0)} to ${bx.b.toFixed(0)} · about 1:110,000, north up</h2>
+      <svg viewBox="0 0 ${PW} ${PH}" class="chart"><defs><clipPath id="us${t0}_${n}"><path d="${us}"/></clipPath></defs><rect width="${PW}" height="${PH}" class="sea"/>${land}
+      <image href="${q(CHS_SVC, "show:0,1,2,3,4,5,6,7,9,12")}" width="${PW}" height="${PH}"/>
+      <image href="${q(NOAA_SVC, "show:0,1,2,3,4,5,6,7")}" width="${PW}" height="${PH}" clip-path="url(#us${t0}_${n})"/>
+      ${line ? `<polyline points="${line}" class="rtc"/><polyline points="${line}" class="rt"/>` : ""}${paths}${ticks.join("")}${alts.join("")}${hrs.join("")}${gates.join("")}${stops.join("")}${legend}
+      <rect width="${PW}" height="${PH}" class="frame"/></svg></div>` };
   });
+  // pages: a full chart alone, half charts two to a page
+  const pages = []; let k = 0;
+  while (k < svgs.length) {
+    if (svgs[k].half && svgs[k + 1] && svgs[k + 1].half) { pages.push([svgs[k], svgs[k + 1]]); k += 2; } else pages.push([svgs[k++]]);
+  }
+  return pages.map((pg) => `<section class="strip${pg.length > 1 || pg[0].half ? " two" : ""}">${pg.map((s) => s.html).join("")}
+    <footer><b>${esc(PRINT_PLAN)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`);
 }
-function printSheets() {
+let PRINT_PLAN = "";
+async function printSheets() {
   const P = LAST_PLAN; if (!P) return;
+  // open the window straight from the click (a pop-up opened later is blocked), then fill it once the shoreline mask is in
+  const w = window.open("", "_blank"); if (!w) { alert("Allow pop-ups for this page to open the daily sheets."); return; }
+  w.document.write("<p style='font:16px system-ui;margin:2em'>Building the daily sheets and charts…</p>");
+  try { await loadPrintMask(); } catch (e) { console.warn("print mask", e); }
   const { ch, r1, r2 } = P, hm = (t) => fmtT.format(t), dur = (h) => shortDur(h);
   const kn = (v) => `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(1)}`;
   const sheets = [];
   // which plan these pages are for, on every page, so a sheet that strays from the pile can't be mistaken for another plan
   const target = (r2.finish - P.s2) / (24 * H);
-  const planLine = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(r2.finish)} (${target.toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
+  const planLine = PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(r2.finish)} (${target.toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
   const build = (stage, c, rec, v, t0, t1, from, to, title, stops, endStop) => {
     const pos = (t) => Math.max(0, Math.min(c.total, posAt(rec.track, t))), p0 = pos(t0), p1 = endStop ? endStop.pos : pos(t1);
     const place = (p) => nearPlace(pointAt(c, p)).replace(/^at /, "");
@@ -1742,10 +1831,13 @@ function printSheets() {
       <div><h2>Other landings near the end (breaks, emergency)</h2><table class="sm"><thead><tr><th class="n">nm</th><th class="n">Off route</th><th>Place</th></tr></thead><tbody>${alt.join("") || `<tr><td colspan="3">${endStop ? "None listed" : "Finish line"}</td></tr>`}</tbody></table>
       <h2>Notes</h2><div class="lines"></div></div></div>
       <footer><b>${esc(planLine)}</b><br>R2AK 2028 planner · for planning, not navigation: check the official CHS/NOAA tables and the forecast</footer></section>`);
-    const marks = [{ ll: pointAt(c, p0), label: from, cls: "go" }, ...gates.map((g) => ({ ll: [g.st.lat, g.st.lon], label: g.st.name, cls: "gate" })),
-      ...stops.map((x, i) => ({ ll: x.site ? x.site.ll : pointAt(c, x.pos), site: x.site, label: `Break ${i + 1} ${hm(x.t)}: ${x.site ? chartLabel(x.site) : "on the water"}`, cls: "stop" })),
-      { ll: endStop && endStop.site ? endStop.site.ll : pointAt(c, p1), site: endStop && endStop.site, label: endStop ? `Camp ${hm(t1)}: ${endStop.site ? chartLabel(endStop.site) : "on the water"}` : to, cls: "end" }];
-    sheets.push(...chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine));
+    // what the charts mark: the start, the gates, each break and the camp (with the details for their callouts)
+    const info = (x, head) => [head, x.site ? chartLabel(x.site) : "on the water", ...(x.site ? [`${x.site.place}${x.site.o != null ? ` · ${x.site.o.toFixed(1)} nm off route` : ""}`] : [])];
+    const marks = [{ ll: pointAt(c, p0), at: p0, label: from, cls: "go" }, ...gates.map((g) => ({ ll: [g.st.lat, g.st.lon], at: g.along, label: `${g.st.name} ${hm(g.arr)}`, cls: "gate" })),
+      ...stops.map((x, i) => ({ ll: x.site ? x.site.ll : pointAt(c, x.pos), at: x.pos, site: x.site, cls: "stop", info: info(x, `Break ${i + 1}: ${hm(x.t)} to ${hm(x.until)} (${dur((x.until - x.t) / H)})`) })),
+      endStop ? { ll: endStop.site ? endStop.site.ll : pointAt(c, p1), at: p1, site: endStop.site, cls: "end", info: info(endStop, `Camp: ${hm(t1)} to ${fmt.format(endStop.until)} (${dur((endStop.until - endStop.t) / H)})`) }
+        : { ll: pointAt(c, p1), at: p1, label: to, cls: "go" }];
+    sheets.push(...chartStrips(c, rec, t0, t1, p0, p1, marks, title));
   };
   // Stage 1
   build(1, ch.stage1, r1, P.v1, P.s1, r1.finish, "Port Townsend", "Victoria", "Stage 1: Port Townsend to Victoria", [], null);
@@ -1769,15 +1861,21 @@ function printSheets() {
     th { font-size: 9pt; } .n { text-align: right; white-space: nowrap; } table.sm { font-size: 9pt; } .k { font-size: 8.5pt; margin: 2pt 0; }
     .cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14pt; } .lines { height: 100pt; background: repeating-linear-gradient(#fff 0 17pt, #999 17pt 17.5pt); }
     footer { font-size: 8pt; margin-top: 8pt; color: #333; }
-    .strip header p { font-size: 8.5pt; } header p.plan { font-size: 9pt; font-weight: 600; border: 1pt solid #000; padding: 2pt 5pt; margin-bottom: 4pt; display: inline-block; } section.strip { height: 10.05in; display: flex; flex-direction: column; overflow: hidden; } svg.chart { display: block; flex: 1 1 auto; min-height: 0; width: 100%; margin-top: 4pt; }
-    svg.chart .frame { fill: none; stroke: #000; stroke-width: 3; }
-    .sea { fill: #eef5fa; } .rt { fill: none; stroke: #c026d3; stroke-width: 6; stroke-opacity: 0.75; stroke-linejoin: round; }
-    svg text { font: 600 26px system-ui, sans-serif; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 6px; } svg text.nm { font-size: 22px; fill: #7e22ce; }
-    .hr { fill: #fff; stroke: #c026d3; stroke-width: 4; } .tk { fill: #7e22ce; } .alt { fill: #16a34a; stroke: #fff; stroke-width: 2; } .alt.pc { fill: #ea580c; } .alt.dk { fill: #2563eb; } svg text.al { font-size: 19px; font-weight: 500; stroke-width: 5px; }
-    .mk { stroke: #000; stroke-width: 3; fill: #fff; } .mk.gate { fill: #f59e0b; } .mk.stop { fill: #38bdf8; } .mk.end, .mk.go { fill: #dc2626; } .mkl { font-size: 28px; }
+    header p.plan { font-size: 9pt; font-weight: 600; border: 1pt solid #000; padding: 2pt 5pt; margin-bottom: 4pt; display: inline-block; }
+    section.strip { height: 10.05in; display: flex; flex-direction: column; overflow: hidden; } .cv { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+    .strip.two .cv + .cv { margin-top: 6pt; } h2.ch { font-size: 10pt; margin: 0 0 2pt; border: 0; }
+    svg.chart { display: block; flex: 1 1 auto; min-height: 0; width: 100%; } svg.chart .frame { fill: none; stroke: #000; stroke-width: 3; }
+    .sea { fill: #eef5fa; } .rtc { fill: none; stroke: #fff; stroke-width: 13; stroke-linejoin: round; stroke-opacity: .85; }
+    .rt { fill: none; stroke: #a100ff; stroke-width: 8; stroke-linejoin: round; } .rt2 { fill: none; stroke: #a100ff; stroke-width: 4; stroke-dasharray: 10 7; }
+    svg text { font: 600 24px system-ui, sans-serif; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 6px; } svg text.nm { font-size: 22px; fill: #6d00b3; }
+    .hr { fill: #fff; stroke: #a100ff; stroke-width: 4; } .tk { fill: #6d00b3; } .alt { stroke: #fff; stroke-width: 2; } .alt.ld { fill: #16a34a; } .alt.pc { fill: #ea580c; } .alt.dk { fill: #2563eb; }
+    .mk { stroke: #000; stroke-width: 3; fill: #fff; } .mk.gate { fill: #f59e0b; } .mk.stop { fill: #38bdf8; } .mk.end, .mk.go { fill: #dc2626; } .mkl { font-size: 24px; }
+    .co { fill: #fff; stroke: #000; stroke-width: 2; } .co.stop { stroke: #0284c7; stroke-width: 3; } .co.end { stroke: #dc2626; stroke-width: 3; } .co.al { stroke: #555; stroke-width: 1.5; }
+    .ld { stroke: #000; stroke-width: 2; } .ld.al { stroke: #555; stroke-width: 1.5; }
+    svg text.ct { font: 400 19px system-ui, sans-serif; stroke: none; } svg text.ct.b { font-weight: 700; font-size: 20px; }
+    .lg { fill: #fff; fill-opacity: .94; stroke: #000; stroke-width: 2; } svg text.lt { font: 500 19px system-ui, sans-serif; stroke: none; }
     .sb { fill: #000; } .nocharts .strip { display: none; } .bar { margin: 8pt 0; } @media print { .bar { display: none; } }`;
-  const w = window.open("", "_blank"); if (!w) { alert("Allow pop-ups for this page to open the daily sheets."); return; }
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets, ${state.days} days</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}</body></html>`);
+  w.document.open(); w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets, ${state.days} days</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}</body></html>`);
   w.document.close();
 }
 function when(t) { const d = new Date(t), p = (o) => new Intl.DateTimeFormat("en-US", Object.assign({ timeZone: TZ }, o)).format(d); return `<span class="when">${p({ month: "short", day: "numeric" })}</span><br>${p({ hour: "2-digit", minute: "2-digit", hour12: false })}`; }
