@@ -57,14 +57,14 @@ def log(*a):
     print(*a, file=sys.stderr, flush=True)
 
 
-def get(url, timeout=120, tries=6):
+def get(url, timeout=45, tries=8):
     for i in range(tries):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
                 return r.read()
         except Exception as e:
             log(f"  {type(e).__name__} {e} ({url[:90]})")
-            time.sleep(min(300, 20 * (i + 1) ** 2))
+            time.sleep(min(120, 10 * (i + 1) ** 2))
     return None
 
 
@@ -200,23 +200,46 @@ def stats(ev_by_year, hourly_by_year, country, scale):
     return s
 
 
+def points():
+    return [p for name, cc, (la, lo), buoy, note in AREAS for p in [(name, la, lo)] + ([(f"buoy {buoy}", *BUOYS[buoy])] if buoy else [])]
+
+
 def main():
+    """--only N: fetch ERA5 for the Nth point alone into parts/N.json (one runner each: Open-Meteo throttles a single address);
+    otherwise merge any parts into the cache, fetch whatever is still missing, and work out the history."""
     OUT.mkdir(parents=True, exist_ok=True)
     cache = OUT / "era5_hourly.json"
     raw = json.loads(cache.read_text()) if cache.exists() else {}
-    for name, cc, (la, lo), buoy, note in AREAS:
-        for key, a, b in [(name, la, lo)] + ([(f"buoy {buoy}", *BUOYS[buoy])] if buoy else []):
-            raw.setdefault(key, {})
-            for y in range(Y0, Y1 + 1):
-                if str(y) in raw[key]:
-                    continue
+    parts = OUT / "parts"
+    if "--only" in sys.argv:
+        n = int(sys.argv[sys.argv.index("--only") + 1]); key, a, b = points()[n]
+        got = raw.get(key, {})
+        for y in range(Y0, Y1 + 1):
+            if str(y) not in got:
                 d = era5(a, b, y)
-                if d is None:
-                    log(f"  no ERA5 for {key} {y}"); continue
-                raw[key][str(y)] = d
-                time.sleep(2.5)
-            cache.write_text(json.dumps(raw, separators=(",", ":")))
-            log(f"ERA5 {key}: {len(raw[key])} years")
+                if d is not None:
+                    got[str(y)] = d
+                time.sleep(1)
+        parts.mkdir(exist_ok=True)
+        (parts / f"{n}.json").write_text(json.dumps({key: got}, separators=(",", ":")))
+        log(f"ERA5 {key}: {len(got)} years")
+        return
+    for f in sorted(parts.glob("*.json")) if parts.exists() else []:
+        for k, v in json.loads(f.read_text()).items():
+            raw.setdefault(k, {}).update(v)
+    cache.write_text(json.dumps(raw, separators=(",", ":")))
+    for key, a, b in points():   # anything a part did not bring
+        raw.setdefault(key, {})
+        for y in range(Y0, Y1 + 1):
+            if str(y) in raw[key]:
+                continue
+            d = era5(a, b, y)
+            if d is None:
+                log(f"  no ERA5 for {key} {y}"); continue
+            raw[key][str(y)] = d
+            time.sleep(2.5)
+        cache.write_text(json.dumps(raw, separators=(",", ":")))
+        log(f"ERA5 {key}: {len(raw[key])} years")
 
     summary, out_ev, rows = [], [], []
     for ai, (name, cc, (la, lo), buoy, note) in enumerate(AREAS):

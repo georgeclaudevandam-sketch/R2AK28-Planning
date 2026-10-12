@@ -15,18 +15,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  history:
+  fetch:
+    # one runner per sample point: Open-Meteo throttles a single address
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        n: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - run: python scripts/storm_history.py --only ${{ matrix.n }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: era5-${{ matrix.n }}
+          path: data/storm_history/parts/${{ matrix.n }}.json
+
+  history:
+    needs: fetch
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: era5-*
+          path: data/storm_history/parts
+          merge-multiple: true
       - run: python scripts/storm_history.py
-      - name: Commit the history (also the partial ERA5 cache if the run failed)
+      - name: Commit the history (also the merged ERA5 cache if the run failed)
         if: always()
         run: |
+          rm -rf data/storm_history/parts
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
           git add -A data/storm_history
