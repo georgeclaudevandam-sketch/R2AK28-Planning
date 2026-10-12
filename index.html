@@ -1633,6 +1633,8 @@ function setTime(t) {
 const FLOW_RAMP = ["rgba(30,58,138,0.55)", "rgba(29,78,216,0.85)", "rgba(109,40,217,0.95)", "rgba(192,38,211,1)", "rgba(220,38,38,1)"];
 const FLOW_DARK = ["rgba(147,197,253,0.5)", "rgba(191,219,254,0.75)", "rgba(224,242,254,0.9)", "rgba(240,171,252,1)", "rgba(252,165,165,1)"];
 const FLOW_BREAKS = [0.5, 1, 2, 3];
+const FLOW_MIN_KN = 1;   // only streams this strong are drawn (the narrows and tide races), which also keeps the drawing light
+const FLOW_CELL = 8;     // the stream is worked out once per 8 px screen cell per view and per 5 minutes of map time
 async function loadFlow() {
   const d = await fetch("data/stream_grid.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error("stream_grid " + r.status); return r.json(); });
   const b64 = (s, T) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new T(u.buffer); };
@@ -1797,13 +1799,15 @@ const FlowLayer = L.Layer.extend({
     if (!map.getPane("flowPane")) { const p = map.createPane("flowPane"); p.style.zIndex = 450; p.style.pointerEvents = "none"; }   // over the charts and the tracks, under the markers
     this.canvas = L.DomUtil.create("canvas", "flow-canvas"); this.canvas.style.pointerEvents = "none";
     map.getPane("flowPane").appendChild(this.canvas);
-    map.on("movestart zoomstart", this._pause, this); map.on("moveend zoomend resize", this._reset, this);
+    // a pan (the follow view moves the map every step while playing) slides the streaks along with the map; only a zoom or
+    // resize starts them afresh, otherwise the trails would be wiped every step and never show
+    map.on("zoomstart", this._pause, this); map.on("moveend", this._moved, this); map.on("zoomend resize", this._reset, this);
     this.running = true;
     (this.fieldP ||= loadFlow()).then((f) => { this.field = f; if (this.running) { this._reset(); this._loop(); } }).catch((e) => console.warn("flow lines", e));
   },
   onRemove(map) {
     this.running = false; cancelAnimationFrame(this.raf);
-    map.off("movestart zoomstart", this._pause, this); map.off("moveend zoomend resize", this._reset, this);
+    map.off("zoomstart", this._pause, this); map.off("moveend", this._moved, this); map.off("zoomend resize", this._reset, this);
     this.canvas.remove();
   },
   // The stream the planner rows in: within 3 nm of a route the station tables take over near their stations (Dodd, Seymour,
@@ -1822,7 +1826,7 @@ const FlowLayer = L.Layer.extend({
   _at(lat, lon) {
     const f = this.field; if (!f.wet(lat, lon)) return null;
     const m = f.at(lat, lon), r = this._route(lat, lon); if (!r) return m;
-    const { st, trust } = stationStream(r.ch, r.pos, state.t);
+    const ss = stationStream(r.ch, r.pos, state.t), st = ss.st, trust = ss.trust * Math.max(0, 1 - r.d);   // tables fade out a mile off the route
     if (m) return trust > 0 ? [m[0] * (1 - trust) + st * trust * r.e, m[1] * (1 - trust) + st * trust * r.n] : m;
     if (r.d > 1) return null;   // side inlets off the route: nothing to say about them
     const fld = fieldAt(r.ch, r.pos, state.t); if (fld == null && !trust) return null;
@@ -1839,19 +1843,51 @@ const FlowLayer = L.Layer.extend({
     this.canvas.style.width = size.x + "px"; this.canvas.style.height = size.y + "px";
     L.DomUtil.setPosition(this.canvas, map.containerPointToLayerPoint([0, 0]));
     this.ctx = this.canvas.getContext("2d"); this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.ctx.lineCap = "round";
+    this._frame();
+    this.field.setT(state.t);
+    const count = Math.round(Math.min(1500, Math.max(300, (size.x * size.y) / 400)));
+    this.parts = Array.from({ length: count }, () => this._spawn({}, true));
+    this.last = null; this.paused = false;
+  },
+  _frame() {   // screen to lat/lon for the current view, and the canvas pinned to the container's top left
+    const map = this.map, size = map.getSize();
+    L.DomUtil.setPosition(this.canvas, map.containerPointToLayerPoint([0, 0]));
     // Web Mercator: latitude depends on the screen row only, longitude is linear across
     this.latY = new Float64Array(size.y + 1); for (let y = 0; y <= size.y; y++) this.latY[y] = map.containerPointToLatLng([0, y]).lat;
     const w0 = map.containerPointToLatLng([0, 0]).lng, w1 = map.containerPointToLatLng([size.x, 0]).lng;
     this.lon = (x) => w0 + (w1 - w0) * (x / size.x);
     this.lat = (y) => { const k = Math.max(0, Math.min(this.h, y)), j = Math.floor(k), f = k - j; return j >= this.h ? this.latY[this.h] : this.latY[j] * (1 - f) + this.latY[j + 1] * f; };
-    this.field.setT(state.t);
-    const count = Math.round(Math.min(2500, Math.max(400, (size.x * size.y) / 250)));
-    this.parts = Array.from({ length: count }, () => this._spawn({}, true));
-    this.last = null; this.paused = false;
+    this.ref = map.containerPointToLatLng([0, 0]); this.zoom = map.getZoom();
+    this.cw = Math.ceil(size.x / FLOW_CELL); this.chh = Math.ceil(size.y / FLOW_CELL);
+    if (!this.gs || this.gs.length !== this.cw * this.chh) { this.gs = new Uint32Array(this.cw * this.chh); this.gv = new Float32Array(2 * this.cw * this.chh); this.gen = 0; }
+    this.gen++;
+  },
+  _moved() {
+    const map = this.map, size = map.getSize();
+    if (!this.field || !this.ctx || !this.ref || this.zoom !== map.getZoom() || size.x !== this.w || size.y !== this.h) return this._reset();
+    const q = map.latLngToContainerPoint(this.ref), dx = Math.round(q.x), dy = Math.round(q.y);
+    if (Math.abs(dx) > this.w || Math.abs(dy) > this.h) return this._reset();
+    if (dx || dy) {   // slide what is drawn and the streaks by the pan
+      const c = this.ctx, dpr = this.canvas.width / this.w;
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = "copy"; c.drawImage(this.canvas, dx * dpr, dy * dpr); c.restore();
+      for (const p of this.parts) { p.x += dx; p.y += dy; }
+    }
+    this._frame(); this.paused = false;
+  },
+  // stream at a screen point from the cell cache: null where there is none or it is under FLOW_MIN_KN
+  _vec(x, y) {
+    const C = FLOW_CELL, i = Math.min(this.cw - 1, Math.max(0, (x / C) | 0)), j = Math.min(this.chh - 1, Math.max(0, (y / C) | 0)), k = j * this.cw + i;
+    const tb = Math.floor(state.t / 300e3);
+    if (this.tb !== tb) { this.tb = tb; this.gen++; }
+    if (this.gs[k] !== this.gen) {
+      const v = this._at(this.lat(j * C + C / 2), this.lon(i * C + C / 2));
+      this.gs[k] = this.gen; this.gv[2 * k] = v && Math.hypot(v[0], v[1]) >= FLOW_MIN_KN ? v[0] : NaN; this.gv[2 * k + 1] = v ? v[1] : NaN;
+    }
+    const e = this.gv[2 * k]; return e === e ? [e, this.gv[2 * k + 1]] : null;
   },
   _spawn(p, initial) {
     p.ok = false;
-    for (let tries = 0; tries < 30; tries++) { p.x = Math.random() * this.w; p.y = Math.random() * this.h; if (this._at(this.lat(p.y), this.lon(p.x))) { p.ok = true; break; } }
+    for (let tries = 0; tries < 30; tries++) { p.x = Math.random() * this.w; p.y = Math.random() * this.h; if (this._vec(p.x, p.y)) { p.ok = true; break; } }
     p.age = initial ? Math.random() * 3 : 0; p.max = 2 + Math.random() * 3;
     return p;
   },
@@ -1866,7 +1902,7 @@ const FlowLayer = L.Layer.extend({
     for (const p of this.parts) {
       p.age += dt;
       if (p.age > p.max || !p.ok) { this._spawn(p); continue; }
-      const v = this._at(this.lat(p.y), this.lon(p.x)); if (!v) { this._spawn(p); continue; }
+      const v = this._vec(p.x, p.y); if (!v) { this._spawn(p); continue; }
       const kn = Math.hypot(v[0], v[1]), nx = p.x + v[0] * k, ny = p.y - v[1] * k;
       let b = 0; while (b < FLOW_BREAKS.length && kn >= FLOW_BREAKS[b]) b++;
       buckets[b].push(p.x, p.y, nx, ny); p.x = nx; p.y = ny;
