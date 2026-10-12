@@ -1624,8 +1624,9 @@ function setTime(t) {
 // Data: data/stream_grid.json (east/north tidal stream on a half-mile grid within 3 nm of the routes, from SalishSeaCast and
 // WebTide) and data/water_mask.png (shoreline). Both load the first time the layer is shown. Streak speed is for the eye
 // (faster current, faster streak), not to scale; colour bands are under 0.5, 0.5-1, 1-2, 2-3 and over 3 kn.
-const FLOW_RAMP = ["rgba(30,64,175,0.30)", "rgba(29,78,216,0.45)", "rgba(37,99,235,0.6)", "rgba(124,58,237,0.75)", "rgba(190,18,60,0.85)"];
-const FLOW_DARK = ["rgba(147,197,253,0.30)", "rgba(191,219,254,0.45)", "rgba(224,242,254,0.6)", "rgba(233,213,255,0.75)", "rgba(254,205,211,0.85)"];
+// day: strong dark colours that stand out on the pale chart water; night: light ones over the darkened charts
+const FLOW_RAMP = ["rgba(30,58,138,0.55)", "rgba(29,78,216,0.85)", "rgba(109,40,217,0.95)", "rgba(192,38,211,1)", "rgba(220,38,38,1)"];
+const FLOW_DARK = ["rgba(147,197,253,0.5)", "rgba(191,219,254,0.75)", "rgba(224,242,254,0.9)", "rgba(240,171,252,1)", "rgba(252,165,165,1)"];
 const FLOW_BREAKS = [0.5, 1, 2, 3];
 async function loadFlow() {
   const d = await fetch("data/stream_grid.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error("stream_grid " + r.status); return r.json(); });
@@ -1788,7 +1789,7 @@ const LightLayer = L.Layer.extend({
 const FlowLayer = L.Layer.extend({
   onAdd(map) {
     this.map = map;
-    if (!map.getPane("flowPane")) { const p = map.createPane("flowPane"); p.style.zIndex = 390; p.style.pointerEvents = "none"; }
+    if (!map.getPane("flowPane")) { const p = map.createPane("flowPane"); p.style.zIndex = 450; p.style.pointerEvents = "none"; }   // over the charts and the tracks, under the markers
     this.canvas = L.DomUtil.create("canvas", "flow-canvas"); this.canvas.style.pointerEvents = "none";
     map.getPane("flowPane").appendChild(this.canvas);
     map.on("movestart zoomstart", this._pause, this); map.on("moveend zoomend resize", this._reset, this);
@@ -1866,7 +1867,7 @@ const FlowLayer = L.Layer.extend({
       buckets[b].push(p.x, p.y, nx, ny); p.x = nx; p.y = ny;
       if (nx < 0 || ny < 0 || nx > this.w || ny > this.h) this._spawn(p);
     }
-    ctx.lineWidth = 1.4;
+    ctx.lineWidth = 2;
     buckets.forEach((seg, b) => { if (!seg.length) return; ctx.strokeStyle = ramp[b]; ctx.beginPath();
       for (let i = 0; i < seg.length; i += 4) { ctx.moveTo(seg[i], seg[i + 1]); ctx.lineTo(seg[i + 2], seg[i + 3]); } ctx.stroke(); });
   },
