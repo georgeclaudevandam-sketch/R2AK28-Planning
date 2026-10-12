@@ -501,14 +501,14 @@ function initMap() {
       <label class="follow" title="While playing, run 5 times faster through the time in port in Victoria"><input type="checkbox" id="skipvic" checked> Victoria 5&times;</label>
       <select id="play-speed" aria-label="Playback speed"><option value="0.25">0.25 h/s</option><option value="0.5">0.5 h/s</option><option value="1" selected>1 h/s</option><option value="2">2 h/s</option><option value="4">4 h/s</option></select>
       <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
-      <div class="prog" title="How much of the map the follow view shows, nautical miles across"><span>View</span><input id="follow-nm" type="range" min="5" max="50" step="1" value="25" aria-label="Follow view width in nautical miles"><span id="follow-nm-v">25 nm</span></div>
+      <div class="prog" title="How much of the map the follow view shows, nautical miles across"><span>View</span><input id="follow-nm" type="range" min="0" max="100" step="1" value="85" aria-label="Follow view width, 1 km to 50 nm"><span id="follow-nm-v">25 nm</span></div>
       <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Pace boat</span><b id="pb-pace">–</b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
     d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
     d.querySelector("#reset").addEventListener("click", resetPlay);
     d.querySelector("#progress").addEventListener("input", (e) => { const v = +e.target.value; playT = v; setTime(v); });
     d.querySelector("#follow").addEventListener("change", (e) => { if (e.target.checked) { followKey = null; followBoat(); } });
-    d.querySelector("#follow-nm").addEventListener("input", (e) => { FOLLOW_NM = +e.target.value; d.querySelector("#follow-nm-v").textContent = `${FOLLOW_NM} nm`; followBoat(); });
+    d.querySelector("#follow-nm").addEventListener("input", (e) => { FOLLOW_NM = followNm(+e.target.value); d.querySelector("#follow-nm-v").textContent = followLabel(FOLLOW_NM); followBoat(); });
     return d;
   } });
   // layer order by pane, bottom to top: imagery, CHS charts (the default tile pane), NOAA charts clipped to US waters. So CHS
@@ -1360,7 +1360,11 @@ function setFollow(on) { const c = $("follow"); if (c) c.checked = on; if (on) {
 // Follow mode: the map stays on the boat at a fixed scale, about FOLLOW_NM across the part of the map left of the inset and
 // play box (set with the View slider), and keeps the boat in the middle of it as it moves (no zooming in and out at stops).
 // With a pace boat shown it zooms out as far as about 120 nm across to keep both in view, centred between them.
-let FOLLOW_NM = 25;   // the View slider in the play box, 5 to 50 nm
+let FOLLOW_NM = 25;   // the View slider in the play box, 1 km to 50 nm
+// the slider runs 0-100 on a log scale, so the close-in end (1 km, for watching the stream at a narrows) gets as much travel as the wide end
+const FOLLOW_MIN = 1 / 1.852, FOLLOW_MAX = 50;
+const followNm = (v) => FOLLOW_MIN * Math.pow(FOLLOW_MAX / FOLLOW_MIN, v / 100);
+const followLabel = (nm) => nm < 5 ? `${(nm * 1.852).toFixed(nm < 1.5 ? 1 : 0)} km` : `${Math.round(nm)} nm`;
 let FLYING = false;
 function followZoom(lat, wpx) {
   const mpp = (FOLLOW_NM * 1852) / Math.max(200, wpx);
@@ -1375,7 +1379,8 @@ function followBoat() {
   const rw = (document.querySelector(".mini")?.offsetWidth || 0) + 40, sz = map.getSize();
   let z = followZoom(b.ll[0], sz.x - rw), mid = b.ll;
   // with a pace boat out, zoom out (up to about 120 nm across) to keep both boats in view, centred between them
-  const p = !b.done && PACE.find((p) => map.hasLayer(p.layer)), q = p && paceAt(p, state.t);
+  // (not when zoomed in close, under 5 nm across: that is for looking at the water round the boat)
+  const p = !b.done && FOLLOW_NM >= 5 && PACE.find((p) => map.hasLayer(p.layer)), q = p && paceAt(p, state.t);
   if (q) {
     const pad = 80, w = Math.max(200, sz.x - rw - 2 * pad), h = Math.max(150, sz.y - 2 * pad);
     const ZMIN = Math.log2((156543.034 * Math.cos(b.ll[0] * Math.PI / 180)) / (120 * 1852 / Math.max(200, sz.x - rw)));
