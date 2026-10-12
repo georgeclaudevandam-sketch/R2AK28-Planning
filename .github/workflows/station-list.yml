@@ -2,6 +2,9 @@ name: List weather stations near the route (for the storm history)
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/station-list.yml"
 
 jobs:
   list:
