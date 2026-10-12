@@ -737,8 +737,10 @@ function zoneStream(ch, z, pos, t) {
 }
 // Tidal stream from the ocean models along the whole route (data/stream_field.json, built by scripts/build_stream_field.py):
 // UBC's SalishSeaCast in the Salish Sea and DFO's WebTide Northeast Pacific model north of it, both driven by the charted depths,
-// already resolved onto the route's heading every mile. null where neither model has water (some narrow inlets).
+// already resolved onto the route's heading every mile. Gaps of up to FIELD_FILL_NM where neither model has water are blended
+// from the miles either side; null beyond that.
 let FIELD = null;
+const FIELD_FILL_NM = 30;
 function fieldAt(ch, pos, t) {
   const F = FIELD, key = ch.north || "stage1"; if (!F || !F.chains[key]) return null;
   if (!F._k) {
@@ -751,6 +753,17 @@ function fieldAt(ch, pos, t) {
       F._k.forEach((q, i) => { const A = q.f * row[2 + 2 * i], g = row[3 + 2 * i] * r; c[1 + 2 * i] = A * Math.cos(g); c[2 + 2 * i] = A * Math.sin(g); });
       return c;
     });
+    // miles where neither model has water (narrow channels north of Bella Bella, Dundas Island): blend the model miles either
+    // side, up to FIELD_FILL_NM of gap (where floods meet from both ends the blend fades through slack, as the stream does)
+    for (const rows of Object.values(F._rows)) {
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i]) continue;
+        let j = i; while (j < rows.length && !rows[j]) j++;
+        const a = rows[i - 1], b = rows[j], gap = (j - i + 1) * F.step_nm;
+        if (a && b && gap <= FIELD_FILL_NM) for (let k = i; k < j; k++) { const w = (k - i + 1) / (j - i + 1); rows[k] = a.map((x, m) => x + (b[m] - x) * w); rows[k].filled = 1; }
+        i = j;
+      }
+    }
   }
   const rows = F._rows[key], c = rows[Math.max(0, Math.min(rows.length - 1, Math.round(pos / F.step_nm)))];
   if (!c) return null;
