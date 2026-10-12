@@ -175,7 +175,9 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 /* ---------- storm contingency page */
 .app[hidden], #storm-page[hidden] { display: none; }
 .pagelink { display: inline-block; margin-top: 8px; font: 600 13px var(--font-ui); color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 3px 12px; }
-button.pagelink { background: none; cursor: pointer; }
+button.genout { display: block; width: 100%; margin-top: 10px; padding: 9px 14px; font: 700 15px var(--font-ui); color: #fff; background: var(--accent); border: 0; border-radius: 10px; cursor: pointer; text-align: left; }
+button.genout small { display: block; font-weight: 400; font-size: 12px; opacity: .9; margin-top: 1px; }
+button.genout:hover { filter: brightness(1.08); }
 #storm-page { height: 100%; overflow-y: auto; padding: 18px 20px 40px; }
 #storm-page .wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 #storm-page .top { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; justify-content: space-between; }
@@ -228,7 +230,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
       <h1>R2AK 2028 tide and current planner</h1>
       <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and how many days you want to take to see what the stream is doing at each tidal gate when you get there.</p>
       <a class="pagelink" href="#storms">Storm contingency: test this plan against storms &rarr;</a>
-      <button type="button" class="pagelink" id="print-days">Print daily sheets and charts</button>
+      <button type="button" class="genout" id="print-days">&#128438; Generate output<small>daily sheets and chart strips for this plan, to print or save as PDF</small></button>
     </header>
 
     <section aria-labelledby="h-scn">
@@ -311,6 +313,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
     <section aria-labelledby="h-days">
       <h2 id="h-days">Day by day</h2>
       <div class="tbl-wrap"><table id="days-tbl"></table></div>
+      <p class="hint" id="kcal-note"></p>
     </section>
 
     <section aria-labelledby="h-past">
@@ -515,7 +518,7 @@ function initMap() {
       <select id="play-speed" aria-label="Playback speed"><option value="0.25">0.25 h/s</option><option value="0.5">0.5 h/s</option><option value="1" selected>1 h/s</option><option value="2">2 h/s</option><option value="4">4 h/s</option></select>
       <label class="follow"><input type="checkbox" id="follow" checked> Follow</label>
       <div class="prog" title="How much of the map the follow view shows, nautical miles across"><span>View</span><input id="follow-nm" type="range" min="0" max="100" step="1" value="85" aria-label="Follow view width, 1 km to 50 nm"><span id="follow-nm-v">25 nm</span></div>
-      <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Pace boat</span><b id="pb-pace">–</b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
+      <div class="pb"><span>Time</span><b id="pb-time"></b><span>Day</span><b id="pb-day"></b><span>Distance</span><b id="pb-dist"></b><span class="opt">Thru water</span><b class="opt" id="pb-stw"></b><span>Current</span><b id="pb-cur"></b><span>Over bottom</span><b id="pb-sog"></b><span>Calories</span><b id="pb-kcal">–</b><span>Pace boat</span><b id="pb-pace">–</b><span class="opt">Light</span><b class="opt" id="pb-sun"></b></div>`;
     L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
     d.querySelector("#play").addEventListener("click", () => (playTimer ? stopPlay() : startPlay()));
     d.querySelector("#reset").addEventListener("click", resetPlay);
@@ -1202,6 +1205,39 @@ function keyMark(m) {
   return null;
 }
 const hullSpeed = (ft) => 1.34 * Math.sqrt(ft);
+
+// ---------- crew energy
+// Seven aboard (six rowing, one coxing, all rotating), each a 200 lb athletic rower. Calories come from the power the boat
+// needs at the planned speed through the water: hull resistance (skin friction by the ITTC 1957 line on a wetted area
+// estimated from the displacement, plus wave-making from the Froude number) with 15% for wind, chop and fouling, delivered
+// through oars at 65% propulsive efficiency by muscle at 22% net efficiency (the calories above resting). Non-active calories
+// are each person's resting burn (Mifflin-St Jeor: 200 lb, 6 ft, age 35) times 1.3 for coxing, camp and light work, all day.
+const CREW = { n: 7, rowers: 6, lb: 200, boatLb: 1400 };   // boat 800 lb plus food, water and gear 600 lb
+const OAR_EFF = 0.65, MUSCLE_EFF = 0.22, SEA_ALLOW = 1.15;
+const REST_KCAL_DAY = (10 * (200 / 2.2046) + 6.25 * 183 - 5 * 35 + 5) * 1.3;   // per person: about 2,450 kcal
+const WAVE_CR = [[0.1, 0], [0.15, 0.0002], [0.2, 0.0006], [0.25, 0.0015], [0.3, 0.004], [0.35, 0.009], [0.4, 0.02], [0.45, 0.035], [0.5, 0.05]];
+function boatWatts(kn, ft) {   // effective (tow-rope) power in watts
+  const v = kn * 0.5144, L = ft * 0.3048, kg = (CREW.n * CREW.lb + CREW.boatLb) / 2.2046, vol = kg / 1025;
+  if (v <= 0) return 0;
+  const S = 2.6 * Math.sqrt(vol * L), Re = v * L / 1.19e-6, Cf = 0.075 / (Math.log10(Re) - 2) ** 2;
+  const fn = v / Math.sqrt(9.81 * L); let cr = WAVE_CR[WAVE_CR.length - 1][1];
+  for (let i = 1; i < WAVE_CR.length; i++) if (fn <= WAVE_CR[i][0]) { const [a, ca] = WAVE_CR[i - 1], [b, cb] = WAVE_CR[i]; cr = ca + (cb - ca) * (Math.max(fn, a) - a) / (b - a); break; }
+  return (0.5 * 1025 * v * v * S * Cf * 1.1 + kg * 9.81 * cr) * v * SEA_ALLOW;
+}
+// rowing calories an hour for the whole crew (above resting), at a speed through the water
+const rowKcalH = (kn, ft) => (boatWatts(kn, ft) / OAR_EFF / MUSCLE_EFF) * 3600 / 4184;
+// hours rowed on a track between two times (moving segments only)
+function rowedH(track, a, b) {
+  let h = 0;
+  for (let i = 1; i < track.length; i++) { const [ta, pa] = track[i - 1], [tb, pb] = track[i]; if (tb <= a) continue; if (ta >= b) break; if (pb - pa > 1e-4) h += (Math.min(tb, b) - Math.max(ta, a)) / H; }
+  return h;
+}
+// crew calories between two times: rowing (both stages) and non-active (everyone, all day)
+function crewKcal(P, a, b) {
+  const ft = state.hullFt, row = rowedH(P.r1.track, a, b) * rowKcalH(P.v1, ft) + rowedH(P.r2.track, a, b) * rowKcalH(P.v2, ft);
+  return { row, rest: CREW.n * REST_KCAL_DAY * Math.max(0, b - a) / (24 * H) };
+}
+const kcal = (k) => Math.round(k).toLocaleString("en-US");
 function plan() {
   const ch = chains(), { s1, s2 } = starts();
   const human = true;
@@ -1386,6 +1422,8 @@ function renderSun() {
     $("pb-stw").textContent = !b ? "–" : moving ? `${stw.toFixed(1)} kn` : "0 (stopped)";
     $("pb-cur").textContent = cur == null ? "–" : Math.abs(cur) < 0.05 ? "slack / none modelled" : `${cur > 0 ? "+" : "−"}${Math.abs(cur).toFixed(1)} kn ${cur > 0 ? "with you" : "against you"}`;
     $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn` : "0";
+    { const e = crewKcal(P, P.s1, Math.min(Math.max(t, P.s1), P.r2.finish)), dayA = Math.max(P.s1, dayStart(t)), ed = crewKcal(P, dayA, Math.min(Math.max(t, dayA), P.r2.finish));
+      $("pb-kcal").textContent = t < P.s1 ? "–" : `${kcal(e.row + e.rest)} crew (rowing ${kcal(e.row)}) · today ${kcal(ed.row + ed.rest)}`; }
     setGauge("g-stw", b ? stw : null, hullSpeed(state.hullFt)); setGauge("g-sog", b ? (moving ? Math.max(0, stw + (cur || 0)) : 0) : null);
   }
   if (mini) { if (b) miniBoat.setLatLng(b.ll).addTo(mini); else miniBoat.remove(); }
@@ -1533,17 +1571,21 @@ function renderPlanner() {
   const total1 = ch.stage1.total;
   const cpos = (t) => t < P.s2 ? posAt(r1.track, t) : total1 + posAt(r2.track, t);
   const where = (p) => p < total1 - 0.01 ? nearPlace(pointAt(ch.stage1, p)) : p - total1 < 0.01 ? "Victoria" : nearPlace(pointAt(ch.stage2, p - total1));
-  let d = state.s1d, out = [], n = 0;
+  let d = state.s1d, out = [], n = 0, eRow = 0, eRest = 0;
   const finishDay = fmtYMD.format(r2.finish);
   while (d <= finishDay && n++ < 60) {
     const a = pdt(d, "00:00"), b = Math.min(pdt(addDays(d, 1), "00:00"), r2.finish);
     const pa = cpos(Math.max(a, P.s1)), pb = cpos(b);
     const gd = gates.filter((g) => g.arr >= a && g.arr < b + 1).map((g) => `${esc(g.st.name.replace(/ \(.*\)/, ""))} ${fmtT.format(g.dep)}`);
     const label = b >= r2.finish ? "Ketchikan finish " + fmtT.format(r2.finish) : where(pb);
-    out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td class="num">${(pb - pa).toFixed(0)}</td><td class="num">${((pb - pa) * 1.852).toFixed(0)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
+    const e = crewKcal(P, Math.max(a, P.s1), b); eRow += e.row; eRest += e.rest;
+    out.push(`<tr><td>${fmtD.format(a + 12 * H)}</td><td class="num">${(pb - pa).toFixed(0)}</td><td class="num">${((pb - pa) * 1.852).toFixed(0)}</td><td class="num">${kcal(e.row)}</td><td class="num">${kcal(e.rest)}</td><td class="num">${kcal((e.row + e.rest) / CREW.n)}</td><td>${esc(label)}${gd.length ? `<br><span class="sub">${gd.join(" · ")}</span>` : ""}</td></tr>`);
     d = addDays(d, 1);
   }
-  $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th class="num">nm</th><th class="num">km</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>`;
+  const nDays = (r2.finish - P.s1) / (24 * H), rowW = boatWatts(P.v2, state.hullFt) / OAR_EFF / CREW.rowers;
+  $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th class="num">nm</th><th class="num">km</th><th class="num" title="Calories burned rowing, whole crew, above resting">Rowing kcal</th><th class="num" title="Resting burn plus coxing, camp and light work, whole crew">Non-active kcal</th><th class="num" title="Both, per person (the crew rotates seats)">kcal each</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>
+    <tfoot><tr><th>Race</th><th class="num">${(ch.stage1.total + ch.stage2.total).toFixed(0)}</th><th class="num">${((ch.stage1.total + ch.stage2.total) * 1.852).toFixed(0)}</th><th class="num">${kcal(eRow)}</th><th class="num">${kcal(eRest)}</th><th class="num">${kcal((eRow + eRest) / CREW.n)}</th><th>${kcal((eRow + eRest) / CREW.n / nDays)} kcal a day each</th></tr></tfoot>`;
+  $("kcal-note").innerHTML = `Calories: ${CREW.n} aboard (${CREW.rowers} rowing, 1 coxing, rotating), each ${CREW.lb} lb; boat, food, water and gear ${CREW.boatLb} lb. At ${P.v2.toFixed(2)} kn through the water the ${state.hullFt} ft hull needs about ${Math.round(boatWatts(P.v2, state.hullFt))} W, which is about ${Math.round(rowW)} W at each oar handle and ${kcal(rowKcalH(P.v2, state.hullFt) / CREW.rowers)} kcal an hour for each rower above resting. Non-active is resting burn times 1.3 for coxing, camp and light work, ${kcal(REST_KCAL_DAY)} kcal a day each. Estimates from a hull resistance model, not measured; wind, waves and cold add more.`;
 
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
@@ -1591,6 +1633,13 @@ function sunTimes(ll, t) {   // [sunrise, sunset] on the local day containing t 
 // Chart strips for paper: the day's route cut into pages of chart at about 1:110,000 (12 x 13.3 nm, the letter page less its
 // header), each one a single export of the CHS chart for that box (NOAA in US waters, clipped at the border), with the
 // route, each hour's planned position, the gates, stops and camp, and the other past campsites drawn over it.
+// what kind of place a stop is, short enough to label a chart: beach, float, marina, BC Marine Trail campsite, a past team's camp
+function siteType(x) {
+  const l = x.landing;
+  if (l) return l.dock ? (DOCK_KIND[l.kind] || "dock") + (l.kind === "dock" && !l.name ? " (check public)" : "") : l.src === "satellite" ? "beach (from imagery)" : l.bcmt ? "BCMT campsite" : l.kind === "campsite" ? "campsite" : l.kind;
+  return x.dock ? "dock" : `past camp, ${x.teams} team${x.teams > 1 ? "s" : ""}`;
+}
+const chartLabel = (x) => { const n = x.landing && x.landing.name; return siteType(x) + (n ? ": " + (n.length > 26 ? n.slice(0, 25) + "…" : n) : ""); };
 const STRIP_W = 12, STRIP_H = 13.3, STRIP_PX = [1500, 1663];
 const merc = (ll) => { const R = 6378137, r = Math.PI / 180; return [R * ll[1] * r, R * Math.log(Math.tan(Math.PI / 4 + ll[0] * r / 2))]; };
 function chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine) {
@@ -1618,17 +1667,38 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine) {
     const q = (svc, show, dpi, text) => `${svc}/export?${new URLSearchParams({ bbox: [x0, cy - h / 2, cx + w / 2, y1].join(","), bboxSR: "3857", imageSR: "3857", size: `${PW},${PH}`, dpi: String(dpi), format: "png32", transparent: "true", layers: show, f: "image", display_params: chartDisplay(text) })}`;
     const us = [US_WATERS.wa, US_WATERS.ak].map((poly) => "M" + poly.map((ll) => xy(ll).map((v) => v.toFixed(0)).join(" ")).join(" L") + " Z").join(" ");
     const line = []; for (let a = Math.max(0, bx.a - 6); a <= Math.min(c.total, bx.b + 6); a += 0.1) line.push(xy(pointAt(c, a)).map((v) => v.toFixed(1)).join(","));
-    const lbl = (x, y, t, cls) => x > PW - 300 ? `<text x="${(x - 20).toFixed(0)}" y="${(y + 9).toFixed(0)}" text-anchor="end" class="${cls || ""}">${esc(t)}</text>` : `<text x="${(x + 14).toFixed(0)}" y="${(y + 9).toFixed(0)}" class="${cls || ""}">${esc(t)}</text>`;
-    const ticks = []; for (let a = Math.ceil(bx.a / 5) * 5; a <= bx.b; a += 5) { const [x, y] = xy(pointAt(c, a)); ticks.push(`<circle cx="${x}" cy="${y}" r="5" class="tk"/>${lbl(x - 2, y - 26, a + " nm", "nm")}`); }
-    const hrs = hours.filter(([, p]) => p >= bx.a - 0.5 && p <= bx.b + 0.5).map(([t, p]) => { const [x, y] = xy(pointAt(c, p)); return `<circle cx="${x}" cy="${y}" r="8" class="hr"/>${lbl(x, y, fmtT.format(t))}`; });
-    const alt = (c._camps || []).filter((x) => x.a > bx.a - 8 && x.a < bx.b + 8).map((x) => xy(x.ll)).filter(inside).map(([x, y]) => `<path d="M${x} ${y - 11} L${x + 10} ${y + 7} L${x - 10} ${y + 7} Z" class="alt"/>`);
-    const mk = marks.map((k) => [xy(k.ll), k]).filter(([v]) => inside(v)).map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>${lbl(x + 4, y + 8, k.label, "mkl")}`);
-    return `<section class="strip"><header><h1>${esc(title)} · chart ${n + 1} of ${boxes.length}</h1><p>nm ${bx.a.toFixed(0)} to ${bx.b.toFixed(0)} of the stage · about 1:110,000, north up, each page ${STRIP_W} nm across · circles: the planned position each hour; squares: gates, stops and camp; triangles: other past campsites and landings</p></header>
+    // labels never overprint each other: try right of the symbol, then left; a place label with no room is left off (the
+    // symbol still shows its type by shape and colour). Plan marks go first, then hours, mile ticks and other landings.
+    const taken = [], FS = { mkl: 28, al: 19, nm: 22 };
+    const free = (r) => r[0] > 0 && r[2] < PW && r[1] > 0 && r[3] < PH && !taken.some((o) => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
+    const lbl = (x, y, t, cls) => {
+      const fs = FS[cls] || 26, w = t.length * fs * 0.56, top = y + 9 - fs * 0.85, bot = y + 9 + fs * 0.25;
+      const R = [x + 14, top, x + 14 + w, bot], Lf = [x - 14 - w, top, x - 14, bot];
+      const side = free(R) ? "r" : free(Lf) ? "l" : cls === "al" || cls === "nm" ? null : x > PW - w - 20 ? "l" : "r";
+      if (!side) return "";
+      taken.push(side === "r" ? R : Lf);
+      return `<text x="${(side === "r" ? x + 14 : x - 14).toFixed(0)}" y="${(y + 9).toFixed(0)}"${side === "l" ? ' text-anchor="end"' : ""} class="${cls || ""}">${esc(t)}</text>`;
+    };
+    const dot = (x, y, r) => taken.push([x - r, y - r, x + r, y + r]);
+    const mkP = marks.map((k) => [xy(k.ll), k]).filter(([v]) => inside(v));
+    mkP.forEach(([[x, y]]) => dot(x, y, 12));
+    const hrP = hours.filter(([, p]) => p >= bx.a - 0.5 && p <= bx.b + 0.5).map(([t, p]) => [xy(pointAt(c, p)), t]);
+    hrP.forEach(([[x, y]]) => dot(x, y, 9));
+    const mk = mkP.map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>${lbl(x, y, k.label, "mkl")}`);
+    const hrs = hrP.map(([[x, y], t]) => `<circle cx="${x}" cy="${y}" r="8" class="hr"/>${lbl(x, y, fmtT.format(t))}`);
+    const ticks = []; for (let a = Math.ceil(bx.a / 5) * 5; a <= bx.b; a += 5) { const [x, y] = xy(pointAt(c, a)); ticks.push(`<circle cx="${x}" cy="${y}" r="5" class="tk"/>${lbl(x, y - 24, a + " nm", "nm")}`); }
+    // every other place to land in the box, for a break or in an emergency: triangle a beach or campsite, circle a dock or float
+    const used = marks.filter((k) => k.site).map((k) => k.site.ll);
+    const altP = (c._camps || []).filter((x) => x.a > bx.a - 8 && x.a < bx.b + 8 && !used.some((u) => nmBetween(u, x.ll) < 0.05)).map((x) => [xy(x.ll), x]).filter(([v]) => inside(v))
+      .sort((a, b) => (a[1].o || 0) - (b[1].o || 0));   // nearest the route labelled first
+    altP.forEach(([[x, y]]) => dot(x, y, 9));
+    const alt = altP.map(([[x, y], s]) => ((s.landing && s.landing.dock) || s.dock ? `<circle cx="${x}" cy="${y}" r="9" class="alt dk"/>` : `<path d="M${x} ${y - 11} L${x + 10} ${y + 7} L${x - 10} ${y + 7} Z" class="alt${s.landing ? "" : " pc"}"/>`) + lbl(x, y - 4, chartLabel(s), "al"));
+    return `<section class="strip"><header><h1>${esc(title)} · chart ${n + 1} of ${boxes.length}</h1><p>nm ${bx.a.toFixed(0)} to ${bx.b.toFixed(0)} of the stage · about 1:110,000, north up, each page ${STRIP_W} nm across · circles: the planned position each hour; squares: gates (orange), breaks (blue) and camp (red); triangles: beaches and campsites (green a mapped landing, orange a past team's camp), blue circles: docks, floats and marinas, each labelled with its type, for a break or in an emergency</p></header>
       <svg viewBox="0 0 ${PW} ${PH}" class="chart"><defs><clipPath id="us${title.length}_${n}"><path d="${us}"/></clipPath></defs><rect width="${PW}" height="${PH}" class="sea"/>
       <image href="${q(CHS_SVC, "show:0,1,2,3,4,5,6,7,9,12", 200, 1.3)}" width="${PW}" height="${PH}"/>
       <image href="${q(NOAA_SVC, "show:0,1,2,3,4,5,6,7", 200, 1.3)}" width="${PW}" height="${PH}" clip-path="url(#us${title.length}_${n})"/>
       <polyline points="${line.join(" ")}" class="rt"/>${ticks.join("")}${alt.join("")}${hrs.join("")}${mk.join("")}
-      <rect x="20" y="${PH - 50}" width="${(PW / STRIP_W) * 2}" height="10" class="sb"/><text x="20" y="${PH - 60}" class="nm">2 nm</text></svg>
+      <rect width="${PW}" height="${PH}" class="frame"/><rect x="20" y="${PH - 50}" width="${(PW / STRIP_W) * 2}" height="10" class="sb"/><text x="20" y="${PH - 60}" class="nm">2 nm</text></svg>
       <footer><b>${esc(planLine)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`;
   });
 }
@@ -1655,7 +1725,7 @@ function printSheets() {
       } else if (sd && g.st.kind === "tide") { const x = tideAt(sd, g.arr); if (x) n = `${x.h.toFixed(1)} m ${x.rising ? "rising" : "falling"}`; }
       ev.push({ t: g.arr, k: "Gate", w: g.st.name, p: g.along, n });
     });
-    stops.forEach((x, i) => ev.push({ t: x.t, k: `Stop ${i + 1} (${dur((x.until - x.t) / H)})`, w: x.where, p: x.pos, n: `leave ${hm(x.until)}` }));
+    stops.forEach((x, i) => ev.push({ t: x.t, k: `Break ${i + 1} (${dur((x.until - x.t) / H)})`, w: x.where, p: x.pos, n: `leave ${hm(x.until)}` }));
     ev.push({ t: t1, k: endStop ? "Camp" : stage === 1 ? "Victoria" : "Finish", w: to, p: p1, n: endStop ? `${dur((endStop.until - endStop.t) / H)}, leave ${fmt.format(endStop.until)}` : "" });
     ev.sort((a, b) => a.t - b.t);
     // the stream every hour while rowing
@@ -1665,21 +1735,23 @@ function printSheets() {
       const cur = streamAt(c, p, t);
       hrs.push(`<tr><td>${hm(t)}</td><td class="n">${p.toFixed(0)}</td><td>${esc(place(p))}</td><td class="n">${kn(cur)}</td><td class="n">${v.toFixed(1)}</td><td class="n">${Math.max(0, v + cur).toFixed(1)}</td></tr>`);
     }
+    const eK = crewKcal(P, t0, endStop ? endStop.until : t1);
     const ll = pointAt(c, p1), [rise, set] = sunTimes(ll, t1 - 6 * H), [rise2] = sunTimes(ll, t1 + 18 * H);
     // other places to stop near the end of the day, in case the plan slips
     const alt = !c._camps || !endStop ? [] : c._camps.filter((x) => Math.abs(x.a - p1) <= 12 && !(endStop && endStop.site && nmBetween(x.ll, endStop.site.ll) < 0.05))
       .sort((a, b) => Math.abs(a.a - p1) - Math.abs(b.a - p1)).slice(0, 6).sort((a, b) => a.a - b.a)
       .map((x) => `<tr><td class="n">${x.a.toFixed(0)}</td><td class="n">${x.o.toFixed(1)}</td><td>${esc(x.landing ? landingKind(x.landing) + (x.landing.name ? " " + x.landing.name : "") : x.dock ? "dock" : "past campsite (" + x.teams + " team" + (x.teams > 1 ? "s" : "") + ")")}, ${esc(x.place)}</td></tr>`);
     sheets.push(`<section><header><p class="plan">${esc(planLine)}</p><h1>${esc(title)}</h1><p>${fmt.format(t0)} to ${fmt.format(t1)} · ${(p1 - p0).toFixed(0)} nm along the route · rowing ${dur(rowH)} · ${v.toFixed(2)} kn through the water</p>
-      <p>${esc(from)} &rarr; ${esc(to)} · sunset ${hm(set)}, sunrise next day ${hm(rise2)} at the end of the day</p></header>
+      <p>${esc(from)} &rarr; ${esc(to)} · sunset ${hm(set)}, sunrise next day ${hm(rise2)} at the end of the day</p>
+      <p>Calories, ${CREW.n} crew: rowing ${kcal(eK.row)} + non-active ${kcal(eK.rest)} = ${kcal(eK.row + eK.rest)} (${kcal((eK.row + eK.rest) / CREW.n)} each)${endStop ? ", camp to camp" : ""}</p></header>
       <h2>Plan</h2><table><thead><tr><th>Time</th><th>What</th><th>Where</th><th class="n">nm</th><th>Notes</th></tr></thead><tbody>${ev.map((e) => `<tr><td>${hm(e.t)}</td><td><b>${esc(e.k)}</b></td><td>${esc(e.w)}</td><td class="n">${e.p.toFixed(0)}</td><td>${esc(e.n)}</td></tr>`).join("")}</tbody></table>
       <div class="cols"><div><h2>Stream each hour while rowing</h2><table class="sm"><thead><tr><th>Time</th><th class="n">nm</th><th>Near</th><th class="n">Stream</th><th class="n">Thru water</th><th class="n">Over ground</th></tr></thead><tbody>${hrs.join("") || '<tr><td colspan="6">Not rowing</td></tr>'}</tbody></table><p class="k">Stream in knots along the route, + with you, − against.</p></div>
-      <div><h2>Other stops near the end</h2><table class="sm"><thead><tr><th class="n">nm</th><th class="n">Off route</th><th>Place</th></tr></thead><tbody>${alt.join("") || `<tr><td colspan="3">${endStop ? "None listed" : "Finish line"}</td></tr>`}</tbody></table>
+      <div><h2>Other landings near the end (breaks, emergency)</h2><table class="sm"><thead><tr><th class="n">nm</th><th class="n">Off route</th><th>Place</th></tr></thead><tbody>${alt.join("") || `<tr><td colspan="3">${endStop ? "None listed" : "Finish line"}</td></tr>`}</tbody></table>
       <h2>Notes</h2><div class="lines"></div></div></div>
       <footer><b>${esc(planLine)}</b><br>R2AK 2028 planner · for planning, not navigation: check the official CHS/NOAA tables and the forecast</footer></section>`);
     const marks = [{ ll: pointAt(c, p0), label: from, cls: "go" }, ...gates.map((g) => ({ ll: [g.st.lat, g.st.lon], label: g.st.name, cls: "gate" })),
-      ...stops.map((x, i) => ({ ll: x.site ? x.site.ll : pointAt(c, x.pos), label: `Stop ${i + 1} ${hm(x.t)}`, cls: "stop" })),
-      { ll: endStop && endStop.site ? endStop.site.ll : pointAt(c, p1), label: endStop ? `Camp ${hm(t1)}` : to, cls: "end" }];
+      ...stops.map((x, i) => ({ ll: x.site ? x.site.ll : pointAt(c, x.pos), site: x.site, label: `Break ${i + 1} ${hm(x.t)}: ${x.site ? chartLabel(x.site) : "on the water"}`, cls: "stop" })),
+      { ll: endStop && endStop.site ? endStop.site.ll : pointAt(c, p1), site: endStop && endStop.site, label: endStop ? `Camp ${hm(t1)}: ${endStop.site ? chartLabel(endStop.site) : "on the water"}` : to, cls: "end" }];
     sheets.push(...chartStrips(c, rec, t0, t1, p0, p1, marks, title, planLine));
   };
   // Stage 1
@@ -1702,12 +1774,13 @@ function printSheets() {
     h1 { font-size: 15pt; margin: 0 0 2pt; } h2 { font-size: 11pt; margin: 10pt 0 3pt; border-bottom: 1.5pt solid #000; } header p { margin: 0; }
     table { border-collapse: collapse; width: 100%; } th, td { border-bottom: 0.5pt solid #888; padding: 2pt 4pt; text-align: left; vertical-align: top; }
     th { font-size: 9pt; } .n { text-align: right; white-space: nowrap; } table.sm { font-size: 9pt; } .k { font-size: 8.5pt; margin: 2pt 0; }
-    .cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14pt; } .lines { height: 150pt; background: repeating-linear-gradient(#fff 0 17pt, #999 17pt 17.5pt); }
+    .cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14pt; } .lines { height: 100pt; background: repeating-linear-gradient(#fff 0 17pt, #999 17pt 17.5pt); }
     footer { font-size: 8pt; margin-top: 8pt; color: #333; }
-    .strip header p { font-size: 8.5pt; } header p.plan { font-size: 9pt; font-weight: 600; border: 1pt solid #000; padding: 2pt 5pt; margin-bottom: 4pt; display: inline-block; } svg.chart { display: block; width: 7.5in; height: 8.31in; margin-top: 4pt; border: 0.75pt solid #000; }
+    .strip header p { font-size: 8.5pt; } header p.plan { font-size: 9pt; font-weight: 600; border: 1pt solid #000; padding: 2pt 5pt; margin-bottom: 4pt; display: inline-block; } section.strip { height: 10.05in; display: flex; flex-direction: column; overflow: hidden; } svg.chart { display: block; flex: 1 1 auto; min-height: 0; width: 100%; margin-top: 4pt; }
+    svg.chart .frame { fill: none; stroke: #000; stroke-width: 3; }
     .sea { fill: #eef5fa; } .rt { fill: none; stroke: #c026d3; stroke-width: 6; stroke-opacity: 0.75; stroke-linejoin: round; }
     svg text { font: 600 26px system-ui, sans-serif; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 6px; } svg text.nm { font-size: 22px; fill: #7e22ce; }
-    .hr { fill: #fff; stroke: #c026d3; stroke-width: 4; } .tk { fill: #7e22ce; } .alt { fill: #16a34a; stroke: #fff; stroke-width: 2; }
+    .hr { fill: #fff; stroke: #c026d3; stroke-width: 4; } .tk { fill: #7e22ce; } .alt { fill: #16a34a; stroke: #fff; stroke-width: 2; } .alt.pc { fill: #ea580c; } .alt.dk { fill: #2563eb; } svg text.al { font-size: 19px; font-weight: 500; stroke-width: 5px; }
     .mk { stroke: #000; stroke-width: 3; fill: #fff; } .mk.gate { fill: #f59e0b; } .mk.stop { fill: #38bdf8; } .mk.end, .mk.go { fill: #dc2626; } .mkl { font-size: 28px; }
     .sb { fill: #000; } .nocharts .strip { display: none; } .bar { margin: 8pt 0; } @media print { .bar { display: none; } }`;
   const w = window.open("", "_blank"); if (!w) { alert("Allow pop-ups for this page to open the daily sheets."); return; }
