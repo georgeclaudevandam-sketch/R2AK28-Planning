@@ -1,0 +1,36 @@
+name: Docks and floats near the route (OpenStreetMap)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/fetch_docks.py"
+      - ".github/workflows/docks.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - run: python scripts/fetch_docks.py
+      - name: Commit docks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A data/docks.json data/docks
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update docks and floats"
+          git pull --rebase
+          git push

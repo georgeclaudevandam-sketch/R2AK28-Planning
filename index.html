@@ -252,6 +252,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
           <input id="breakAfterH" type="range" min="2" max="8" step="0.5" value="4"></label>
         <label for="breakH">Snack/rest break length <b class="clock" id="breakH-out">1 h</b> (at a past campsite)
           <input id="breakH" type="range" min="0.25" max="3" step="0.25" value="1"></label>
+        <label class="check" for="docksOn"><input id="docksOn" type="checkbox" checked> Docks and floats count as stops (purple on the map), not just beaches</label>
         <label class="check" for="nightOn"><input id="nightOn" type="checkbox" checked> No rowing at night: ashore at a past campsite</label>
         <label for="nightH" id="nightH-l">From <b class="clock" id="nightH-out">0.5 h</b> after sunset to the same before sunrise
           <input id="nightH" type="range" min="0" max="2" step="0.25" value="0.5"></label>
@@ -388,8 +389,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH", "docksOn"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, docksOn: true, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -787,6 +788,8 @@ let CAMP_PATHS = {};
 // landing beaches where no past team stopped: BC Marine Trail and other mapped campsites, and beaches picked off satellite imagery
 // (data/landing_sites.json); the planner uses them like past campsites
 let LANDINGS = [];
+// marinas, floats, harbours and docks within 2 nm of the route (data/docks.json, from OpenStreetMap): tie up rather than land
+let DOCKS = [];
 const CAMP_PATH_MEMO = new Map();   // the route is fixed per chain, so each campsite's way in and out only needs working out once
 function campPaths(ch, c) {
   const mk = `${ch.north || "s1"}|${c.ll[0]},${c.ll[1]}`;
@@ -835,7 +838,7 @@ function trackPaths(ch, c) {
 function pickCamp(ch, s, lim, over = 2.5, back = 0) {
   if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]);
     const w = campPaths(ch, c); if (!w && ch.north) return null;   // no water path built: not used (no straight dash in and out)
-    return { ...c, a: p.along, o: p.d, ...(w || { ain: p.along, aout: p.along, din: p.d, dout: p.d, back: 0 }) }; }).filter((c) => c && c.back <= 0.3);
+    return { ...c, a: p.along, o: p.d, ...(w || { ain: p.along, aout: p.along, din: p.d, dout: p.d, back: 0 }) }; }).filter((c) => c && c.back <= 0.3 && (state.docksOn || !c.dock));
   // prefer one near the route within a few miles; failing that, the cheapest past campsite anywhere short of the next gate
   const pick = (ok) => {
     let best = null;
@@ -1910,7 +1913,8 @@ async function loadPast() {
 }
 // Stops: places a past team stayed within 0.3 nm for 2 h or more (camps, anchorages, waiting out weather or tide).
 // Stops within a mile of each other are grouped into one site.
-const landingKind = (l) => l.src === "satellite" ? "beach seen on satellite imagery" : l.bcmt ? "BC Marine Trail campsite" : l.kind === "campsite" ? "mapped campsite" : `mapped ${l.kind}`;
+const DOCK_KIND = { marina: "marina", float: "float", harbour: "small-craft harbour", dock: "dock" };
+const landingKind = (l) => l.dock ? `${DOCK_KIND[l.kind] || "dock"} (tie up)` : l.src === "satellite" ? "beach seen on satellite imagery" : l.bcmt ? "BC Marine Trail campsite" : l.kind === "campsite" ? "mapped campsite" : `mapped ${l.kind}`;
 function buildStops(races) {
   const stops = [];
   races.forEach((r) => r.teams.forEach((t) => {
@@ -1929,6 +1933,10 @@ function buildStops(races) {
     // not around Victoria, where the boat spends the layover in port
     .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1) && nmBetween([l.lat, l.lon], [48.4225, -123.372]) > 6)
       .map((l) => ({ ll: [l.lat, l.lon], teams: 0, place: nearPlace([l.lat, l.lon]).replace(/^at /, ""), landing: l })));
+  // docks and floats, unless a past campsite or landing is right there
+  const taken = CAMPSITES.map((c) => c.ll);
+  CAMPSITES = CAMPSITES.concat(DOCKS.filter((d) => !taken.some((ll) => nmBetween(ll, [d.lat, d.lon]) < 0.3) && nmBetween([d.lat, d.lon], [48.4225, -123.372]) > 6)
+    .map((d) => ({ ll: [d.lat, d.lon], teams: 0, place: nearPlace([d.lat, d.lon]).replace(/^at /, ""), landing: { ...d, dock: true }, dock: true })));
   const g = L.layerGroup();
   sites.forEach((site) => {
     const teams = new Set(site.stops.map((s) => s.team + s.year)).size;
@@ -1937,10 +1945,10 @@ function buildStops(races) {
       .bindTooltip(`<b>${esc(nearPlace(site.ll).replace(/^at /, ""))}</b>: ${teams} team${teams > 1 ? "s" : ""} stopped here<br>${rows.slice(0, 8).join("<br>")}${rows.length > 8 ? `<br>and ${rows.length - 8} more` : ""}`, { sticky: true })
       .addTo(g);
   });
-  CAMPSITES.filter((c) => c.landing).forEach((c) => L.circleMarker(c.ll, { radius: 5, color: "#1e3a8a", weight: 1.5, fillColor: "#93c5fd", fillOpacity: 0.95 })
+  CAMPSITES.filter((c) => c.landing).forEach((c) => L.circleMarker(c.ll, c.dock ? { radius: 5, color: "#581c87", weight: 1.5, fillColor: "#d8b4fe", fillOpacity: 0.95 } : { radius: 5, color: "#1e3a8a", weight: 1.5, fillColor: "#93c5fd", fillOpacity: 0.95 })
     .bindTooltip(`<b>${esc(c.landing.name || c.place)}</b><br>${esc(landingKind(c.landing))}`, { sticky: true }).addTo(g));
   g.addTo(map);
-  layersCtl.addOverlay(g, `Past stops and campsites (${sites.length}), and other landings (blue)`);
+  layersCtl.addOverlay(g, `Past stops and campsites (${sites.length}), other landings (blue), docks and floats (purple)`);
   PAST.stops = { sites: sites.length, stops: stops.length };
 }
 function selectPast(key, id, zoom) {
@@ -1962,7 +1970,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("docksOn").checked = state.docksOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 
@@ -2140,6 +2148,7 @@ async function main() {
   STATIONS = cfg.stations;
   try { CAMP_PATHS = (await get("data/camp_paths.json")).sites; } catch (e) { console.warn("camp paths", e); }
   try { LANDINGS = (await get("data/landing_sites.json")).sites || []; } catch (e) { LANDINGS = []; }
+  try { DOCKS = (await get("data/docks.json")).sites || []; } catch (e) { DOCKS = []; }
   try { FIELD = await get("data/stream_field.json"); } catch (e) { console.warn("stream field", e); }
   try { PRED = await get("data/predictions.json"); } catch (e) { PRED = { stations: {}, failures: ["predictions.json not found: run the Fetch predictions workflow"] }; }
   const r = $("time");
@@ -2165,6 +2174,7 @@ async function main() {
   ["breakAfterH", "breakH"].forEach((k) => $(k).addEventListener("input", (e) => { state[k] = parseFloat(e.target.value); $(k + "-out").textContent = `${state[k]} h`; changed(); }));
   $("campGapH").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 8 && v <= 48) { state.campGapH = v; changed(); } });
   $("nightOn").addEventListener("change", (e) => { state.nightOn = e.target.checked; syncInputs(); changed(); });
+  $("docksOn").addEventListener("change", (e) => { state.docksOn = e.target.checked; changed(); });
   $("nightH").addEventListener("input", (e) => { state.nightH = parseFloat(e.target.value); $("nightH-out").textContent = `${state.nightH} h`; changed(); });
   $("waits").addEventListener("change", (e) => { state.waits = e.target.checked; changed(); });
   $("sched").addEventListener("change", (e) => { state.sched = e.target.value; syncInputs(); changed(); });
