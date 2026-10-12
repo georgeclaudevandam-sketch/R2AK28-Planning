@@ -1,0 +1,43 @@
+name: Storm-shelter survey (charts, OpenStreetMap, satellite)
+
+on:
+  workflow_dispatch:
+    inputs:
+      lat0:
+        description: "South latitude of the stretch"
+        default: "52.54"
+      lat1:
+        description: "North latitude of the stretch"
+        default: "52.93"
+  push:
+    paths:
+      - "scripts/shelter_survey.py"
+      - ".github/workflows/shelter.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shelter-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - run: python scripts/shelter_survey.py ${{ github.event.inputs.lat0 || '52.54' }} ${{ github.event.inputs.lat1 || '52.93' }}
+      - name: Commit the survey
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A data/shelter_survey
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update storm-shelter survey"
+          git pull --rebase
+          git push
