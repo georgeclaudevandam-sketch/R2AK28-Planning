@@ -21,7 +21,8 @@ concurrency:
 
 jobs:
   fetch:
-    if: ${{ !inputs.from_run }}
+    # skipped for a dispatch reusing an earlier run, or a push whose message says [no fetch] (the history job then uses the committed caches)
+    if: ${{ !inputs.from_run && !contains(github.event.head_commit.message, '[no fetch]') }}
     # one runner per ERA5 sample point (Open-Meteo throttles a single address) and per area's observed record
     runs-on: ubuntu-latest
     timeout-minutes: 150
@@ -56,6 +57,7 @@ jobs:
         with:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: part-*
           path: data/storm_history/parts

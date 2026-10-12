@@ -446,7 +446,7 @@ def main():
             if nw is not None:
                 byy = {y: [[h, d, lv] for yy, h, d, lv in nw if yy == y] for y in range(2005, Y1 + 1)}
                 s["nws_issued_2005_on"] = stats(byy, {y: [None] * HOURS for y in byy}, cc, 1.0)
-        # the record used for the area: its stations' observations, else the buoy, else ERA5
+        # the record used for the area: its stations' observations, else the buoy, else the NWS warnings issued, else ERA5
         ob = obs.get(name)
         if ob and len(ob["years"]) >= 8:
             oh = {int(y): v for y, v in ob["years"].items()}
@@ -455,10 +455,14 @@ def main():
             s["observed"] = {**stats(best, oh, cc, 1.0), "stations": st, "years": len(oh), "first": min(oh), "last": max(oh)}
         elif bd and "buoy_observed" in s and len(bev) >= 15:
             best, bsrc, bh = bev, f"buoy {buoy}", {y: bd[y] for y in bev}
+        elif "nws_issued_2005_on" in s:
+            # no station record: the warnings actually issued for the zone beat ERA5, which is far too smooth in inside waters
+            best, bsrc, bh = byy, "NWS warnings issued", {y: [None] * HOURS for y in byy}
         else:
             best, bsrc, bh = ev, "ERA5" + (" (scaled)" if scale != 1.0 else ""), hourly
         s["best_source"] = bsrc; s["best_years"] = f"{min(best)}-{max(best)} ({len(best)} years)"
-        s["best"] = s["observed"] if bsrc == "observed" else s.get("buoy_observed") if bsrc.startswith("buoy") else s["corrected"]
+        s["best"] = s["observed"] if bsrc == "observed" else s.get("buoy_observed") if bsrc.startswith("buoy") \
+            else s["nws_issued_2005_on"] if bsrc.startswith("NWS") else s["corrected"]
         summary.append(s)
         out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "source": bsrc, "years": {str(y): e for y, e in best.items()}})
         for y in sorted(set(best) | set(ev)):
@@ -476,7 +480,7 @@ def main():
     gen = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())
     (OUT / "summary.json").write_text(json.dumps({
         "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment "
-                "Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else ERA5 hourly 10 m wind "
+                "Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else the NWS warnings issued (Clarence Strait, 2005 on), else ERA5 hourly 10 m wind "
                 "at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run "
                 f"of hours at small craft strength or more (gaps up to {MERGE_H} h merged, at least {MIN_H} h); its level is the highest it reached. "
                 "corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). "
