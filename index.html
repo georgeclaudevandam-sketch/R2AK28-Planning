@@ -1633,7 +1633,7 @@ function setTime(t) {
 const FLOW_RAMP = ["rgba(30,58,138,0.55)", "rgba(29,78,216,0.85)", "rgba(109,40,217,0.95)", "rgba(192,38,211,1)", "rgba(220,38,38,1)"];
 const FLOW_DARK = ["rgba(147,197,253,0.5)", "rgba(191,219,254,0.75)", "rgba(224,242,254,0.9)", "rgba(240,171,252,1)", "rgba(252,165,165,1)"];
 const FLOW_BREAKS = [0.5, 1, 2, 3];
-const FLOW_MIN_KN = 1;   // only streams this strong are drawn (the narrows and tide races), which also keeps the drawing light
+const FLOW_MIN_KN = 0.5;   // only streams this strong are drawn (slack water stays clear), which also keeps the drawing light
 const FLOW_CELL = 8;     // the stream is worked out once per 8 px screen cell per view and per 5 minutes of map time
 async function loadFlow() {
   const d = await fetch("data/stream_grid.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error("stream_grid " + r.status); return r.json(); });
