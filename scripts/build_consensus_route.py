@@ -193,6 +193,13 @@ def follow(p, keep=()):
 nh = len(HARBOUR)
 south = HARBOUR + follow(south[nh - 1:], keep=[(48.40, 48.43, -123.40, -123.36)])[1:]
 inside = follow(inside)
+# South of Klemtu the 2026 teams split: most came up the west side (notes, Lillian Signed Up To Suffer, Laughing Roomba), two
+# crossed from the east along 52.55 N. The medoid flips between the two groups and leaves a dogleg east of everyone's line, so
+# hand-draw the west group's common line from 52.505 N to the mouth of Klemtu Passage.
+KLEMTU = [[52.5097, -128.4742], [52.5208, -128.4803], [52.5311, -128.4847], [52.5398, -128.4898], [52.5479, -128.4947], [52.5539, -128.4975]]
+a = next(i for i, p in enumerate(inside) if p[0] > 52.505)
+b = next(i for i, p in enumerate(inside) if p[0] > 52.560)
+inside = inside[:a] + KLEMTU + inside[b:]
 data = json.loads((ROOT / "data" / "route.json").read_text())
 for leg in data["legs"]:
     if leg["key"] == "south":

@@ -795,14 +795,42 @@ function campPaths(ch, c) {
 }
 function campPathsCalc(ch, c) {
   const e = CAMP_PATHS[`${c.ll[0].toFixed(4)},${c.ll[1].toFixed(4)}`];
-  const p = e && ch.north && (e[ch.north] || e.inside);
-  if (!p) return null;
-  const i = projectSeg(ch, p.in[0]), o = projectSeg(ch, p.out[p.out.length - 1]);
-  if (!(i.d < 0.3 && o.d < 0.3 && o.along >= i.along)) return null;
+  let p = e && ch.north && (e[ch.north] || e.inside);
+  let i = p && projectSeg(ch, p.in[0]), o = p && projectSeg(ch, p.out[p.out.length - 1]);
+  // only the way in still meets the route: row back out the way you came
+  if (p && i.d < 0.3 && !(o.d < 0.3 && o.along >= i.along)) {
+    p = { ...p, out: [...p.in].reverse(), nm_out: p.nm_in }; o = i;
+  }
+  // the built path no longer meets the route (the route has moved since): follow the way past teams actually rowed in and out
+  if (!p || !(i.d < 0.3 && o.d < 0.3 && o.along >= i.along)) {
+    p = ch.north && trackPaths(ch, c); if (!p) return null;
+    i = projectSeg(ch, p.in[0]); o = projectSeg(ch, p.out[p.out.length - 1]);
+    if (!(i.d < 0.3 && o.d < 0.3 && o.along >= i.along)) return null;
+  }
   // a campsite you can only reach by heading back down the route (its way in doubles back) is not used
   let top = i.along, back = 0;
   for (const q of p.in) { const x = projectSeg(ch, q).along; top = Math.max(top, x); back = Math.max(back, top - x); }
   return { ain: i.along, aout: o.along, din: p.nm_in, dout: p.nm_out, pin: p.in, pout: p.out, back };
+}
+// a past campsite's way in and out from the tracks of the teams that stopped there: each track back from the stop to where it
+// was last within 0.3 nm of the route, and on from the stop to where it next is. The shortest round trip of them is used.
+function trackPaths(ch, c) {
+  let best = null;
+  (c.stops || []).forEach((s) => {
+    const tr = s.tr, pt = (k) => [tr[k][1], tr[k][2]], near = (k) => projectSeg(ch, pt(k)).d < 0.3;
+    let a = s.i; while (a > 0 && s.i - a < 200 && !near(a)) a--;
+    let b = s.j; while (b < tr.length - 1 && b - s.j < 200 && !near(b)) b++;
+    if (!near(a) || !near(b)) return;
+    const pin = [], pout = [];
+    for (let k = a; k <= s.i; k++) pin.push(pt(k));
+    pin.push(c.ll);
+    pout.push(c.ll);
+    for (let k = s.j; k <= b; k++) pout.push(pt(k));
+    const len = (q) => q.reduce((x, v, k) => k ? x + nmBetween(q[k - 1], v) : 0, 0), nin = len(pin), nout = len(pout);
+    if (nin > 6 || nout > 6) return;   // a team that wandered (or a long pause in the pings): not a way in
+    if (!best || nin + nout < best.nm_in + best.nm_out) best = { in: pin, out: pout, nm_in: nin, nm_out: nout, from: `${s.team} (${s.year})` };
+  });
+  return best;
 }
 function pickCamp(ch, s, lim, over = 2.5, back = 0) {
   if (!ch._camps) ch._camps = CAMPSITES.map((c) => { const p = project(ch, c.ll[0], c.ll[1]);
@@ -1891,13 +1919,13 @@ function buildStops(races) {
       let j = i; while (j + 1 < tr.length && nmBetween([tr[i][1], tr[i][2]], [tr[j + 1][1], tr[j + 1][2]]) < 0.3) j++;
       const hrs = (tr[j][0] - tr[i][0]) / 3600, ll = [tr[i][1], tr[i][2]];
       if (hrs >= 2 && nmBetween(ll, [48.4225, -123.372]) > 2 && nmBetween(ll, [55.339, -131.637]) > 2 && j < tr.length - 1)
-        stops.push({ ll, t: tr[i][0] * 1000, hrs, team: t.name, cls: t.class, year: yearOf(r) });
+        stops.push({ ll, t: tr[i][0] * 1000, hrs, team: t.name, cls: t.class, year: yearOf(r), tr, i, j });
       i = Math.max(j, i + 1);
     }
   }));
   const sites = [];
   stops.forEach((s) => { const site = sites.find((x) => nmBetween(x.ll, s.ll) < 1); if (site) site.stops.push(s); else sites.push({ ll: s.ll, stops: [s] }); });
-  CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, "") }))
+  CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, ""), stops: x.stops }))
     // not around Victoria, where the boat spends the layover in port
     .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1) && nmBetween([l.lat, l.lon], [48.4225, -123.372]) > 6)
       .map((l) => ({ ll: [l.lat, l.lon], teams: 0, place: nearPlace([l.lat, l.lon]).replace(/^at /, ""), landing: l })));
