@@ -21,7 +21,7 @@ D = ROOT / "data" / "storm_history"
 HEAD = Font(bold=True, color="FFFFFF")
 FILL = PatternFill("solid", fgColor="1F4E79")
 WRAP = Alignment(wrap_text=True, vertical="top")
-LEVELS = (("sc", "Small craft+"), ("gale", "Gale+"), ("storm", "Storm"))
+LEVELS = (("k10", "10 kn+"), ("k15", "15 kn+"), ("sc", "Small craft+"), ("gale", "Gale+"), ("storm", "Storm"))
 
 
 def sheet(wb, title, header, rows, widths=None):
@@ -56,6 +56,8 @@ def main():
            "Days with small craft+ per Jun-Jul", "Share of hours at small craft+ (%)", "Years with any small craft+ (%)",
            "Typical small craft+ length (h)", "1 in 10 lasts over (h)", "Longest (h)",
            "Gale+ blows per Jun-Jul", "Chance of a gale+ in 16 days", "Gale+ typical length (h)", "Storm blows per Jun-Jul",
+           "10 kn+ blows per Jun-Jul", "Chance of a 10 kn+ blow in 16 days", "10 kn+ typical length (h)",
+           "15 kn+ blows per Jun-Jul", "Chance of a 15 kn+ blow in 16 days", "15 kn+ typical length (h)",
            "ERA5 1976-2025: small craft+ per Jun-Jul", "ERA5 1976-2025: gale+ per Jun-Jul", "Note"]
     rows = []
     for a in A:
@@ -64,14 +66,17 @@ def main():
         rows.append([a["area"], source(a), a["best_years"], sc["events_per_jj"], round(sc["p_in_16_days"] * 100), sc["days_per_jj"],
                      sc["share_of_hours_pct"] if a["best_source"] != "NWS warnings issued" else None, sc["years_with_any_pct"],
                      sc["dur_h"]["median"], sc["dur_h"]["p90"], sc["dur_h"]["max"], g["events_per_jj"], round(g["p_in_16_days"] * 100),
-                     g["dur_h"]["median"], st["events_per_jj"], e["sc"]["events_per_jj"], e["gale"]["events_per_jj"], a.get("note", "")])
-    ws = sheet(wb, "Summary", hdr, rows, {1: 34, 2: 30, 3: 20, 18: 40})
+                     g["dur_h"]["median"], st["events_per_jj"],
+                     *[x for k in ("k10", "k15") for x in (b[k]["events_per_jj"], round(b[k]["p_in_16_days"] * 100), b[k]["dur_h"]["median"])],
+                     e["sc"]["events_per_jj"], e["gale"]["events_per_jj"], a.get("note", "")])
+    ws = sheet(wb, "Summary", hdr, rows, {1: 34, 2: 30, 3: 20, 24: 40})
     for r in ws.iter_rows(min_row=2, min_col=5, max_col=5):
         for c in r:
             c.number_format = '0"%"'
-    for r in ws.iter_rows(min_row=2, min_col=13, max_col=13):
-        for c in r:
-            c.number_format = '0"%"'
+    for col in (13, 17, 20):
+        for r in ws.iter_rows(min_row=2, min_col=col, max_col=col):
+            for c in r:
+                c.number_format = '0"%"'
 
     hdr = ["Area", "Level", "Blows per Jun-Jul", "25% last under (h)", "Median (h)", "75% last under (h)", "90% last under (h)",
            "Longest (h)", "Number of blows (all years) lasting under 12 h", "12-24 h", "1-2 days", "2-3 days", "3+ days"]
@@ -88,7 +93,7 @@ def main():
     hdr = ["Area", "Level"] + [f"% of hours at level, {h}" for h in halves] + [f"Blows per Jun-Jul, {d}" for d in decs]
     rows = []
     for a in A:
-        for k, lab in LEVELS[:2]:
+        for k, lab in LEVELS[:4]:
             s = a["best"][k]
             rows.append([a["area"], lab, *s["by_half_month_share_pct"].values(),
                          *[v if v else None for v in s["by_decade_events"].values()]])
@@ -114,6 +119,9 @@ def main():
         ["Thresholds", "Small craft 20 kn sustained in Canada, 23 kn in Alaska (the levels the warnings are issued at); gale 34 kn; storm 48 kn."],
         ["Blow", "A run of hours at small craft strength or more. Gaps up to 6 h are merged into one blow and blows under 2 h are "
                  "dropped. Its level is the highest it reached. Length runs from first to last hour at the level."],
+        ["10 and 15 kn", "Lighter cutoffs for crews who stop well before small craft strength: runs at 10 or 15 kn or more, from "
+                         "the same hourly record. In Clarence Strait, where the small craft and gale figures are the warnings issued "
+                         "(which carry no wind speed), they come from the Mary Island station, which reads lighter than the open strait."],
         ["Chance in 16 days", "Share of 16-day windows inside June-July (about the length of a crossing) that contain at least one "
                               "blow starting in them."],
         ["Record used", "Each area uses the best record it has: hourly wind from Environment Canada lightstations and automatic "

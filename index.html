@@ -341,7 +341,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
     <label class="sl" for="sm-mode">Where the storms come from<select id="sm-mode"><option value="hist">Replay June&ndash;July weather, 1976&ndash;2025</option><option value="fixed">Set by the sliders</option></select>
      <small id="sm-mode-note"></small></label>
     <div class="stack" id="sm-hist-ctl" style="gap:10px">
-    <label class="sl" for="sm-lvl">Go ashore for<select id="sm-lvl"><option value="1">Small craft winds and up (20 kn; 23 kn in Alaska)</option><option value="2">Gales and up (34 kn)</option></select></label>
+    <label class="sl" for="sm-lvl">Go ashore for<select id="sm-lvl"><option value="10">Winds of 10 kn and up</option><option value="15">Winds of 15 kn and up</option><option value="1">Small craft winds and up (20 kn; 23 kn in Alaska)</option><option value="2">Gales and up (34 kn)</option></select></label>
     <label class="sl" for="sm-minh">Shortest blow that sends you ashore <b id="sm-minh-o"></b><input id="sm-minh" type="range" min="2" max="24" step="1" value="3"><small>Shorter spells of wind are rowed through.</small></label>
     <label class="sl" for="sm-jit">Shift the calendar up to <b id="sm-jit-o"></b><input id="sm-jit" type="range" min="0" max="20" step="1" value="7"><small>Each scenario takes one past year's weather in every area along the route, moved this many days either way at random, so 50 years give many different races.</small></label>
     </div>
@@ -1997,7 +1997,7 @@ function smSync() {
   Object.keys(SM_FMT).forEach((k) => { $("sm-" + k).value = c[k]; $("sm-" + k + "-o").textContent = SM_FMT[k](c[k]); });
   $("sm-seed").value = c.seed; $("sm-mode").value = c.mode; $("sm-lvl").value = c.lvl;
   $("sm-hist-ctl").hidden = c.mode !== "hist"; $("sm-fixed-ctl").hidden = c.mode === "hist";
-  $("sm-mode-note").textContent = c.mode === "hist" ? "Each area on the route gets the winds it had in a past June and July (ERA5 reanalysis, checked against weather buoys); the crew shelters from any blow in the area it is in." : "The same storms anywhere on the route: so many per race, so long, at random times.";
+  $("sm-mode-note").textContent = c.mode === "hist" ? "Each area on the route gets the winds it had in a past June and July (lightstation, buoy or warning records, see the table below); the crew shelters from any blow in the area it is in." : "The same storms anywhere on the route: so many per race, so long, at random times.";
   smAreaTable();
   const P = LAST_PLAN;
   if (P) $("sm-plan").innerHTML = `Plan from the planner page: Stage 2 starts ${esc(fmt.format(P.s2))}, ${state.days} days to Ketchikan by the ${state.north} route, boat speed ${P.v2.toFixed(2)} kn through the water, ${state.whours} rowing hours a day${state.nightOn ? ", ashore at night" : ""}. Change these on the planner page.`;
@@ -2072,8 +2072,10 @@ function smHistStorms(rnd, R, sim) {
   const idx = smAreaIdx(R.ch.stage2), on = new Set(idx);
   const cand = [];
   // (an area with no record for that year takes another of its years)
-  E.areas.forEach((a, ai) => { if (!on.has(ai)) return; let ev = a.years[y]; if (!ev) { const ys = Object.keys(a.years); ev = ys.length ? a.years[ys[Math.floor(rnd() * ys.length)]] : []; }
-    ev.forEach(([h0, dur, lv]) => { if (lv >= c.lvl && dur >= c.minh && tOf(h0 + dur) > P.s2) cand.push({ ai, t: tOf(h0), end: tOf(h0 + dur), lv }); }); });
+  // 10 and 15 kn: every run at that speed (its own list); small craft and gale: the runs that reached that level
+  const kn = c.lvl >= 10, minLv = kn ? 0 : c.lvl;
+  E.areas.forEach((a, ai) => { if (!on.has(ai)) return; const Y = (kn ? a["k" + c.lvl] : a.years) || {}; let ev = Y[y]; if (!ev) { const ys = Object.keys(Y); ev = ys.length ? Y[ys[Math.floor(rnd() * ys.length)]] : []; }
+    ev.forEach(([h0, dur, lv]) => { if (lv >= minLv && dur >= c.minh && tOf(h0 + dur) > P.s2) cand.push({ ai, t: tOf(h0), end: tOf(h0 + dur), lv }); }); });
   cand.sort((a, b) => a.t - b.t);
   const storms = []; let r = R.base, prevEnd = -Infinity;
   for (const e of cand) {
@@ -2091,15 +2093,15 @@ function smAreaTable() {
   if (!SH) return;
   if (!SH.sum) { $("sm-area-note").textContent = "The storm history has not been built yet (data/storm_history/)."; return; }
   const north = state.north, R = SM.res && SM.res.c.mode === "hist" ? SM.res : null;
-  const k = SM.ctl.lvl >= 2 ? "gale" : "sc", rows = SH.sum.areas.map((a, i) => ({ a, i })).filter((x) => smAreaOn(x.a, north));
+  const L = SM.ctl.lvl, k = L >= 10 ? "k" + L : L >= 2 ? "gale" : "sc", rows = SH.sum.areas.map((a, i) => ({ a, i })).filter((x) => smAreaOn(x.a, north));
   const f1 = (x) => x == null ? "" : x.toFixed(1), hr = (x) => x == null ? "" : x >= 48 ? `${(x / 24).toFixed(1)} d` : `${x} h`;
   $("sm-area-note").innerHTML = `One sample point on the route in each Environment Canada marine forecast area (and the US zone at Ketchikan), ${north} route. ` +
-    `A blow is a spell of ${k === "gale" ? "gale-force wind (34 kn)" : "wind at small craft warning strength (20 kn in Canada, 23 kn in Alaska)"} or more, gaps under 6 h joined. ` +
+    `A blow is a spell of ${L >= 10 ? `wind of ${L} kn` : k === "gale" ? "gale-force wind (34 kn)" : "wind at small craft warning strength (20 kn in Canada, 23 kn in Alaska)"} or more, gaps under 6 h joined. ` +
     `From the hourly wind at each area's lightstations (Environment Canada) or weather stations (NDBC in Alaska); where an area has too few years of those, a weather buoy or ERA5 reanalysis. <b>Chance in 16 days</b>: that at least one starts in a given 16-day stretch of June or July.` +
     (R ? " <b>Met per race</b>: how many the crew actually sat out there, on average, in the last run." : "");
   $("sm-area").innerHTML = `<thead><tr><th>Area</th><th class="n">Blows per Jun&ndash;Jul</th><th class="n">Chance in 16 days</th><th class="n">Days with one</th><th class="n">Typical length</th><th class="n">1 in 10 last over</th><th class="n">Longest</th>${R ? '<th class="n">Met per race</th>' : ""}</tr></thead><tbody>` +
-    rows.map(({ a, i }) => { const s = a.best[k], src = a.best_source === "observed" ? `${a.observed.stations.map((x) => x.replace(/\b(\w)(\w*)/g, (m, p, q) => p + q.toLowerCase())).join(", ")}, ${a.best_years}` : `${a.best_source}, ${a.best_years}`;
-      return `<tr><td>${esc(a.area)}<div class="sub">${esc(src)}${a.note ? `; ${esc(a.note)}` : ""}</div></td><td class="n">${f1(s.events_per_jj)}</td><td class="n">${Math.round(100 * s.p_in_16_days)}%</td><td class="n">${f1(s.days_per_jj)}</td><td class="n">${hr(s.dur_h.median)}</td><td class="n">${hr(s.dur_h.p90)}</td><td class="n">${hr(s.dur_h.max)}</td>${R ? `<td class="n">${((R.areaMet[i] || 0) / R.i).toFixed(2)}</td>` : ""}</tr>`; }).join("") + "</tbody>";
+    rows.map(({ a, i }) => { const s = a.best[k] || { dur_h: {} }, ks = L >= 10 && a.best_k_source !== a.best_source ? a.best_k_source : a.best_source, src = ks === "observed" ? `${a.observed.stations.map((x) => x.replace(/\b(\w)(\w*)/g, (m, p, q) => p + q.toLowerCase())).join(", ")}, ${ks === a.best_source ? a.best_years : `${a.observed.first}-${a.observed.last} (${a.observed.years} years)`}` : `${ks}, ${a.best_years}`;
+      return `<tr><td>${esc(a.area)}<div class="sub">${esc(src)}${a.note ? `; ${esc(a.note)}` : ""}</div></td><td class="n">${f1(s.events_per_jj)}</td><td class="n">${s.p_in_16_days == null ? "" : Math.round(100 * s.p_in_16_days) + "%"}</td><td class="n">${f1(s.days_per_jj)}</td><td class="n">${hr(s.dur_h.median)}</td><td class="n">${hr(s.dur_h.p90)}</td><td class="n">${hr(s.dur_h.max)}</td>${R ? `<td class="n">${((R.areaMet[i] || 0) / R.i).toFixed(2)}</td>` : ""}</tr>`; }).join("") + "</tbody>";
 }
 function smRun() {
   const P = LAST_PLAN; if (!P || SM.run) return;
