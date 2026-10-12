@@ -351,6 +351,17 @@ def main():
     cache = OUT / "era5_hourly.json"
     raw = json.loads(cache.read_text()) if cache.exists() else {}
     parts = OUT / "parts"
+    if "--list" in sys.argv:   # stations with hourly data near each area, to choose OBS from
+        inv = inventory()
+        for name, cc, pt, _, _ in AREAS:
+            log(f"== {name}")
+            for st in sorted(inv, key=lambda st: km(pt, (float(st["Latitude (Decimal Degrees)"] or 0), float(st["Longitude (Decimal Degrees)"] or 0)))):
+                ll = (float(st["Latitude (Decimal Degrees)"] or 0), float(st["Longitude (Decimal Degrees)"] or 0))
+                if km(pt, ll) > 80:
+                    break
+                if st.get("HLY First Year"):
+                    log(f"   {st['Name']:40} {st['Station ID']:>6} {ll[0]:.3f},{ll[1]:.3f} {km(pt, ll):5.0f} km  HLY {st['HLY First Year']}-{st['HLY Last Year']}")
+        return
     if "--obs" in sys.argv:
         n = int(sys.argv[sys.argv.index("--obs") + 1]); name, cc, pt, _, _ = AREAS[n]
         rec, src = observed(name, pt)
