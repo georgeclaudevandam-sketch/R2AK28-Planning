@@ -1,6 +1,6 @@
 {
  "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 60% complete), else a MEDS buoy, else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. Times Pacific daylight time.",
- "generated": "2026-10-12T07:03Z",
+ "generated": "2026-10-12T07:07Z",
  "areas": [
   {
    "area": "Juan de Fuca Strait - east entrance",
