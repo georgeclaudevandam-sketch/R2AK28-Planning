@@ -1914,7 +1914,7 @@ async function loadPast() {
 // Stops: places a past team stayed within 0.3 nm for 2 h or more (camps, anchorages, waiting out weather or tide).
 // Stops within a mile of each other are grouped into one site.
 const DOCK_KIND = { marina: "marina", float: "float", harbour: "small-craft harbour", dock: "dock" };
-const landingKind = (l) => l.dock ? `${DOCK_KIND[l.kind] || "dock"} (tie up)` : l.src === "satellite" ? "beach seen on satellite imagery" : l.bcmt ? "BC Marine Trail campsite" : l.kind === "campsite" ? "mapped campsite" : `mapped ${l.kind}`;
+const landingKind = (l) => l.dock ? (l.kind === "dock" && !l.name ? "unnamed dock (check it is public)" : `${DOCK_KIND[l.kind] || "dock"} (tie up)`) : l.src === "satellite" ? "beach seen on satellite imagery" : l.bcmt ? "BC Marine Trail campsite" : l.kind === "campsite" ? "mapped campsite" : `mapped ${l.kind}`;
 function buildStops(races) {
   const stops = [];
   races.forEach((r) => r.teams.forEach((t) => {
