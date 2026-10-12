@@ -236,11 +236,11 @@ def eccc(st, y0, y1):
             if not b:
                 continue
             for r in csv.DictReader(io.StringIO(b.decode("utf-8-sig", "replace"))):
-                v = r.get("Wind Spd (km/h)", "")
+                v = r.get("Wind Spd (km/h)") or ""
                 try:
                     kn = float(v) / 1.852
                     dt = datetime.strptime(r["Date/Time (LST)"][:16], "%Y-%m-%d %H:%M") + timedelta(hours=1)   # LST (UTC-8) to PDT
-                except (ValueError, KeyError):
+                except (ValueError, KeyError, TypeError):
                     continue
                 h = int((dt - datetime(y, 6, 1)).total_seconds() // 3600)
                 if 0 <= h < HOURS:
