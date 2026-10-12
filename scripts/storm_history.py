@@ -51,6 +51,24 @@ AREAS = [
 BUOYS = {"46146": (49.34, -123.73), "46131": (49.91, -124.99), "46204": (51.38, -128.77), "46185": (52.42, -129.79),
          "46183": (53.62, -131.10), "46145": (54.37, -132.42)}
 NWS_ZONES = {"Clarence Strait (PKZ036)": "PKZ036"}
+# Observed wind: Environment Canada lightstations and automatic stations in each area (names as in its station inventory, in order of
+# preference; each name's stations within 25 km of the area are joined into one record), and NDBC stations in Alaska.
+OBS = {
+    "Juan de Fuca Strait - east entrance": ["RACE ROCKS", "VICTORIA HARTLAND", "TRIAL ISLAND"],
+    "Haro Strait": ["DISCOVERY ISLAND", "TRIAL ISLAND"],
+    "Strait of Georgia - south of Nanaimo": ["ENTRANCE ISLAND", "BALLENAS ISLAND", "SATURNA ISLAND"],
+    "Strait of Georgia - north of Nanaimo": ["SISTERS ISLAND", "MERRY ISLAND", "CAPE MUDGE"],
+    "Johnstone Strait": ["CHATHAM POINT", "HELMCKEN ISLAND", "KELSEY BAY"],
+    "Queen Charlotte Strait": ["PINE ISLAND", "PULTENEY POINT", "SCARLETT POINT", "HERBERT ISLAND"],
+    "Queen Charlotte Sound - eastern half": ["EGG ISLAND", "PINE ISLAND"],
+    "Central Coast from McInnes Island to Pine Island": ["ADDENBROKE ISLAND", "DRYAD POINT", "IVORY ISLAND", "MCINNES ISLAND"],
+    "Inside channels, Finlayson to Grenville (no forecast area)": ["BOAT BLUFF", "CATHEDRAL POINT", "IVORY ISLAND"],
+    "Hecate Strait - southern half": ["BONILLA ISLAND", "MCINNES ISLAND"],
+    "Hecate Strait - northern half": ["BONILLA ISLAND", "GREY ISLET", "HOLLAND ROCK"],
+    "Dixon Entrance east": ["GREEN ISLAND", "HOLLAND ROCK", "LUCY ISLAND", "TRIPLE ISLAND"],
+    "Clarence Strait (PKZ036)": ["ndbc:mrya2", "ndbc:scxa2"],
+}
+OBS_KM = 60   # how far from the area's route point a named station may be
 
 
 def log(*a):
@@ -173,6 +191,128 @@ def nws(zone):
     return out
 
 
+INV = "https://collaboration.cmc.ec.gc.ca/cmc/climate/Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv"
+
+
+def inventory():
+    b = get(INV, 120, 4)
+    if not b:
+        return []
+    lines = b.decode("utf-8-sig", "replace").splitlines()
+    k = next(i for i, l in enumerate(lines) if l.startswith('"Name"'))
+    return list(csv.DictReader(lines[k:]))
+
+
+def km(a, b):
+    return nm(a, b) * 1.852
+
+
+def nm(a, b):
+    return math.hypot((b[0] - a[0]) * 60, (b[1] - a[1]) * 60 * math.cos(math.radians(a[0])))
+
+
+def fill(series):
+    """Carry each observation forward up to 2 h, so 3-hourly lightstation reports read as a continuous record."""
+    out, last, age = list(series), None, 9
+    for h, x in enumerate(series):
+        if x is not None:
+            last, age = x, 0
+        else:
+            age += 1
+            if last is not None and age <= 2:
+                out[h] = last
+    return out
+
+
+def eccc(st, y0, y1):
+    """{year: list of HOURS kn (PDT)} from one ECCC station's hourly data, June and July."""
+    out = {}
+    sid = st["Station ID"]
+    for y in range(max(Y0, y0), min(Y1, y1) + 1):
+        ser = [None] * HOURS
+        for m in (6, 7):
+            b = get(f"https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID={sid}&Year={y}&Month={m}&Day=1"
+                    f"&time=LST&timeframe=1&submit=Download+Data", 90, 4)
+            if not b:
+                continue
+            for r in csv.DictReader(io.StringIO(b.decode("utf-8-sig", "replace"))):
+                v = r.get("Wind Spd (km/h)", "")
+                try:
+                    kn = float(v) / 1.852
+                    dt = datetime.strptime(r["Date/Time (LST)"][:16], "%Y-%m-%d %H:%M") + timedelta(hours=1)   # LST (UTC-8) to PDT
+                except (ValueError, KeyError):
+                    continue
+                h = int((dt - datetime(y, 6, 1)).total_seconds() // 3600)
+                if 0 <= h < HOURS:
+                    ser[h] = round(kn, 1)
+            time.sleep(0.3)
+        if sum(x is not None for x in ser) > 24 * 10:
+            out[y] = ser
+    return out
+
+
+def ndbc(sid):
+    """{year: list of HOURS kn (PDT)} from an NDBC station's historical standard meteorological files."""
+    import gzip
+    out = {}
+    for y in range(Y0, Y1 + 1):
+        b = get(f"https://www.ndbc.noaa.gov/data/historical/stdmet/{sid}h{y}.txt.gz", 60, 2)
+        if not b:
+            continue
+        try:
+            txt = gzip.decompress(b).decode("latin-1")
+        except OSError:
+            continue
+        ser = [None] * HOURS
+        for line in txt.splitlines():
+            p = line.split()
+            if not p or p[0].startswith("#") or not p[0].isdigit():
+                continue
+            try:
+                yy = int(p[0]); yy += 1900 if yy < 100 else 0
+                dt = datetime(yy, int(p[1]), int(p[2]), int(p[3])) - timedelta(hours=7)
+                w = float(p[6] if len(p) > 16 else p[5])   # WSPD m/s (column 6 once minutes were added in 2005)
+            except (ValueError, IndexError):
+                continue
+            if w >= 90:
+                continue
+            h = int((dt - datetime(y, 6, 1)).total_seconds() // 3600)
+            if 0 <= h < HOURS:
+                ser[h] = round(max(ser[h] or 0, w * 1.943844), 1)
+        if sum(x is not None for x in ser) > 24 * 10:
+            out[y] = ser
+        time.sleep(0.3)
+    return out
+
+
+def observed(name, point):
+    """The area's observed June-July record: {year: hourly kn}, joined from its stations in order of preference, with the source per year."""
+    inv = observed.inv if hasattr(observed, "inv") else None
+    rec, src = {}, {}
+    for want in OBS.get(name, []):
+        if want.startswith("ndbc:"):
+            parts = {want[5:].upper(): ndbc(want[5:])}
+        else:
+            if inv is None:
+                inv = observed.inv = inventory()
+            parts = {}
+            for st in inv:
+                try:
+                    ll = (float(st["Latitude (Decimal Degrees)"]), float(st["Longitude (Decimal Degrees)"]))
+                    h0, h1 = int(st["HLY First Year"] or 0), int(st["HLY Last Year"] or 0)
+                except (ValueError, KeyError):
+                    continue
+                if want in st["Name"].upper() and st["Province"].startswith("BRITISH") and h1 >= Y0 and km(ll, point) < OBS_KM:
+                    log(f"  {name}: {st['Name']} ({st['Station ID']}) hourly {h0}-{h1}, {km(ll, point):.0f} km")
+                    parts[st["Name"]] = eccc(st, h0, h1)
+        for sname, ser in parts.items():
+            for y, v in ser.items():
+                v = fill(v)
+                if sum(x is not None for x in v) >= 0.6 * HOURS and y not in rec:
+                    rec[y] = v; src[y] = sname
+    return rec, src
+
+
 def stats(ev_by_year, hourly_by_year, country, scale):
     """Likelihood, frequency and duration of events at small craft or more (sc) and gale or more (gale)."""
     yrs = sorted(ev_by_year)
@@ -211,6 +351,13 @@ def main():
     cache = OUT / "era5_hourly.json"
     raw = json.loads(cache.read_text()) if cache.exists() else {}
     parts = OUT / "parts"
+    if "--obs" in sys.argv:
+        n = int(sys.argv[sys.argv.index("--obs") + 1]); name, cc, pt, _, _ = AREAS[n]
+        rec, src = observed(name, pt)
+        parts.mkdir(exist_ok=True)
+        (parts / f"obs{n}.json").write_text(json.dumps({name: {"years": {str(y): v for y, v in rec.items()}, "src": {str(y): s for y, s in src.items()}}}, separators=(",", ":")))
+        log(f"observed {name}: {len(rec)} years {sorted(set(src.values()))}")
+        return
     if "--only" in sys.argv:
         n = int(sys.argv[sys.argv.index("--only") + 1]); key, a, b = points()[n]
         got = raw.get(key, {})
@@ -224,10 +371,17 @@ def main():
         (parts / f"{n}.json").write_text(json.dumps({key: got}, separators=(",", ":")))
         log(f"ERA5 {key}: {len(got)} years")
         return
-    for f in sorted(parts.glob("*.json")) if parts.exists() else []:
+    ocache = OUT / "obs_hourly.json"
+    obs = json.loads(ocache.read_text()) if ocache.exists() else {}
+    for f in sorted(parts.glob("[0-9]*.json")) if parts.exists() else []:
         for k, v in json.loads(f.read_text()).items():
             raw.setdefault(k, {}).update(v)
+    for f in sorted(parts.glob("obs*.json")) if parts.exists() else []:
+        for k, v in json.loads(f.read_text()).items():
+            if v["years"]:
+                obs[k] = v
     cache.write_text(json.dumps(raw, separators=(",", ":")))
+    ocache.write_text(json.dumps(obs, separators=(",", ":")))
     for key, a, b in points():   # anything a part did not bring
         raw.setdefault(key, {})
         for y in range(Y0, Y1 + 1):
@@ -265,6 +419,8 @@ def main():
                        "buoy_sc_days_pct": round(100 * sum(level(x, cc) >= 1 for x in ob) / len(ob), 1),
                        "era5_sc_days_pct": round(100 * sum(level(x, cc) >= 1 for x in md) / len(md), 1),
                        "era5_scaled_sc_days_pct": round(100 * sum(level(x * scale, cc) >= 1 for x in md) / len(md), 1)}
+        if not 0.8 <= scale <= 1.25:   # ERA5 far off the buoy here (its cell is part land): not worth scaling
+            scale = 1.0
         ev = {y: events(hourly[y], cc, scale) for y in sorted(hourly)}
         raw_ev = {y: events(hourly[y], cc) for y in sorted(hourly)}
         s = {"area": name, "country": cc, "point": [la, lo], "note": note, "years": len(ev), "scale": round(scale, 3), "calibration": cal,
@@ -279,19 +435,38 @@ def main():
             if nw is not None:
                 byy = {y: [[h, d, lv] for yy, h, d, lv in nw if yy == y] for y in range(2005, Y1 + 1)}
                 s["nws_issued_2005_on"] = stats(byy, {y: [None] * HOURS for y in byy}, cc, 1.0)
+        # the record used for the area: its stations' observations, else the buoy, else ERA5
+        ob = obs.get(name)
+        if ob and len(ob["years"]) >= 15:
+            oh = {int(y): v for y, v in ob["years"].items()}
+            best, bsrc, bh = {y: events(v, cc) for y, v in oh.items()}, "observed", oh
+            st = sorted(set(ob["src"].values()))
+            s["observed"] = {**stats(best, oh, cc, 1.0), "stations": st, "years": len(oh), "first": min(oh), "last": max(oh)}
+        elif bd and "buoy_observed" in s and len(bev) >= 15:
+            best, bsrc, bh = bev, f"buoy {buoy}", {y: bd[y] for y in bev}
+        else:
+            best, bsrc, bh = ev, "ERA5" + (" (scaled)" if scale != 1.0 else ""), hourly
+        s["best_source"] = bsrc; s["best_years"] = f"{min(best)}-{max(best)} ({len(best)} years)"
+        s["best"] = s["observed"] if bsrc == "observed" else s.get("buoy_observed") if bsrc.startswith("buoy") else s["corrected"]
         summary.append(s)
-        out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "scale": round(scale, 3),
-                       "years": {str(y): e for y, e in ev.items()}})
-        for y in sorted(ev):
-            rows.append({"area": name, "year": y, **{f"{k}_events": sum(e[2] >= lv for e in ev[y]) for k, lv in (("sc", 1), ("gale", 2), ("storm", 3))},
-                         "sc_hours": sum(e[1] for e in ev[y]), "longest_h": max((e[1] for e in ev[y]), default=0),
-                         "max_kn": round(max((x for x in hourly[y] if x is not None), default=0) * scale, 1)})
-        log(name, "scale", round(scale, 2), json.dumps({k: (v["events_per_jj"], v["dur_h"]["median"]) for k, v in s["corrected"].items()}))
+        out_ev.append({"area": name, "country": cc, "point": [la, lo], "note": note, "source": bsrc, "years": {str(y): e for y, e in best.items()}})
+        for y in sorted(set(best) | set(ev)):
+            r = {"area": name, "year": y}
+            for tag, E, Hs in (("best", best, bh), ("era5", ev, hourly)):
+                if y in E:
+                    r.update({f"{tag}_{k}_events": sum(e[2] >= lv for e in E[y]) for k, lv in (("sc", 1), ("gale", 2), ("storm", 3))})
+                    r.update({f"{tag}_sc_hours": sum(e[1] for e in E[y]), f"{tag}_longest_h": max((e[1] for e in E[y]), default=0),
+                              f"{tag}_max_kn": round(max((x for x in Hs[y] if x is not None), default=0) * (scale if tag == "era5" else 1), 1)})
+            r["best_source"] = (ob["src"].get(str(y), "") if bsrc == "observed" else bsrc) if y in best else ""
+            rows.append(r)
+        log(name, bsrc, json.dumps({k: (v["events_per_jj"], v["dur_h"]["median"]) for k, v in s["best"].items()}))
     with open(OUT / "area_year.csv", "w", newline="") as f:
-        w = csv.DictWriter(f, list(rows[0])); w.writeheader(); w.writerows(rows)
+        w = csv.DictWriter(f, list(dict.fromkeys(k for r in rows for k in r))); w.writeheader(); w.writerows(rows)
     gen = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime())
     (OUT / "summary.json").write_text(json.dumps({
-        "note": "June 1 - July 31, 1976-2025, from ERA5 hourly 10 m wind at a point on the route in each marine forecast area. An event is a run "
+        "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment "
+                "Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 60% complete), else a MEDS buoy, else ERA5 hourly 10 m wind "
+                "at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run "
                 f"of hours at small craft strength or more (gaps up to {MERGE_H} h merged, at least {MIN_H} h); its level is the highest it reached. "
                 "corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). "
                 "buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. "
@@ -299,7 +474,7 @@ def main():
         "generated": gen, "areas": summary}, indent=1))
     (OUT / "events.json").write_text(json.dumps({
         "note": "Per area and year, June-July events at small craft strength or more: [start hour after June 1 00:00 PDT, hours, level 1 small craft / 2 gale / 3 storm]. "
-                "From scripts/storm_history.py (corrected ERA5).", "generated": gen, "y0": Y0, "y1": Y1, "areas": out_ev}, separators=(",", ":")))
+                "From scripts/storm_history.py: each area's best record (source).", "generated": gen, "y0": Y0, "y1": Y1, "areas": out_ev}, separators=(",", ":")))
     log("done")
 
 

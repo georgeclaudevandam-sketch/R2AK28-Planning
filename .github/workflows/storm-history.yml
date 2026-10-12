@@ -16,23 +16,28 @@ concurrency:
 
 jobs:
   fetch:
-    # one runner per sample point: Open-Meteo throttles a single address
+    # one runner per ERA5 sample point (Open-Meteo throttles a single address) and per area's observed record
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     strategy:
       fail-fast: false
       matrix:
-        n: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        arg: ["--only 0", "--only 1", "--only 2", "--only 3", "--only 4", "--only 5", "--only 6", "--only 7", "--only 8", "--only 9",
+              "--only 10", "--only 11", "--only 12", "--only 13", "--only 14", "--only 15", "--only 16", "--only 17", "--only 18",
+              "--obs 0", "--obs 1", "--obs 2", "--obs 3", "--obs 4", "--obs 5", "--obs 6", "--obs 7", "--obs 8", "--obs 9",
+              "--obs 10", "--obs 11", "--obs 12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python scripts/storm_history.py --only ${{ matrix.n }}
+      - run: python scripts/storm_history.py ${{ matrix.arg }}
+      - id: name
+        run: echo "n=$(echo '${{ matrix.arg }}' | tr -d ' -')" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
-          name: era5-${{ matrix.n }}
-          path: data/storm_history/parts/${{ matrix.n }}.json
+          name: part-${{ steps.name.outputs.n }}
+          path: data/storm_history/parts/
 
   history:
     needs: fetch
@@ -46,11 +51,11 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
-          pattern: era5-*
+          pattern: part-*
           path: data/storm_history/parts
           merge-multiple: true
       - run: python scripts/storm_history.py
-      - name: Commit the history (also the merged ERA5 cache if the run failed)
+      - name: Commit the history (also the merged caches if the run failed)
         if: always()
         run: |
           rm -rf data/storm_history/parts
