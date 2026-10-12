@@ -1642,7 +1642,10 @@ function siteType(x) {
 const chartLabel = (x) => { const n = x.landing && x.landing.name; return siteType(x) + (n ? ": " + (n.length > 26 ? n.slice(0, 25) + "…" : n) : ""); };
 const siteKind = (x) => (x.landing && x.landing.dock) || x.dock ? "dk" : x.landing ? "ld" : "pc";
 const STRIP_W = 12, STRIP_FULL = 13.3, STRIP_HALF = 6.3, STRIP_PXW = 1500;   // nm across, nm tall, px across (125 px a nm)
-const PRINT_TEXT = 0.85;   // chart text (soundings, names) for print: smaller than on screen
+// Chart symbols, soundings and text print at their nominal size when the image is fetched at the size it prints. Fetching it
+// larger (at the same dpi) and printing it into the same space shrinks them all by that factor, and the finer scale also
+// brings in the more detailed charts. The print page has a control for it; CHART_SHRINK is where it starts.
+const PRINT_TEXT = 1.0, CHART_SHRINK = 0.45;
 const merc = (ll) => { const R = 6378137, r = Math.PI / 180; return [R * ll[1] * r, R * Math.log(Math.tan(Math.PI / 4 + ll[0] * r / 2))]; };
 const unmerc = ([x, y]) => { const R = 6378137, r = Math.PI / 180; return [(2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) / r, x / R / r]; };
 // the shoreline mask (1 = water) used by the flow lines, loaded once for the print page
@@ -1688,7 +1691,8 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
     const xy = (ll) => { const [x, y] = merc(ll); return [((x - x0) / w) * PW, ((y1 - y) / h) * PH]; };
     const toLL = (x, y) => unmerc([x0 + (x / PW) * w, y1 - (y / PH) * h]);
     const inside = ([x, y]) => x > -20 && y > -20 && x < PW + 20 && y < PH + 20;
-    const q = (svc, show) => `${svc}/export?${new URLSearchParams({ bbox: [x0, cy - h / 2, cx + w / 2, y1].join(","), bboxSR: "3857", imageSR: "3857", size: `${PW},${PH}`, dpi: "200", format: "png32", transparent: "true", layers: show, f: "image", display_params: chartDisplay(PRINT_TEXT) })}`;
+    const q = (svc, show) => `${svc}/export?${new URLSearchParams({ bbox: [x0, cy - h / 2, cx + w / 2, y1].join(","), bboxSR: "3857", imageSR: "3857", dpi: "200", format: "png32", transparent: "true", layers: show, f: "image", display_params: chartDisplay(PRINT_TEXT) })}`;
+    const img = (u, extra) => `<image data-u="${esc(u)}" data-w="${PW}" data-h="${PH}" href="${esc(u + "&size=" + chartSize(PW, PH, CHART_SHRINK))}" width="${PW}" height="${PH}"${extra || ""}/>`;
     // land from the shoreline mask under the chart: shows the coast even where a chart image fails to load
     let land = "";
     if (PRINT_MASK) {
@@ -1712,13 +1716,20 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
       const fs = cls === "nm" ? 22 : 24, wd = t.length * fs * 0.56, top = y + 8 - fs * 0.85, bot = y + 8 + fs * 0.25;
       for (const [R, anchor, tx] of [[[x + 13, top, x + 13 + wd, bot], "", x + 13], [[x - 13 - wd, top, x - 13, bot], ' text-anchor="end"', x - 13]])
         if (R[0] > 0 && R[2] < PW && !hit(R)) { taken.push(R); return `<text x="${tx.toFixed(0)}" y="${(y + 8).toFixed(0)}"${anchor} class="${cls || ""}">${esc(t)}</text>`; }
+      if (force) taken.push(x + 13 + wd > PW ? [x - 13 - wd, top, x - 13, bot] : [x + 13, top, x + 13 + wd, bot]);
       return force ? (x + 13 + wd > PW ? `<text x="${(x - 13).toFixed(0)}" y="${(y + 8).toFixed(0)}" text-anchor="end" class="${cls || ""}">${esc(t)}</text>` : `<text x="${(x + 13).toFixed(0)}" y="${(y + 8).toFixed(0)}" class="${cls || ""}">${esc(t)}</text>`) : "";
     };
     const mkP = marks.map((k) => [xy(k.ll), k]).filter(([v]) => inside(v));
     const hrP = hours.filter(([, p]) => p >= bx.a - 0.5 && p <= bx.b + 0.5).map(([t, p]) => [xy(pointAt(c, p)), t]);
     const used = marks.filter((k) => k.site).map((k) => k.site.ll);
-    const altP = (c._camps || []).filter((x) => x.a > bx.a - 8 && x.a < bx.b + 8 && !used.some((u) => nmBetween(u, x.ll) < 0.05)).map((x) => [xy(x.ll), x]).filter(([v]) => inside(v))
+    if (!c._printSites) c._printSites = CAMPSITES.map((x) => { const p = project(c, x.ll[0], x.ll[1]); return { ...x, a: p.along, o: p.d }; });
+    const altP0 = c._printSites.filter((x) => !used.some((u) => nmBetween(u, x.ll) < 0.05)).map((x) => [xy(x.ll), x]).filter(([[x, y]]) => x > 8 && y > 8 && x < PW - 8 && y < PH - 8)
       .sort((a, b) => (a[1].o || 0) - (b[1].o || 0));
+    // unnamed docks within 0.25 nm of each other (one marina's fingers, a row of private docks) count as one place
+    const unnamedDock = (x) => siteKind(x) === "dk" && !(x.landing && x.landing.name);
+    const altP = [];
+    altP0.forEach(([v, x]) => { const g = unnamedDock(x) && altP.find(([, y]) => y.group && nmBetween(y.ll, x.ll) < 0.25);
+      if (g) g[1].group.push(x); else altP.push([v, unnamedDock(x) ? { ...x, group: [x] } : x]); });
     [...mkP, ...hrP, ...altP].forEach(([[x, y]]) => taken.push([x - 12, y - 12, x + 12, y + 12]));
     const sym = (x, y, k) => k === "dk" ? `<circle cx="${x}" cy="${y}" r="9" class="alt dk"/>` : `<path d="M${x} ${y - 11} L${x + 10} ${y + 7} L${x - 10} ${y + 7} Z" class="alt ${k}"/>`;
     // gate names and the hour times go beside their symbols
@@ -1726,31 +1737,35 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
     const hrs = hrP.map(([[x, y], t]) => `<circle cx="${x}" cy="${y}" r="8" class="hr"/>${lbl(x, y, fmtT.format(t), "", true)}`);
     const ticks = []; for (let a = Math.ceil(bx.a / 5) * 5; a <= bx.b; a += 5) { const [x, y] = xy(pointAt(c, a)); ticks.push(`<circle cx="${x}" cy="${y}" r="5" class="tk"/>${lbl(x, y - 22, a + " nm", "nm")}`); }
     // callouts: breaks and camp first (with times), then the other landings nearest the route while there is room
+    // a callout box goes only where the shoreline mask says land under all of it, clear of the route, the legend and other
+    // boxes, joined to its site by a leader line with a dot on the site. Planned stops that find no dry spot take the driest.
+    const dry = (R) => { for (let yy = R[1]; yy <= R[3] + 0.1; yy += Math.max(8, (R[3] - R[1]) / 6)) for (let xx = R[0]; xx <= R[2] + 0.1; xx += Math.max(8, (R[2] - R[0]) / 12)) { const [la, lo] = toLL(Math.min(xx, R[2]), Math.min(yy, R[3])); if (wet(la, lo)) return false; } return true; };
+    const wetCount = (R) => { let n = 0; for (let u = 0; u <= 8; u++) for (let v = 0; v <= 4; v++) { const [la, lo] = toLL(R[0] + ((R[2] - R[0]) * u) / 8, R[1] + ((R[3] - R[1]) * v) / 4); if (wet(la, lo)) n++; } return n; };
     const callout = (x, y, lines, cls, must) => {
-      const fs = 19, lh = 23, bw = Math.max(...lines.map((s, i) => s.length * (i ? fs : fs + 2) * 0.56)) + 16, bh = lines.length * lh + 10;
-      let best = null;
-      for (const r of [70, 110, 160, 230, 320, 440]) for (let k = 0; k < 16; k++) {
-        const an = (k / 16) * 2 * Math.PI, bx0 = x + Math.cos(an) * r - bw / 2, by0 = y + Math.sin(an) * r - bh / 2, R = [bx0, by0, bx0 + bw, by0 + bh];
-        if (R[0] < 4 || R[1] < 4 || R[2] > PW - 4 || R[3] > PH - 4 || hit(R) || nearRoute(R, 45)) continue;
-        // the leader runs from the symbol to the nearest point of the box; it should not cross the route
+      const fs = 19, lh = 23, bw = Math.max(...lines.map((t, i) => t.length * (i ? fs : fs + 2) * 0.56)) + 16, bh = lines.length * lh + 10;
+      let best = null, fall = null;
+      for (const r of [60, 90, 130, 180, 240, 310, 400, 500, 620]) { if (!must && r > 240) break; for (let k = 0; k < 24; k++) {
+        const an = (k / 24) * 2 * Math.PI, bx0 = x + Math.cos(an) * r - bw / 2, by0 = y + Math.sin(an) * r - bh / 2, R = [bx0, by0, bx0 + bw, by0 + bh];
+        if (R[0] < 4 || R[1] < 4 || R[2] > PW - 4 || R[3] > PH - 4 || hit(R) || nearRoute(R, 40)) continue;
         const ex = Math.max(R[0], Math.min(x, R[2])), ey = Math.max(R[1], Math.min(y, R[3]));
-        let cross = 0; for (let s = 0.15; s < 0.95; s += 0.1) { const px = x + (ex - x) * s, py = y + (ey - y) * s; if (routePx.some(([a, b]) => Math.abs(a - px) < 10 && Math.abs(b - py) < 10)) cross++; }
-        let wetN = 0; for (let u = 0; u <= 4; u++) for (let v = 0; v <= 2; v++) { const [la, lo] = toLL(R[0] + (bw * u) / 4, R[1] + (bh * v) / 2); if (wet(la, lo)) wetN++; }
-        const score = r + wetN * 40 + cross * 400;
-        if (!best || score < best.score) best = { score, R, ex, ey };
-      }
-      if (!best || (!must && best.score > 900)) return "";
-      taken.push(best.R);
-      const [bx0, by0] = best.R;
-      return `<line x1="${x}" y1="${y}" x2="${best.ex.toFixed(0)}" y2="${best.ey.toFixed(0)}" class="ld ${cls}"/><rect x="${bx0.toFixed(0)}" y="${by0.toFixed(0)}" width="${bw.toFixed(0)}" height="${bh}" rx="5" class="co ${cls}"/>` +
-        lines.map((s, i) => `<text x="${(bx0 + 8).toFixed(0)}" y="${(by0 + 5 + lh * (i + 1) - 6).toFixed(0)}" class="ct${i ? "" : " b"}">${esc(s)}</text>`).join("");
+        let cross = 0; for (let t = 0.1; t < 0.95; t += 0.05) { const px = x + (ex - x) * t, py = y + (ey - y) * t; if (routePx.some(([a, b]) => Math.abs(a - px) < 9 && Math.abs(b - py) < 9)) cross++; }
+        if (dry(R)) { const sc = r + cross * 300; if (!best || sc < best.sc) best = { sc, R, ex, ey }; }
+        else if (must) { const sc = r + wetCount(R) * 60 + cross * 300; if (!fall || sc < fall.sc) fall = { sc, R, ex, ey }; }
+      } if (best) break; }
+      const b = best || fall; if (!b) return null;
+      taken.push(b.R);
+      const [bx0, by0] = b.R;
+      return `<line x1="${x}" y1="${y}" x2="${b.ex.toFixed(0)}" y2="${b.ey.toFixed(0)}" class="ldc"/><line x1="${x}" y1="${y}" x2="${b.ex.toFixed(0)}" y2="${b.ey.toFixed(0)}" class="ld ${cls}"/><circle cx="${x}" cy="${y}" r="6" class="ldd ${cls}"/>` +
+        `<rect x="${bx0.toFixed(0)}" y="${by0.toFixed(0)}" width="${bw.toFixed(0)}" height="${bh}" rx="5" class="co ${cls}"/>` +
+        lines.map((t, i) => `<text x="${(bx0 + 8).toFixed(0)}" y="${(by0 + 5 + lh * (i + 1) - 6).toFixed(0)}" class="ct${i ? "" : " b"}">${esc(t)}</text>`).join("");
     };
-    const stops = mkP.filter(([, k]) => k.cls === "stop" || k.cls === "end").map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>` + callout(x, y, k.info, k.cls, true));
-    // the other landings: campsites, beaches and past camps get a callout, and docks only when named, nearest the route first and
-    // at most 10 a chart; the rest keep their symbol (its shape and colour say what it is)
-    let nCo = 0;
-    const alts = altP.map(([[x, y], s]) => { const k = siteKind(s), want = (k !== "dk" || (s.landing && s.landing.name)) && nCo < 10;
-      const co = want ? callout(x, y, [chartLabel(s), `${s.o.toFixed(1)} nm off route at nm ${s.a.toFixed(0)}`], "al", false) : ""; if (co) nCo++; return sym(x, y, k) + co; });
+    const stops = mkP.filter(([, k]) => k.cls === "stop" || k.cls === "end").map(([[x, y], k]) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" class="mk ${k.cls}"/>` + (callout(x, y, k.info, k.cls, true) || ""));
+    // every other landing: a callout where there is dry land for it, otherwise a number by its symbol and a line in the key below
+    const key = [];
+    const alts = altP.map(([[x, y], s]) => { const k = siteKind(s), many = s.group && s.group.length > 1;
+      const lines = [many ? `${s.group.length} unnamed docks (check public)` : chartLabel(s), `${s.o.toFixed(1)} nm off route at nm ${s.a.toFixed(0)}`];
+      const co = callout(x, y, lines, "al", false); if (co) return sym(x, y, k) + co;
+      key.push(lines.join(", ")); return sym(x, y, k) + `<text x="${x + 11}" y="${y - 9}" class="kn">${key.length}</text>`; });
     const lg = (k, y) => `<g transform="translate(${LEG[0] + 14} ${LEG[1] + y})">${k}</g>`;
     const legend = `<rect x="${LEG[0]}" y="${LEG[1]}" width="${LW}" height="${LH}" rx="6" class="lg"/>` + [
       [`<line x1="0" y1="0" x2="34" y2="0" class="rt" style="stroke-width:7"/>`, "Planned route"],
@@ -1766,20 +1781,26 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
       lg(`<rect x="0" y="0" width="${PW / STRIP_W}" height="9" class="sb"/><rect x="${PW / STRIP_W / 2}" y="0" width="${PW / STRIP_W / 2}" height="9" fill="#fff" stroke="#000" stroke-width="2"/><text x="${PW / STRIP_W + 12}" y="10" class="lt">1 nm</text>`, LH - 30);
     return { half: bx.Hn === STRIP_HALF, html: `<div class="cv"><h2 class="ch">${esc(title)} · chart ${n + 1} of ${boxes.length} · nm ${bx.a.toFixed(0)} to ${bx.b.toFixed(0)} · about 1:110,000, north up</h2>
       <svg viewBox="0 0 ${PW} ${PH}" class="chart"><defs><clipPath id="us${t0}_${n}"><path d="${us}"/></clipPath></defs><rect width="${PW}" height="${PH}" class="sea"/>${land}
-      <image href="${q(CHS_SVC, "show:0,1,2,3,4,5,6,7,9,12")}" width="${PW}" height="${PH}"/>
-      <image href="${q(NOAA_SVC, "show:0,1,2,3,4,5,6,7")}" width="${PW}" height="${PH}" clip-path="url(#us${t0}_${n})"/>
+      ${img(q(CHS_SVC, "show:0,1,2,3,4,5,6,7,9,12"))}
+      ${img(q(NOAA_SVC, "show:0,1,2,3,4,5,6,7"), ` clip-path="url(#us${t0}_${n})"`)}
       ${line ? `<polyline points="${line}" class="rtc"/><polyline points="${line}" class="rt"/>` : ""}${paths}${ticks.join("")}${alts.join("")}${hrs.join("")}${gates.join("")}${stops.join("")}${legend}
-      <rect width="${PW}" height="${PH}" class="frame"/></svg></div>` };
+      <rect width="${PW}" height="${PH}" class="frame"/></svg>${key.length && key.length <= 12 ? `<ol class="key">${key.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>` : key.length ? `<p class="key">Landings numbered 1 to ${key.length}: see the key on the next page.</p>` : ""}</div>`,
+      key: key.length > 12 ? `<h2 class="ch">${esc(title)} · chart ${n + 1}: numbered landings</h2><ol class="key big">${key.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>` : "" };
   });
   // pages: a full chart alone, half charts two to a page
   const pages = []; let k = 0;
   while (k < svgs.length) {
     if (svgs[k].half && svgs[k + 1] && svgs[k + 1].half) { pages.push([svgs[k], svgs[k + 1]]); k += 2; } else pages.push([svgs[k++]]);
   }
-  return pages.map((pg) => `<section class="strip${pg.length > 1 || pg[0].half ? " two" : ""}">${pg.map((s) => s.html).join("")}
-    <footer><b>${esc(PRINT_PLAN)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer></section>`);
+  const foot = `<footer><b>${esc(PRINT_PLAN)}</b><br>Charts: CHS (Open Government Licence - Canada) and NOAA Office of Coast Survey · for planning, not navigation: carry the official paper charts</footer>`;
+  return pages.flatMap((pg) => {
+    const keys = pg.map((s) => s.key).filter(Boolean);
+    return [`<section class="strip${pg.length > 1 || pg[0].half ? " two" : ""}">${pg.map((s) => s.html).join("")}${foot}</section>`, ...(keys.length ? [`<section class="keypage">${keys.join("")}${foot}</section>`] : [])];
+  });
 }
 let PRINT_PLAN = "";
+// image size to ask for: f of the printed size shrinks everything drawn on the chart to f (the export tops out at 4096 px)
+function chartSize(W, H, f) { let w = W / f, h = H / f; const k = Math.min(1, 4096 / Math.max(w, h)); return `${Math.round(w * k)}%2C${Math.round(h * k)}`; }
 async function printSheets() {
   const P = LAST_PLAN; if (!P) return;
   // open the window straight from the click (a pop-up opened later is blocked), then fill it once the shoreline mask is in
@@ -1870,12 +1891,16 @@ async function printSheets() {
     svg text { font: 600 24px system-ui, sans-serif; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 6px; } svg text.nm { font-size: 22px; fill: #6d00b3; }
     .hr { fill: #fff; stroke: #a100ff; stroke-width: 4; } .tk { fill: #6d00b3; } .alt { stroke: #fff; stroke-width: 2; } .alt.ld { fill: #16a34a; } .alt.pc { fill: #ea580c; } .alt.dk { fill: #2563eb; }
     .mk { stroke: #000; stroke-width: 3; fill: #fff; } .mk.gate { fill: #f59e0b; } .mk.stop { fill: #38bdf8; } .mk.end, .mk.go { fill: #dc2626; } .mkl { font-size: 24px; }
-    .co { fill: #fff; stroke: #000; stroke-width: 2; } .co.stop { stroke: #0284c7; stroke-width: 3; } .co.end { stroke: #dc2626; stroke-width: 3; } .co.al { stroke: #555; stroke-width: 1.5; }
-    .ld { stroke: #000; stroke-width: 2; } .ld.al { stroke: #555; stroke-width: 1.5; }
+    .co { fill: #fff; stroke: #000; stroke-width: 2.5; } .co.stop, .co.end { fill: #f3e8ff; stroke: #6d00b3; stroke-width: 3.5; } .co.al { stroke: #333; }
+    .ldc { stroke: #fff; stroke-width: 9; stroke-linecap: round; } .ld { stroke: #111; stroke-width: 4; stroke-linecap: round; } .ld.stop, .ld.end { stroke: #6d00b3; }
+    .ldd { fill: #111; stroke: #fff; stroke-width: 2; } .ldd.stop, .ldd.end { fill: #6d00b3; }
+    svg text.kn { font: 700 20px system-ui, sans-serif; } ol.key { columns: 2; font-size: 7pt; margin: 3pt 0 0; padding-left: 16pt; line-height: 1.25; } p.key { font-size: 8pt; margin: 2pt 0 0; } ol.key.big { columns: 2; font-size: 8.5pt; } .nocharts .keypage { display: none; }
     svg text.ct { font: 400 19px system-ui, sans-serif; stroke: none; } svg text.ct.b { font-weight: 700; font-size: 20px; }
     .lg { fill: #fff; fill-opacity: .94; stroke: #000; stroke-width: 2; } svg text.lt { font: 500 19px system-ui, sans-serif; stroke: none; }
     .sb { fill: #000; } .nocharts .strip { display: none; } .bar { margin: 8pt 0; } @media print { .bar { display: none; } }`;
-  w.document.open(); w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets, ${state.days} days</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}</body></html>`);
+  w.document.open(); w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>R2AK 2028 daily sheets, ${state.days} days</title><style>${css}</style></head><body><div class="bar"><button onclick="print()">Print or save as PDF</button> <label><input type="checkbox" checked onchange="document.body.classList.toggle('nocharts', !this.checked)"> Chart strips</label>
+    · <label>Chart symbols and depths <select onchange="chartScale(+this.value)">${[1, 0.75, 0.6, 0.5, 0.45, 0.4, 0.33].map((f) => `<option value="${f}"${f === CHART_SHRINK ? " selected" : ""}>${Math.round(f * 100)}%</option>`).join("")}</select></label> · letter size; let the charts finish loading before printing</div>${sheets.join("")}<script>${chartSize.toString()}
+function chartScale(f) { document.querySelectorAll("image[data-u]").forEach((im) => im.setAttribute("href", im.dataset.u + "&size=" + chartSize(+im.dataset.w, +im.dataset.h, f))); }<\/script></body></html>`);
   w.document.close();
 }
 function when(t) { const d = new Date(t), p = (o) => new Intl.DateTimeFormat("en-US", Object.assign({ timeZone: TZ }, o)).format(d); return `<span class="when">${p({ month: "short", day: "numeric" })}</span><br>${p({ hour: "2-digit", minute: "2-digit", hour12: false })}`; }
