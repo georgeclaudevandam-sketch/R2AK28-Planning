@@ -405,11 +405,11 @@ def main():
         if bd:
             era_b = {int(y): v for y, v in raw.get(f"buoy {buoy}", {}).items()}
             ob, md = [], []
-            for y, obs in bd.items():
+            for y, bser in bd.items():
                 if y not in era_b:
                     continue
                 for d in range(61):
-                    o = [x for x in obs[d * 24:(d + 1) * 24] if x is not None]; m = [x for x in era_b[y][d * 24:(d + 1) * 24] if x is not None]
+                    o = [x for x in bser[d * 24:(d + 1) * 24] if x is not None]; m = [x for x in era_b[y][d * 24:(d + 1) * 24] if x is not None]
                     if len(o) >= 18 and len(m) == 24:
                         ob.append(max(o)); md.append(max(m))
             if len(ob) > 300:
