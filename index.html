@@ -851,6 +851,14 @@ function campPathsCalc(ch, c) {
   const e = CAMP_PATHS[`${c.ll[0].toFixed(4)},${c.ll[1].toFixed(4)}`];
   let p = e && ch.north && (e[ch.north] || e.inside);
   let i = p && projectSeg(ch, p.in[0]), o = p && projectSeg(ch, p.out[p.out.length - 1]);
+  // the route was straightened after the paths were built (scripts/smooth_route.py), so an end can now sit up to half a mile
+  // off it: carry that end on to the nearest point of the route
+  if (p && (i.d >= 0.3 && i.d < 0.8 || o.d >= 0.3 && o.d < 0.8)) {
+    const pin = i.d >= 0.3 && i.d < 0.8 ? [pointAt(ch, i.along), ...p.in] : p.in, pout = o.d >= 0.3 && o.d < 0.8 ? [...p.out, pointAt(ch, o.along)] : p.out;
+    const len = (q) => q.reduce((x, v, k) => k ? x + nmBetween(q[k - 1], v) : 0, 0);
+    p = { ...p, in: pin, out: pout, nm_in: len(pin), nm_out: len(pout) };
+    i = projectSeg(ch, p.in[0]); o = projectSeg(ch, p.out[p.out.length - 1]);
+  }
   // only the way in still meets the route: row back out the way you came
   if (p && i.d < 0.3 && !(o.d < 0.3 && o.along >= i.along)) {
     p = { ...p, out: [...p.in].reverse(), nm_out: p.nm_in }; o = i;
