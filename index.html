@@ -177,7 +177,7 @@ label.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13p
 .pagelink { display: inline-block; margin-top: 8px; font: 600 13px var(--font-ui); color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 3px 12px; }
 button.genout { display: block; width: 100%; margin-top: 10px; padding: 9px 14px; font: 700 15px var(--font-ui); color: #fff; background: var(--accent); border: 0; border-radius: 10px; cursor: pointer; text-align: left; }
 button.genout small { display: block; font-weight: 400; font-size: 12px; opacity: .9; margin-top: 1px; }
-button.genout:hover { filter: brightness(1.08); }
+button.genout:hover { filter: brightness(1.08); } button.genout.alt { background: #6d28d9; margin-top: 6px; }
 #storm-page { height: 100%; overflow-y: auto; padding: 18px 20px 40px; }
 #storm-page .wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 #storm-page .top { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; justify-content: space-between; }
@@ -231,6 +231,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
       <p class="sub">Port Townsend to Victoria to Ketchikan. Pick a start date and how many days you want to take to see what the stream is doing at each tidal gate when you get there.</p>
       <a class="pagelink" href="#storms">Storm contingency: test this plan against storms &rarr;</a>
       <button type="button" class="genout" id="print-days">&#128438; Generate output<small>daily sheets and chart strips for this plan, to print or save as PDF</small></button>
+      <button type="button" class="genout alt" id="gpx-dl">&#11015; Download GPX for Garmin<small>a zip: one route and planned track per day, planned stops, and every place to land</small></button>
     </header>
 
     <section aria-labelledby="h-scn">
@@ -1520,7 +1521,7 @@ function startPlay() {
 }
 
 let nightLayer;
-document.addEventListener("click", (e) => { if (e.target && e.target.id === "print-days") printSheets(); });
+document.addEventListener("click", (e) => { const b = e.target && e.target.closest && e.target.closest("button"); if (!b) return; if (b.id === "print-days") printSheets(); if (b.id === "gpx-dl") downloadGpx(); });
 function renderPlanner() {
   const P = plan(), { ch, r1, r2 } = P;
   LAST_PLAN = P; syncProgress();
@@ -1809,6 +1810,102 @@ function chartStrips(c, rec, t0, t1, p0, p1, marks, title) {
 let PRINT_PLAN = "";
 // image size to ask for: f of the printed size shrinks everything drawn on the chart to f (the export tops out at 4096 px)
 function chartSize(W, H, f) { let w = W / f, h = H / f; const k = Math.min(1, 4096 / Math.max(w, h)); return `${Math.round(w * k)}%2C${Math.round(h * k)}`; }
+// ---------- GPX for a Garmin: one file per day (a route to follow and the planned track with times), the planned stops as
+// waypoints, and every place to land as waypoints, all in one zip
+const gx = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const gpxPt = (tag, ll, inner = "") => `<${tag} lat="${ll[0].toFixed(6)}" lon="${ll[1].toFixed(6)}">${inner}</${tag}>`;
+const gpxDoc = (name, body) => `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="R2AK 2028 planner" xmlns="http://www.topografix.com/GPX/1/1"><metadata><name>${gx(name)}</name><desc>${gx(PRINT_PLAN)}. For planning, not navigation.</desc></metadata>\n${body}\n</gpx>\n`;
+// Garmin symbol names for each kind of landing
+const gpxSym = (x) => { const k = siteKind(x); return k === "dk" ? (x.landing && x.landing.kind === "marina" ? "Marina" : "Anchor") : x.landing && !x.landing.bcmt && x.landing.kind !== "campsite" ? "Beach" : "Campground"; };
+// the days, as the daily sheets cut them: Stage 1, then Stage 2 camp to camp
+function planDays(P) {
+  const { ch, r1, r2 } = P, out = [{ n: 0, name: "Stage 1", c: ch.stage1, rec: r1, t0: P.s1, t1: r1.finish, from: "Port Townsend", to: "Victoria", stops: [], end: null }];
+  const all = r2.nights.map((x, i) => ({ ...x, i }));
+  let t0 = P.s2, from = "Victoria", day = 1, prev = null;
+  for (const cp of all.filter((x) => x.camp).concat([null])) {
+    const t1 = cp ? cp.t : r2.finish;
+    out.push({ n: day, name: `Day ${day}`, c: ch.stage2, rec: r2, t0, t1, from, to: cp ? (cp.site ? cp.site.place : "on the water") : "Ketchikan", start: prev, stops: all.filter((x) => !x.camp && x.t > t0 && x.t < t1), end: cp });
+    if (!cp) break;
+    t0 = cp.until; from = cp.site ? cp.site.place : "on the water"; prev = cp; day++;
+  }
+  return out;
+}
+// the first time the planned track reaches a point along the route
+const timeAt = (track, a) => { for (let i = 1; i < track.length; i++) if (track[i][1] >= a) { const [ta, pa] = track[i - 1], [tb, pb] = track[i]; return ta + (tb - ta) * ((a - pa) / ((pb - pa) || 1)); } return track[track.length - 1][0]; };
+const iso = (t) => new Date(t).toISOString().replace(/\.\d+Z$/, "Z");
+function dayGpx(d) {
+  const { c, rec } = d, a0 = Math.max(0, Math.min(c.total, posAt(rec.track, d.t0))), a1 = d.end ? d.end.pos : Math.min(c.total, posAt(rec.track, d.t1));
+  // the route's own turning points between the two ends, plus the way out of last night's camp and into tonight's
+  const pts = [[pointAt(c, a0), a0]];
+  c.points.forEach((p, i) => { if (c.cum[i] > a0 + 0.01 && c.cum[i] < a1 - 0.01) pts.push([p, c.cum[i]]); });
+  pts.push([pointAt(c, a1), a1]);
+  const leave = d.start && d.start.site && d.start.site.pout ? d.start.site.pout : d.start && d.start.site ? [d.start.site.ll] : [];
+  const arrive = d.end && d.end.site && d.end.site.pin ? d.end.site.pin : d.end && d.end.site ? [d.end.site.ll] : [];
+  const seq = [...leave.map((ll) => [ll, null, d.t0]), ...pts.map(([ll, a]) => [ll, a, timeAt(rec.track, a)]), ...arrive.map((ll) => [ll, null, d.t1])];
+  const tag = d.n ? `D${String(d.n).padStart(2, "0")}` : "S1";
+  // the route keeps only its turns (within 20 m of a straight line counts as straight), so it stays well under a Garmin's
+  // 250 points a route; the track keeps every point with its planned time
+  const dp = (a, b) => { if (b - a < 2) return [a]; const [p, q] = [seq[a][0], seq[b][0]], k = Math.cos(p[0] * Math.PI / 180);
+    let m = -1, md = 0; for (let i = a + 1; i < b; i++) { const r = seq[i][0], bx = (q[1] - p[1]) * k, by = q[0] - p[0], rx = (r[1] - p[1]) * k, ry = r[0] - p[0], L = Math.hypot(bx, by) || 1e-9;
+      const dd = Math.abs(bx * ry - by * rx) / L * 60 * 1852; if (dd > md) { md = dd; m = i; } }
+    return md > 20 ? [...dp(a, m), ...dp(m, b)] : [a]; };
+  const keep = [...dp(0, seq.length - 1), seq.length - 1].map((i) => seq[i]);
+  const rte = `<rte><name>R2AK ${tag}</name><desc>${gx(`${d.name}: ${d.from} to ${d.to}, ${fmt.format(d.t0)} to ${fmt.format(d.t1)}`)}</desc>` +
+    keep.map(([ll], k) => gpxPt("rtept", ll, `<name>${tag}-${String(k + 1).padStart(3, "0")}</name>`)).join("") + `</rte>`;
+  const trk = `<trk><name>R2AK ${tag} plan</name><desc>${gx(`${d.name} planned track; times are the plan (UTC)`)}</desc><trkseg>` +
+    seq.map(([ll, , t]) => gpxPt("trkpt", ll, `<time>${iso(t)}</time>`)).join("") + `</trkseg></trk>`;
+  return { file: `R2AK28_${tag}_${(d.n ? d.name.replace(" ", "") : "Stage1")}.gpx`, text: gpxDoc(`R2AK 2028 ${d.name}`, rte + "\n" + trk) };
+}
+function stopsGpx(days) {
+  const w = [];
+  days.forEach((d) => {
+    const tag = d.n ? `D${String(d.n).padStart(2, "0")}` : "S1", c = d.c;
+    if (!d.n) w.push(gpxPt("wpt", pointAt(c, 0), `<name>START PT</name><desc>Stage 1 start, Port Townsend, ${gx(fmt.format(d.t0))}</desc><sym>Flag, Green</sym>`));
+    d.stops.forEach((x, i) => w.push(gpxPt("wpt", x.site ? x.site.ll : pointAt(c, x.pos), `<name>${tag} BRK${i + 1}</name><desc>${gx(`${d.name} break ${i + 1}: ${fmt.format(x.t)} to ${fmtT.format(x.until)}; ${x.site ? chartLabel(x.site) + ", " + x.site.place : "on the water"}`)}</desc><sym>${x.site ? gpxSym(x.site) : "Waypoint"}</sym>`)));
+    if (d.end) w.push(gpxPt("wpt", d.end.site ? d.end.site.ll : pointAt(c, d.end.pos), `<name>${tag} CAMP</name><desc>${gx(`${d.name} camp: arrive ${fmt.format(d.end.t)}, leave ${fmt.format(d.end.until)}; ${d.end.site ? chartLabel(d.end.site) + ", " + d.end.site.place : "on the water"}`)}</desc><sym>Campground</sym>`));
+    if (d.n && !d.end) w.push(gpxPt("wpt", pointAt(c, c.total), `<name>FINISH KTN</name><desc>Ketchikan finish, ${gx(fmt.format(d.t1))}</desc><sym>Flag, Red</sym>`));
+    if (!d.n) w.push(gpxPt("wpt", pointAt(c, c.total), `<name>VICTORIA</name><desc>Stage 1 finish, Victoria, ${gx(fmt.format(d.t1))}</desc><sym>Flag, Blue</sym>`));
+  });
+  return gpxDoc("R2AK 2028 planned stops", w.join("\n"));
+}
+function sitesGpx(ch) {
+  if (!ch._printSites) ch._printSites = CAMPSITES.map((x) => { const p = project(ch, x.ll[0], x.ll[1]); return { ...x, a: p.along, o: p.d }; });
+  // names must differ (a Garmin replaces a waypoint with another of the same name): kind, nm along Stage 2, a letter
+  const seen = new Set();
+  const w = ch._printSites.slice().sort((a, b) => a.a - b.a).map((x) => {
+    const k = siteKind(x), base = (k === "dk" ? "DK" : k === "pc" ? "PC" : "LD") + String(Math.round(x.a)).padStart(3, "0");
+    let id = base; for (let n = 0; seen.has(id); n++) id = base + "abcdefghijklmnopqrstuvwxyz"[n % 26] + (n >= 26 ? Math.floor(n / 26) : ""); seen.add(id);
+    return gpxPt("wpt", x.ll, `<name>${id} ${gx((x.landing && x.landing.name || x.place || "").replace(/^near /, "").slice(0, 8))}</name><desc>${gx(`${chartLabel(x)}, ${x.place}; ${x.o.toFixed(1)} nm off route at nm ${x.a.toFixed(0)} of Stage 2`)}</desc><sym>${gpxSym(x)}</sym>`);
+  });
+  return gpxDoc("R2AK 2028 all landings", w.join("\n"));
+}
+// a zip with the files stored as they are (no compression needed for a handful of small text files)
+function zipFiles(files) {
+  const crcT = new Uint32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+  const crc = (b) => { let c = 0xffffffff; for (const x of b) c = crcT[(c ^ x) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const u16 = (v) => [v & 255, (v >>> 8) & 255], u32 = (v) => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  files.forEach(({ file, text }) => {
+    const name = enc.encode(file), data = enc.encode(text), c = crc(data);
+    const head = [...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(c), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)];
+    parts.push(new Uint8Array(head), name, data);
+    cen.push(new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(c), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
+    off += head.length + name.length + data.length;
+  });
+  const cenLen = cen.reduce((s, b) => s + b.length, 0);
+  return new Blob([...parts, ...cen, new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cenLen), ...u32(off), ...u16(0)])], { type: "application/zip" });
+}
+function gpxFiles() {
+  const P = LAST_PLAN; if (!P) return [];
+  PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(P.r2.finish)} (${((P.r2.finish - P.s2) / (24 * H)).toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
+  const days = planDays(P);
+  return [...days.map(dayGpx), { file: "R2AK28_planned_stops.gpx", text: stopsGpx(days) }, { file: "R2AK28_all_landings.gpx", text: sitesGpx(P.ch.stage2) }];
+}
+function downloadGpx() {
+  const files = gpxFiles(); if (!files.length) return;
+  const a = document.createElement("a"); a.href = URL.createObjectURL(zipFiles(files)); a.download = `R2AK28_gpx_${state.days}days.zip`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
 async function printSheets() {
   const P = LAST_PLAN; if (!P) return;
   // open the window straight from the click (a pop-up opened later is blocked), then fill it once the shoreline mask is in
