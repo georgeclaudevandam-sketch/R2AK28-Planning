@@ -232,6 +232,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
       <a class="pagelink" href="#storms">Storm contingency: test this plan against storms &rarr;</a>
       <button type="button" class="genout" id="print-days">&#128438; Generate output<small>daily sheets and chart strips for this plan, to print or save as PDF</small></button>
       <button type="button" class="genout alt" id="gpx-dl">&#11015; Download GPX for Garmin<small>a zip: one route and planned track per day, planned stops, and every place to land</small></button>
+      <button type="button" class="genout alt" id="kmz-dl">&#11015; Download KMZ for Google Earth / Navionics<small>one file: the daily routes, planned stops and every place to land, in folders</small></button>
     </header>
 
     <section aria-labelledby="h-scn">
@@ -1521,7 +1522,7 @@ function startPlay() {
 }
 
 let nightLayer;
-document.addEventListener("click", (e) => { const b = e.target && e.target.closest && e.target.closest("button"); if (!b) return; if (b.id === "print-days") printSheets(); if (b.id === "gpx-dl") downloadGpx(); });
+document.addEventListener("click", (e) => { const b = e.target && e.target.closest && e.target.closest("button"); if (!b) return; if (b.id === "print-days") printSheets(); if (b.id === "gpx-dl") downloadGpx(); if (b.id === "kmz-dl") downloadKmz(); });
 function renderPlanner() {
   const P = plan(), { ch, r1, r2 } = P;
   LAST_PLAN = P; syncProgress();
@@ -1833,7 +1834,7 @@ function planDays(P) {
 // the first time the planned track reaches a point along the route
 const timeAt = (track, a) => { for (let i = 1; i < track.length; i++) if (track[i][1] >= a) { const [ta, pa] = track[i - 1], [tb, pb] = track[i]; return ta + (tb - ta) * ((a - pa) / ((pb - pa) || 1)); } return track[track.length - 1][0]; };
 const iso = (t) => new Date(t).toISOString().replace(/\.\d+Z$/, "Z");
-function dayGpx(d) {
+function daySeq(d) {
   const { c, rec } = d, a0 = Math.max(0, Math.min(c.total, posAt(rec.track, d.t0))), a1 = d.end ? d.end.pos : Math.min(c.total, posAt(rec.track, d.t1));
   // the route's own turning points between the two ends, plus the way out of last night's camp and into tonight's
   const pts = [[pointAt(c, a0), a0]];
@@ -1841,7 +1842,10 @@ function dayGpx(d) {
   pts.push([pointAt(c, a1), a1]);
   const leave = d.start && d.start.site && d.start.site.pout ? d.start.site.pout : d.start && d.start.site ? [d.start.site.ll] : [];
   const arrive = d.end && d.end.site && d.end.site.pin ? d.end.site.pin : d.end && d.end.site ? [d.end.site.ll] : [];
-  const seq = [...leave.map((ll) => [ll, null, d.t0]), ...pts.map(([ll, a]) => [ll, a, timeAt(rec.track, a)]), ...arrive.map((ll) => [ll, null, d.t1])];
+  return [...leave.map((ll) => [ll, null, d.t0]), ...pts.map(([ll, a]) => [ll, a, timeAt(rec.track, a)]), ...arrive.map((ll) => [ll, null, d.t1])];
+}
+function dayGpx(d) {
+  const seq = daySeq(d);
   const tag = d.n ? `D${String(d.n).padStart(2, "0")}` : "S1";
   // the route keeps only its turns (within 20 m of a straight line counts as straight), so it stays well under a Garmin's
   // 250 points a route; the track keeps every point with its planned time
@@ -1900,6 +1904,49 @@ function gpxFiles() {
   PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(P.r2.finish)} (${((P.r2.finish - P.s2) / (24 * H)).toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
   const days = planDays(P);
   return [...days.map(dayGpx), { file: "R2AK28_planned_stops.gpx", text: stopsGpx(days) }, { file: "R2AK28_all_landings.gpx", text: sitesGpx(P.ch.stage2) }];
+}
+// The same in one KMZ (a zipped KML) for Google Earth, Navionics, OpenCPN and the like: a folder of days (each a line in its
+// own colour, with the planned times), the planned stops, and every landing in folders by kind
+function kmzBlob() {
+  const P = LAST_PLAN; if (!P) return null;
+  gpxFiles();   // sets PRINT_PLAN
+  const days = planDays(P), cols = ["ff00a5ff", "ffff00ff", "ff00ff00", "ff0000ff", "ffffff00", "ff00ffff"];
+  const co = (ll) => `${ll[1].toFixed(6)},${ll[0].toFixed(6)},0`;
+  const pm = (name, desc, style, geom) => `<Placemark><name>${gx(name)}</name><description>${gx(desc)}</description><styleUrl>#${style}</styleUrl>${geom}</Placemark>`;
+  const pt = (ll) => `<Point><coordinates>${co(ll)}</coordinates></Point>`;
+  const icon = (id, href, scale, color) => `<Style id="${id}"><IconStyle>${color ? `<color>${color}</color>` : ""}<scale>${scale}</scale><Icon><href>http://maps.google.com/mapfiles/kml/${href}</href></Icon></IconStyle><LabelStyle><scale>0.7</scale></LabelStyle></Style>`;
+  const styles = cols.map((c, i) => `<Style id="d${i}"><LineStyle><color>${c}</color><width>4</width></LineStyle></Style>`).join("") +
+    icon("camp", "shapes/campground.png", 1.2, "ff8000ff") + icon("brk", "shapes/coffee.png", 1.0, "ffffa040") + icon("flag", "shapes/flag.png", 1.2) +
+    icon("pc", "shapes/campground.png", 0.8, "ff0058ea") + icon("ld", "shapes/campground.png", 0.8, "ff3aa316") + icon("beach", "shapes/swimming.png", 0.8, "ff3aa316") +
+    icon("dk", "shapes/marina.png", 0.8, "ffeb6325");
+  const dayF = days.map((d, i) => {
+    const seq = daySeq(d), tag = d.n ? `Day ${d.n}` : "Stage 1";
+    return `<Folder><name>${gx(`${tag}: ${d.from} to ${d.to}`)}</name>` +
+      pm(`${tag} route`, `${fmt.format(d.t0)} to ${fmt.format(d.t1)}`, `d${i % cols.length}`, `<LineString><tessellate>1</tessellate><coordinates>${seq.map(([ll]) => co(ll)).join(" ")}</coordinates></LineString>`) +
+      `</Folder>`;
+  }).join("");
+  const stops = [];
+  days.forEach((d) => {
+    const tag = d.n ? `D${String(d.n).padStart(2, "0")}` : "S1", c = d.c;
+    if (!d.n) { stops.push(pm("START Port Townsend", fmt.format(d.t0), "flag", pt(pointAt(c, 0)))); stops.push(pm("Victoria", `Stage 1 finish ${fmt.format(d.t1)}`, "flag", pt(pointAt(c, c.total)))); }
+    d.stops.forEach((x, i) => stops.push(pm(`${tag} break ${i + 1}`, `${fmt.format(x.t)} to ${fmtT.format(x.until)}; ${x.site ? chartLabel(x.site) + ", " + x.site.place : "on the water"}`, "brk", pt(x.site ? x.site.ll : pointAt(c, x.pos)))));
+    if (d.end) stops.push(pm(`${tag} camp`, `arrive ${fmt.format(d.end.t)}, leave ${fmt.format(d.end.until)}; ${d.end.site ? chartLabel(d.end.site) + ", " + d.end.site.place : "on the water"}`, "camp", pt(d.end.site ? d.end.site.ll : pointAt(c, d.end.pos))));
+    else if (d.n) stops.push(pm("FINISH Ketchikan", fmt.format(d.t1), "flag", pt(pointAt(c, c.total))));
+  });
+  const ch = P.ch.stage2;
+  if (!ch._printSites) ch._printSites = CAMPSITES.map((x) => { const q = project(ch, x.ll[0], x.ll[1]); return { ...x, a: q.along, o: q.d }; });
+  const kinds = [["Past teams' camps", (x) => siteKind(x) === "pc", "pc"], ["Campsites", (x) => siteKind(x) === "ld" && gpxSym(x) === "Campground", "ld"],
+    ["Beaches", (x) => siteKind(x) === "ld" && gpxSym(x) === "Beach", "beach"], ["Docks, floats and marinas", (x) => siteKind(x) === "dk", "dk"]];
+  const sites = kinds.map(([name, f, st]) => `<Folder><name>${name}</name><visibility>0</visibility>` + ch._printSites.filter(f).sort((a, b) => a.a - b.a)
+    .map((x) => pm(chartLabel(x), `${x.place}; ${x.o.toFixed(1)} nm off route at nm ${x.a.toFixed(0)} of Stage 2`, st, pt(x.ll))).join("") + `</Folder>`).join("");
+  const kml = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>R2AK 2028 plan, ${state.days} days</name><description>${gx(PRINT_PLAN)}. For planning, not navigation.</description>${styles}` +
+    `<Folder><name>Daily routes</name>${dayF}</Folder><Folder><name>Planned stops</name>${stops.join("")}</Folder><Folder><name>All landings</name>${sites}</Folder></Document></kml>\n`;
+  return zipFiles([{ file: "doc.kml", text: kml }]);
+}
+function downloadKmz() {
+  const blob = kmzBlob(); if (!blob) return;
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `R2AK28_plan_${state.days}days.kmz`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 function downloadGpx() {
   const files = gpxFiles(); if (!files.length) return;
