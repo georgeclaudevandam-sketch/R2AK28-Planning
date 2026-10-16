@@ -1243,6 +1243,8 @@ function crewKcal(P, a, b) {
   return { row, rest: CREW.n * REST_KCAL_DAY * Math.max(0, b - a) / (24 * H) };
 }
 const kcal = (k) => Math.round(k).toLocaleString("en-US");
+// rowing split: minutes and seconds to cover 500 m at a speed in knots
+const split = (kn) => { if (!(kn > 0.05)) return "–"; const s = Math.round(500 / (kn * 1852 / 3600)); return s >= 3600 ? ">60:00" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
 // cutoffs the optimizer tries (kn); above 1.5 kn the gates already wait for the turn
 const HEAD_AUTO_TRY = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
 let HEAD_AUTO_CACHE = null;
@@ -1454,9 +1456,9 @@ function renderSun() {
     // the route at the boat (+ with you, − against); speed over the bottom is the two added
     const moving = b && sog > 0.05, stw = moving ? (s2 ? P.v2 : P.v1) : 0;
     const cur = b && t >= P.s1 && t <= P.r2.finish ? streamAt(s2 ? P.ch.stage2 : P.ch.stage1, pos, t) : null;
-    $("pb-stw").textContent = !b ? "–" : moving ? `${stw.toFixed(1)} kn` : "0 (stopped)";
+    $("pb-stw").textContent = !b ? "–" : moving ? `${stw.toFixed(1)} kn · ${split(stw)}/500 m` : "0 (stopped)";
     $("pb-cur").textContent = cur == null ? "–" : Math.abs(cur) < 0.05 ? "slack / none modelled" : `${cur > 0 ? "+" : "−"}${Math.abs(cur).toFixed(1)} kn ${cur > 0 ? "with you" : "against you"}`;
-    $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn` : "0";
+    $("pb-sog").textContent = !b ? "–" : moving ? `${Math.max(0, stw + (cur || 0)).toFixed(1)} kn · ${split(Math.max(0, stw + (cur || 0)))}/500 m` : "0";
     { const e = crewKcal(P, P.s1, Math.min(Math.max(t, P.s1), P.r2.finish)), dayA = Math.max(P.s1, dayStart(t)), ed = crewKcal(P, dayA, Math.min(Math.max(t, dayA), P.r2.finish));
       $("pb-kcal").textContent = t < P.s1 ? "–" : `${kcal(e.row + e.rest)} crew (rowing ${kcal(e.row)}) · today ${kcal(ed.row + ed.rest)}`; }
     const vH = hullSpeed(state.hullFt); setGauge("g-stw", b ? stw : null, vH); setGauge("g-sog", b ? (moving ? Math.max(0, stw + (cur || 0)) : 0) : null, vH);
@@ -1557,7 +1559,7 @@ function renderPlanner() {
   const s1h = (r1.finish - P.s1) / H, s2d = (r2.finish - P.s2) / H / 24;
   const waits = r1.passed.concat(r2.passed).reduce((a, g) => a + g.wait, 0);
   const rows = [];
-  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing` +
+  if (P.human) rows.push(["Rowing speed", `${P.v2.toFixed(2)} kn through the water while rowing, a split of <b>${split(P.v2)}</b> per 500 m` +
     (P.hullCap ? `<br><span class="warn">${state.days} days needs more than the hull speed of a ${state.hullFt} ft monohull (${hullSpeed(state.hullFt).toFixed(2)} kn).</span> At hull speed you arrive in ${P.hullCap.d.toFixed(1)} days; the plan below rows at ${P.v2.toFixed(2)} kn, the quickest finish at or under hull speed.` : ` (hull speed for ${state.hullFt} ft: ${hullSpeed(state.hullFt).toFixed(2)} kn)`) + (P.v2 > 4.5 ? `<br><span class="warn">That is fast for a loaded rowing boat over many days.</span> Most rowing boats hold about 3 to 4.5 kn; add hours a day or allow more days.` : "") + (P.gap ? `<br><span class="warn">No speed lands exactly on ${state.days} days.</span> ${P.gap.fast.v.toFixed(2)} kn arrives in ${P.gap.fast.d.toFixed(1)} days; anything slower ${P.win ? "misses the end of that rowing day or a slack" : "misses a fair tide"} and arrives in ${P.gap.slow.d.toFixed(1)} days. The plan below uses the ${P.gap.useSlow ? "slower" : "faster"} option, the nearer to ${state.days} days. To land in between, change the rowing hours${state.waits ? " or turn off waiting for slack" : ""}.` : "")]);
   rows.push(["Stage 1", `${ch.stage1.total.toFixed(0)} nm, Victoria ${fmt.format(r1.finish)} (${s1h.toFixed(1)} h)${s1h > 36 ? ' <span class="warn">over the 36 h limit</span>' : ""}${r1.finish > P.s2 ? ' <span class="warn">after the Stage 2 start</span>' : ""}`]);
   rows.push(["Stage 2", `${ch.stage2.total.toFixed(0)} nm (${state.north}), Ketchikan ${fmt.format(r2.finish)} (${s2d.toFixed(1)} d)`]);
@@ -1634,7 +1636,7 @@ function renderPlanner() {
   // night stops on the map
   nightLayer.clearLayers(); STOP_LL = []; followKey = null; if (miniStops) miniStops.clearLayers();
   r1.nights.forEach((x, i) => L.marker(pointAt(ch.stage1, x.pos), { icon: L.divIcon({ className: "night", html: "S1", iconSize: [18, 14] }) }).bindTooltip(`Stage 1 stop ${fmt.format(x.t)}`).addTo(nightLayer));
-  let nc = 0, prev = 0, prevOut = 0;
+  let nc = 0, prev = 0, prevOut = 0, prevT = P.s2;
   const stopRows = [], pics = [];
   r2.nights.forEach((x) => {
     const on = pointAt(ch.stage2, x.pos), ll = x.site ? x.site.ll : on, hrs = (x.until - x.t) / H;
@@ -1646,14 +1648,14 @@ function renderPlanner() {
     const sd = shortDur(hrs), wd = (x.camp ? 34 : 28) + 6 * sd.length + 4;
     L.marker(ll, { icon: L.divIcon({ className: x.camp ? "stop camp" : "stop snack", html: `${x.camp ? ICON.camp : ICON.snack}<b>${n}</b><i class="dur">${sd}</i>`, iconSize: [wd, x.camp ? 20 : 16] }), zIndexOffset: x.camp ? 500 : 400 })
       .bindTooltip(`<b>${label}</b><br>Stopped <b>${fmtDur(hrs)}</b><br>Arrive ${fmt.format(x.t)}<br>Leave ${fmt.format(x.until)}<br>${where}${x.site ? `<br>${x.d.toFixed(1)} nm off the route` : ""}`, { className: "stop-tip", direction: "auto" }).addTo(nightLayer);
-    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${when(x.t)}</td><td>${when(x.until)}</td><td><b>${fmtDur(hrs).replace(" h ", "h ").replace(" min", "m")}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
+    stopRows.push(`<tr data-t="${x.t}"><td title="${label}">${n} ${x.camp ? ICON.camp : ICON.snack}</td><td>${when(x.t)}</td><td>${when(x.until)}</td><td><b>${fmtDur(hrs).replace(" h ", "h ").replace(" min", "m")}</b></td><td>${(x.pos - prev + prevOut + (x.site ? x.site.din : 0)).toFixed(0)}</td><td>${split((x.pos - prev + prevOut + (x.site ? x.site.din : 0)) / (rowedH(r2.track, prevT, x.t) || Infinity))}</td><td>${x.pos.toFixed(0)}</td><td>${where}${x.site ? `<br><span class="sub">${x.d.toFixed(1)} nm off the route</span>` : ""}</td></tr>`);
     pics.push({ n, x, ll, on, hrs, where });
-    prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0;
+    prev = x.site ? Math.max(x.pos, x.site.aout) : x.pos; prevOut = x.site ? x.site.dout : 0; prevT = x.until;
   });
   renderPics(pics, ch.stage2);
-  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Snack/rest: ${Math.min(1, state.breakH)} to ${state.campH} hours${state.breakH < 1 ? ` (breaks under an hour are taken on the water)` : ""}. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites; total is along the route from the Victoria start. Click a row to set the map time.`;
-  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${when(r2.finish)}</td><td></td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
-  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Leave</th><th title="How long the crew is stopped, from arriving to leaving">Stopped</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg<br>nm</th><th title="Along the route from the Victoria start">Total<br>nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
+  $("stops-hint").innerHTML = `${ICON.camp} Camp: ${state.campH} hours or more. ${ICON.snack} Snack/rest: ${Math.min(1, state.breakH)} to ${state.campH} hours${state.breakH < 1 ? ` (breaks under an hour are taken on the water)` : ""}. Stops of an hour or more (waits at tidal gates too) go to the past campsite that costs the least extra rowing, rowing back up to 4 nm if none is ahead; when the day's rowing hours run out the stop is made a camp there. A few short pauses stay on the water where no past campsite is in reach. Leg is the miles rowed since the previous stop, including the trips out of and in to campsites, and split is that leg's average time per 500 m over the ground (through the water it is ${split(P.v2)} all race); total is along the route from the Victoria start. Click a row to set the map time.`;
+  stopRows.push(`<tr data-t="${r2.finish}"><td>🏁</td><td>${when(r2.finish)}</td><td></td><td></td><td>${(ch.stage2.total - prev + prevOut).toFixed(0)}</td><td>${split((ch.stage2.total - prev + prevOut) / (rowedH(r2.track, prevT, r2.finish) || Infinity))}</td><td>${ch.stage2.total.toFixed(0)}</td><td>Ketchikan finish</td></tr>`);
+  $("stops-tbl").innerHTML = `<thead><tr><th>Stop</th><th>Arrive</th><th>Leave</th><th title="How long the crew is stopped, from arriving to leaving">Stopped</th><th title="Miles rowed since the previous stop, with the trips out of and in to campsites">Leg<br>nm</th><th title="Average split over the ground for the leg (minutes per 500 m): the leg's miles over its rowing time, so it shows the help or hindrance of the current. The split through the water is the same all race, set by the rowing speed.">Split<br>/500 m</th><th title="Along the route from the Victoria start">Total<br>nm</th><th>Where</th></tr></thead><tbody>${stopRows.join("")}</tbody>`;
   document.querySelectorAll("#stops-tbl tr[data-t]").forEach((r) => r.onclick = () => setTime(+r.dataset.t));
 
   // start-date note: moon and Seymour Narrows strength in the first 4 days of Stage 2
@@ -1937,7 +1939,7 @@ function zipFiles(files) {
 }
 function gpxFiles() {
   const P = LAST_PLAN; if (!P) return [];
-  PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(P.r2.finish)} (${((P.r2.finish - P.s2) / (24 * H)).toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
+  PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(P.r2.finish)} (${((P.r2.finish - P.s2) / (24 * H)).toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water (split ${split(P.v2)}/500 m) · ${state.north} route · head-current cutoff ${state.headKn} kn`;
   const days = planDays(P);
   return [...days.map(dayGpx), { file: "R2AK28_planned_stops.gpx", text: stopsGpx(days) }, { file: "R2AK28_all_landings.gpx", text: sitesGpx(P.ch.stage2) }];
 }
@@ -2000,7 +2002,7 @@ async function printSheets() {
   const sheets = [];
   // which plan these pages are for, on every page, so a sheet that strays from the pile can't be mistaken for another plan
   const target = (r2.finish - P.s2) / (24 * H);
-  const planLine = PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(r2.finish)} (${target.toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water · ${state.north} route · head-current cutoff ${state.headKn} kn`;
+  const planLine = PRINT_PLAN = `Plan for ${state.days} target days, Victoria ${fmtD.format(P.s2)} to Ketchikan ${fmt.format(r2.finish)} (${target.toFixed(1)} days) · ${P.v2.toFixed(2)} kn through the water (split ${split(P.v2)}/500 m) · ${state.north} route · head-current cutoff ${state.headKn} kn`;
   const build = (stage, c, rec, v, t0, t1, from, to, title, stops, endStop) => {
     const pos = (t) => Math.max(0, Math.min(c.total, posAt(rec.track, t))), p0 = pos(t0), p1 = endStop ? endStop.pos : pos(t1);
     const place = (p) => nearPlace(pointAt(c, p)).replace(/^at /, "");
@@ -2024,7 +2026,7 @@ async function printSheets() {
     for (let t = Math.ceil(t0 / H) * H; t < t1; t += H) {
       const p = pos(t), moving = pos(t + 2 * 60e3) - pos(t - 2 * 60e3) > 0.01; if (!moving) continue;
       const cur = streamAt(c, p, t);
-      hrs.push(`<tr><td>${hm(t)}</td><td class="n">${p.toFixed(0)}</td><td>${esc(place(p))}</td><td class="n">${kn(cur)}</td><td class="n">${v.toFixed(1)}</td><td class="n">${Math.max(0, v + cur).toFixed(1)}</td></tr>`);
+      hrs.push(`<tr><td>${hm(t)}</td><td class="n">${p.toFixed(0)}</td><td>${esc(place(p))}</td><td class="n">${kn(cur)}</td><td class="n">${v.toFixed(1)}</td><td class="n">${Math.max(0, v + cur).toFixed(1)}</td><td class="n">${split(Math.max(0, v + cur))}</td></tr>`);
     }
     const eK = crewKcal(P, t0, endStop ? endStop.until : t1);
     const ll = pointAt(c, p1), [rise, set] = sunTimes(ll, t1 - 6 * H), [rise2] = sunTimes(ll, t1 + 18 * H);
@@ -2032,11 +2034,11 @@ async function printSheets() {
     const alt = !c._camps || !endStop ? [] : c._camps.filter((x) => Math.abs(x.a - p1) <= 12 && !(endStop && endStop.site && nmBetween(x.ll, endStop.site.ll) < 0.05))
       .sort((a, b) => Math.abs(a.a - p1) - Math.abs(b.a - p1)).slice(0, 6).sort((a, b) => a.a - b.a)
       .map((x) => `<tr><td class="n">${x.a.toFixed(0)}</td><td class="n">${x.o.toFixed(1)}</td><td>${esc(x.landing ? landingKind(x.landing) + (x.landing.name ? " " + x.landing.name : "") : x.dock ? "dock" : "past campsite (" + x.teams + " team" + (x.teams > 1 ? "s" : "") + ")")}, ${esc(x.place)}</td></tr>`);
-    sheets.push(`<section><header><p class="plan">${esc(planLine)}</p><h1>${esc(title)}</h1><p>${fmt.format(t0)} to ${fmt.format(t1)} · ${(p1 - p0).toFixed(0)} nm along the route · rowing ${dur(rowH)} · ${v.toFixed(2)} kn through the water</p>
+    sheets.push(`<section><header><p class="plan">${esc(planLine)}</p><h1>${esc(title)}</h1><p>${fmt.format(t0)} to ${fmt.format(t1)} · ${(p1 - p0).toFixed(0)} nm along the route · rowing ${dur(rowH)} · ${v.toFixed(2)} kn through the water, split ${split(v)}/500 m</p>
       <p>${esc(from)} &rarr; ${esc(to)} · sunset ${hm(set)}, sunrise next day ${hm(rise2)} at the end of the day</p>
       <p>Calories, ${CREW.n} crew: rowing ${kcal(eK.row)} + non-active ${kcal(eK.rest)} = ${kcal(eK.row + eK.rest)} (${kcal((eK.row + eK.rest) / CREW.n)} each)${endStop ? ", camp to camp" : ""}</p></header>
       <h2>Plan</h2><table><thead><tr><th>Time</th><th>What</th><th>Where</th><th class="n">nm</th><th>Notes</th></tr></thead><tbody>${ev.map((e) => `<tr><td>${hm(e.t)}</td><td><b>${esc(e.k)}</b></td><td>${esc(e.w)}</td><td class="n">${e.p.toFixed(0)}</td><td>${esc(e.n)}</td></tr>`).join("")}</tbody></table>
-      <div class="cols"><div><h2>Stream each hour while rowing</h2><table class="sm"><thead><tr><th>Time</th><th class="n">nm</th><th>Near</th><th class="n">Stream</th><th class="n">Thru water</th><th class="n">Over ground</th></tr></thead><tbody>${hrs.join("") || '<tr><td colspan="6">Not rowing</td></tr>'}</tbody></table><p class="k">Stream in knots along the route, + with you, − against.</p></div>
+      <div class="cols"><div><h2>Stream each hour while rowing</h2><table class="sm"><thead><tr><th>Time</th><th class="n">nm</th><th>Near</th><th class="n">Stream</th><th class="n">Thru water</th><th class="n">Over ground</th><th class="n">Split ground</th></tr></thead><tbody>${hrs.join("") || '<tr><td colspan="7">Not rowing</td></tr>'}</tbody></table><p class="k">Stream in knots along the route, + with you, − against. Speeds in knots; split is minutes per 500 m over the ground (GPS); through the water it is ${split(v)}.</p></div>
       <div><h2>Other landings near the end (breaks, emergency)</h2><table class="sm"><thead><tr><th class="n">nm</th><th class="n">Off route</th><th>Place</th></tr></thead><tbody>${alt.join("") || `<tr><td colspan="3">${endStop ? "None listed" : "Finish line"}</td></tr>`}</tbody></table>
       <h2>Notes</h2><div class="lines"></div></div></div>
       <footer><b>${esc(planLine)}</b><br>R2AK 2028 planner · for planning, not navigation: check the official CHS/NOAA tables and the forecast</footer></section>`);
