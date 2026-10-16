@@ -1,0 +1,22 @@
+{
+ "_note": "Only boats that are a kayak, canoe, paddleboard or rowboat. Boat types from the R2AK 2015-2017 finisher comparison (r2ak.com) and, for Team John, Matt Johnson's analysis of the SPOT data. Teams whose boat type could not be confirmed are left out.",
+ "_results": "Official finish order and elapsed times from Victoria: r2ak.com/2015-full-race-results/",
+ "teams": {
+  "Team Soggy Beavers": {
+   "class": "Canoe",
+   "boat": "OC6 outrigger canoe, 6 crew",
+   "place": 7,
+   "official_elapsed_h": 268.4
+  },
+  "Team Mikes Kayak": {
+   "class": "Kayak",
+   "boat": "Prijon Kodiak, 1 crew",
+   "place": 14,
+   "official_elapsed_h": 556.983
+  },
+  "Team John": {
+   "class": "Kayak",
+   "boat": "kayak with outriggers"
+  }
+ }
+}

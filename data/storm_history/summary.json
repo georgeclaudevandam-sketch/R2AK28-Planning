@@ -1,0 +1,7398 @@
+{
+ "note": "June 1 - July 31, 1976-2025, per marine forecast area on the route. best: the record used, best_source says which: observed (Environment Canada lightstation and automatic station hourly wind, NDBC in Alaska; years at least 40% complete once each report is carried 3 h; at least 8 years), else a MEDS buoy, else the NWS warnings issued (Clarence Strait, 2005 on), else ERA5 hourly 10 m wind at a route point in the area (era5_raw; corrected = scaled to the area's buoy where that is within 20%). An event is a run of hours at small craft strength or more (gaps up to 6 h merged, at least 2 h); its level is the highest it reached. corrected: ERA5 scaled by the buoy/ERA5 ratio of 95th percentile daily maximum wind where a MEDS buoy is in the area (else as era5_raw). buoy_observed: the buoy itself. nws_issued_2005_on: the warnings the US National Weather Service actually issued. Thresholds: small craft 20 kn (Canada) / 23 kn (US), gale 34 kn, storm 48 kn. best.k10 and best.k15: the same for runs at 10 and 15 kn or more, from best_k_source (the station record where best is the warnings issued). Times Pacific daylight time.",
+ "generated": "2026-10-12T13:06Z",
+ "areas": [
+  {
+   "area": "Juan de Fuca Strait - east entrance",
+   "country": "CA",
+   "point": [
+    48.36,
+    -123.38
+   ],
+   "note": "Victoria start",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 7.93,
+     "days_per_jj": 8.8,
+     "share_of_hours_pct": 2.88,
+     "p_in_16_days": 0.857,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 8,
+      "p90": 11,
+      "max": 36
+     },
+     "longest_by_days": {
+      "<12 h": 307,
+      "12-24 h": 30,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 13.12,
+      "1986-1995": 8.4,
+      "1996-2005": 6.8,
+      "2006-2015": 6.3,
+      "2016-2025": 6.3
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.2,
+      "Jun 16-30": 3.17,
+      "Jul 1-15": 2.89,
+      "Jul 16-31": 2.31
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.05,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.01,
+     "years_with_any_pct": 5,
+     "dur_h": {
+      "p25": 8,
+      "median": 12,
+      "p75": 12,
+      "p90": 12,
+      "max": 12
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.12,
+      "1986-1995": 0.2,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "VICTORIA GONZALES CS",
+     "VICTORIA GONZALES HTS"
+    ],
+    "years": 43,
+    "first": 1976,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1976-2025 (43 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 7.93,
+     "days_per_jj": 8.8,
+     "share_of_hours_pct": 2.88,
+     "p_in_16_days": 0.857,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 8,
+      "p90": 11,
+      "max": 36
+     },
+     "longest_by_days": {
+      "<12 h": 307,
+      "12-24 h": 30,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 13.12,
+      "1986-1995": 8.4,
+      "1996-2005": 6.8,
+      "2006-2015": 6.3,
+      "2016-2025": 6.3
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.2,
+      "Jun 16-30": 3.17,
+      "Jul 1-15": 2.89,
+      "Jul 16-31": 2.31
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.05,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.01,
+     "years_with_any_pct": 5,
+     "dur_h": {
+      "p25": 8,
+      "median": 12,
+      "p75": 12,
+      "p90": 12,
+      "max": 12
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.12,
+      "1986-1995": 0.2,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "VICTORIA GONZALES CS",
+     "VICTORIA GONZALES HTS"
+    ],
+    "years": 43,
+    "first": 1976,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 34.56,
+     "days_per_jj": 49.3,
+     "share_of_hours_pct": 37.04,
+     "p_in_16_days": 0.991,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 11,
+      "p75": 21,
+      "p90": 40,
+      "max": 130
+     },
+     "longest_by_days": {
+      "<12 h": 780,
+      "12-24 h": 355,
+      "1-2 days": 238,
+      "2-3 days": 77,
+      "3+ days": 36
+     },
+     "by_decade_events": {
+      "1976-1985": 40.88,
+      "1986-1995": 30.6,
+      "1996-2005": 33.4,
+      "2006-2015": 34.0,
+      "2016-2025": 33.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 37.58,
+      "Jun 16-30": 38.9,
+      "Jul 1-15": 37.93,
+      "Jul 16-31": 33.96
+     }
+    },
+    "k15": {
+     "events_per_jj": 22.44,
+     "days_per_jj": 28.1,
+     "share_of_hours_pct": 13.93,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 8,
+      "p75": 14,
+      "p90": 25,
+      "max": 59
+     },
+     "longest_by_days": {
+      "<12 h": 633,
+      "12-24 h": 225,
+      "1-2 days": 100,
+      "2-3 days": 7,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 25.88,
+      "1986-1995": 20.4,
+      "1996-2005": 23.2,
+      "2006-2015": 21.8,
+      "2016-2025": 20.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 14.5,
+      "Jun 16-30": 15.01,
+      "Jul 1-15": 14.33,
+      "Jul 16-31": 12.0
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Haro Strait",
+   "country": "CA",
+   "point": [
+    48.6,
+    -123.22
+   ],
+   "note": "",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.58,
+     "days_per_jj": 0.7,
+     "share_of_hours_pct": 0.2,
+     "p_in_16_days": 0.13,
+     "years_with_any_pct": 48,
+     "dur_h": {
+      "p25": 2,
+      "median": 3,
+      "p75": 6,
+      "p90": 9,
+      "max": 14
+     },
+     "longest_by_days": {
+      "<12 h": 28,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.6,
+      "1986-1995": 0.6,
+      "1996-2005": 0.7,
+      "2006-2015": 0.4,
+      "2016-2025": 0.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.45,
+      "Jun 16-30": 0.13,
+      "Jul 1-15": 0.21,
+      "Jul 16-31": 0.02
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.58,
+     "days_per_jj": 0.7,
+     "share_of_hours_pct": 0.2,
+     "p_in_16_days": 0.13,
+     "years_with_any_pct": 48,
+     "dur_h": {
+      "p25": 2,
+      "median": 3,
+      "p75": 6,
+      "p90": 9,
+      "max": 14
+     },
+     "longest_by_days": {
+      "<12 h": 28,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.6,
+      "1986-1995": 0.6,
+      "1996-2005": 0.7,
+      "2006-2015": 0.4,
+      "2016-2025": 0.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.45,
+      "Jun 16-30": 0.13,
+      "Jul 1-15": 0.21,
+      "Jul 16-31": 0.02
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 3.31,
+     "days_per_jj": 3.5,
+     "share_of_hours_pct": 1.16,
+     "p_in_16_days": 0.542,
+     "years_with_any_pct": 93,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 7,
+      "p90": 10,
+      "max": 35
+     },
+     "longest_by_days": {
+      "<12 h": 89,
+      "12-24 h": 6,
+      "1-2 days": 1,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 2.89,
+      "2006-2015": 3.2,
+      "2016-2025": 3.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.0,
+      "Jun 16-30": 0.82,
+      "Jul 1-15": 0.9,
+      "Jul 16-31": 0.93
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.07,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.023,
+     "years_with_any_pct": 7,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.11,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.07,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.023,
+     "years_with_any_pct": 7,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.11,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "stations": [
+     "DISCOVERY ISLAND",
+     "KELP REEFS"
+    ],
+    "years": 29,
+    "first": 1997,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1997-2025 (29 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 3.31,
+     "days_per_jj": 3.5,
+     "share_of_hours_pct": 1.16,
+     "p_in_16_days": 0.542,
+     "years_with_any_pct": 93,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 7,
+      "p90": 10,
+      "max": 35
+     },
+     "longest_by_days": {
+      "<12 h": 89,
+      "12-24 h": 6,
+      "1-2 days": 1,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 2.89,
+      "2006-2015": 3.2,
+      "2016-2025": 3.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.0,
+      "Jun 16-30": 0.82,
+      "Jul 1-15": 0.9,
+      "Jul 16-31": 0.93
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.07,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.023,
+     "years_with_any_pct": 7,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.11,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.07,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.023,
+     "years_with_any_pct": 7,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.11,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.01
+     }
+    },
+    "stations": [
+     "DISCOVERY ISLAND",
+     "KELP REEFS"
+    ],
+    "years": 29,
+    "first": 1997,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 43.45,
+     "days_per_jj": 52.0,
+     "share_of_hours_pct": 32.25,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 9,
+      "p75": 16,
+      "p90": 32,
+      "max": 84
+     },
+     "longest_by_days": {
+      "<12 h": 775,
+      "12-24 h": 303,
+      "1-2 days": 146,
+      "2-3 days": 33,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 43.67,
+      "2006-2015": 44.6,
+      "2016-2025": 42.1
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 30.95,
+      "Jun 16-30": 32.5,
+      "Jul 1-15": 32.1,
+      "Jul 16-31": 33.36
+     }
+    },
+    "k15": {
+     "events_per_jj": 22.0,
+     "days_per_jj": 23.3,
+     "share_of_hours_pct": 8.64,
+     "p_in_16_days": 0.977,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 9,
+      "p90": 12,
+      "max": 43
+     },
+     "longest_by_days": {
+      "<12 h": 551,
+      "12-24 h": 77,
+      "1-2 days": 10,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 24.0,
+      "2006-2015": 20.1,
+      "2016-2025": 22.1
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.83,
+      "Jun 16-30": 8.36,
+      "Jul 1-15": 8.1,
+      "Jul 16-31": 9.24
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Strait of Georgia - south of Nanaimo",
+   "country": "CA",
+   "point": [
+    49.25,
+    -123.65
+   ],
+   "note": "Halibut Bank buoy",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": {
+    "buoy": "46146",
+    "years": "1992-2022",
+    "days_compared": 1183,
+    "scale": 2.619,
+    "buoy_p95_daily_max_kn": 22.0,
+    "era5_p95_daily_max_kn": 8.4,
+    "buoy_sc_days_pct": 13.1,
+    "era5_sc_days_pct": 0.0,
+    "era5_scaled_sc_days_pct": 9.2
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 4.19,
+     "days_per_jj": 5.4,
+     "share_of_hours_pct": 1.48,
+     "p_in_16_days": 0.688,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 7,
+      "p90": 11,
+      "max": 21
+     },
+     "longest_by_days": {
+      "<12 h": 62,
+      "12-24 h": 5,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 3.6,
+      "2006-2015": 5.0,
+      "2016-2025": 3.5
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.0,
+      "Jun 16-30": 0.9,
+      "Jul 1-15": 2.27,
+      "Jul 16-31": 0.78
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 10.56,
+     "days_per_jj": 12.7,
+     "share_of_hours_pct": 6.22,
+     "p_in_16_days": 0.882,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 13,
+      "p90": 21,
+      "max": 107
+     },
+     "longest_by_days": {
+      "<12 h": 234,
+      "12-24 h": 74,
+      "1-2 days": 22,
+      "2-3 days": 6,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 10.0,
+      "1996-2005": 12.1,
+      "2006-2015": 10.1,
+      "2016-2025": 9.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.82,
+      "Jun 16-30": 4.24,
+      "Jul 1-15": 7.03,
+      "Jul 16-31": 6.74
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.03,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.005,
+     "years_with_any_pct": 3,
+     "dur_h": {
+      "p25": 2,
+      "median": 2,
+      "p75": 2,
+      "p90": 2,
+      "max": 2
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ENTRANCE ISLAND"
+    ],
+    "years": 32,
+    "first": 1994,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1994-2025 (32 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 10.56,
+     "days_per_jj": 12.7,
+     "share_of_hours_pct": 6.22,
+     "p_in_16_days": 0.882,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 13,
+      "p90": 21,
+      "max": 107
+     },
+     "longest_by_days": {
+      "<12 h": 234,
+      "12-24 h": 74,
+      "1-2 days": 22,
+      "2-3 days": 6,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 10.0,
+      "1996-2005": 12.1,
+      "2006-2015": 10.1,
+      "2016-2025": 9.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.82,
+      "Jun 16-30": 4.24,
+      "Jul 1-15": 7.03,
+      "Jul 16-31": 6.74
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.03,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.005,
+     "years_with_any_pct": 3,
+     "dur_h": {
+      "p25": 2,
+      "median": 2,
+      "p75": 2,
+      "p90": 2,
+      "max": 2
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.01,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ENTRANCE ISLAND"
+    ],
+    "years": 32,
+    "first": 1994,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 39.59,
+     "days_per_jj": 54.0,
+     "share_of_hours_pct": 44.89,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 7,
+      "median": 12,
+      "p75": 23,
+      "p90": 42,
+      "max": 203
+     },
+     "longest_by_days": {
+      "<12 h": 586,
+      "12-24 h": 371,
+      "1-2 days": 212,
+      "2-3 days": 57,
+      "3+ days": 41
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 38.5,
+      "1996-2005": 38.8,
+      "2006-2015": 38.4,
+      "2016-2025": 41.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 45.96,
+      "Jun 16-30": 41.2,
+      "Jul 1-15": 45.54,
+      "Jul 16-31": 46.74
+     }
+    },
+    "k15": {
+     "events_per_jj": 28.31,
+     "days_per_jj": 34.4,
+     "share_of_hours_pct": 20.77,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 8,
+      "p75": 13,
+      "p90": 26,
+      "max": 152
+     },
+     "longest_by_days": {
+      "<12 h": 637,
+      "12-24 h": 168,
+      "1-2 days": 59,
+      "2-3 days": 25,
+      "3+ days": 17
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 31.0,
+      "1996-2005": 30.0,
+      "2006-2015": 27.4,
+      "2016-2025": 27.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 20.56,
+      "Jun 16-30": 16.66,
+      "Jul 1-15": 21.88,
+      "Jul 16-31": 23.79
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Strait of Georgia - north of Nanaimo",
+   "country": "CA",
+   "point": [
+    49.8,
+    -124.75
+   ],
+   "note": "Sentry Shoal buoy",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": {
+    "buoy": "46131",
+    "years": "1994-2022",
+    "days_compared": 937,
+    "scale": 2.419,
+    "buoy_p95_daily_max_kn": 22.5,
+    "era5_p95_daily_max_kn": 9.3,
+    "buoy_sc_days_pct": 12.0,
+    "era5_sc_days_pct": 0.0,
+    "era5_scaled_sc_days_pct": 13.0
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 4.25,
+     "days_per_jj": 4.9,
+     "share_of_hours_pct": 1.81,
+     "p_in_16_days": 0.613,
+     "years_with_any_pct": 81,
+     "dur_h": {
+      "p25": 4,
+      "median": 6,
+      "p75": 10,
+      "p90": 17,
+      "max": 25
+     },
+     "longest_by_days": {
+      "<12 h": 56,
+      "12-24 h": 11,
+      "1-2 days": 1,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 3.0,
+      "1996-2005": 5.0,
+      "2006-2015": 6.25,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.41,
+      "Jun 16-30": 1.39,
+      "Jul 1-15": 2.0,
+      "Jul 16-31": 1.48
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 18.03,
+     "days_per_jj": 22.4,
+     "share_of_hours_pct": 8.86,
+     "p_in_16_days": 0.992,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 11,
+      "p90": 16,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 482,
+      "12-24 h": 122,
+      "1-2 days": 26,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 10.5,
+      "1986-1995": 23.0,
+      "1996-2005": 20.2,
+      "2006-2015": 18.9,
+      "2016-2025": 17.5
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 12.41,
+      "Jun 16-30": 8.84,
+      "Jul 1-15": 8.15,
+      "Jul 16-31": 6.23
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.57,
+     "days_per_jj": 1.1,
+     "share_of_hours_pct": 0.15,
+     "p_in_16_days": 0.132,
+     "years_with_any_pct": 46,
+     "dur_h": {
+      "p25": 16,
+      "median": 19,
+      "p75": 28,
+      "p90": 41,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 3,
+      "12-24 h": 10,
+      "1-2 days": 6,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.25,
+      "1986-1995": 0.0,
+      "1996-2005": 0.7,
+      "2006-2015": 0.6,
+      "2016-2025": 0.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.34,
+      "Jun 16-30": 0.08,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.13
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "MERRY ISLAND LIGHTSTATION",
+     "SISTERS ISLAND"
+    ],
+    "years": 35,
+    "first": 1976,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1976-2025 (35 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 18.03,
+     "days_per_jj": 22.4,
+     "share_of_hours_pct": 8.86,
+     "p_in_16_days": 0.992,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 11,
+      "p90": 16,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 482,
+      "12-24 h": 122,
+      "1-2 days": 26,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 10.5,
+      "1986-1995": 23.0,
+      "1996-2005": 20.2,
+      "2006-2015": 18.9,
+      "2016-2025": 17.5
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 12.41,
+      "Jun 16-30": 8.84,
+      "Jul 1-15": 8.15,
+      "Jul 16-31": 6.23
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.57,
+     "days_per_jj": 1.1,
+     "share_of_hours_pct": 0.15,
+     "p_in_16_days": 0.132,
+     "years_with_any_pct": 46,
+     "dur_h": {
+      "p25": 16,
+      "median": 19,
+      "p75": 28,
+      "p90": 41,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 3,
+      "12-24 h": 10,
+      "1-2 days": 6,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.25,
+      "1986-1995": 0.0,
+      "1996-2005": 0.7,
+      "2006-2015": 0.6,
+      "2016-2025": 0.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.34,
+      "Jun 16-30": 0.08,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.13
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "MERRY ISLAND LIGHTSTATION",
+     "SISTERS ISLAND"
+    ],
+    "years": 35,
+    "first": 1976,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 38.2,
+     "days_per_jj": 56.6,
+     "share_of_hours_pct": 50.44,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 14,
+      "p75": 32,
+      "p90": 52,
+      "max": 190
+     },
+     "longest_by_days": {
+      "<12 h": 569,
+      "12-24 h": 342,
+      "1-2 days": 265,
+      "2-3 days": 97,
+      "3+ days": 64
+     },
+     "by_decade_events": {
+      "1976-1985": 33.25,
+      "1986-1995": 36.0,
+      "1996-2005": 37.8,
+      "2006-2015": 38.2,
+      "2016-2025": 40.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 54.23,
+      "Jun 16-30": 50.16,
+      "Jul 1-15": 48.57,
+      "Jul 16-31": 48.91
+     }
+    },
+    "k15": {
+     "events_per_jj": 38.26,
+     "days_per_jj": 46.2,
+     "share_of_hours_pct": 26.13,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 27,
+      "max": 89
+     },
+     "longest_by_days": {
+      "<12 h": 872,
+      "12-24 h": 303,
+      "1-2 days": 141,
+      "2-3 days": 19,
+      "3+ days": 4
+     },
+     "by_decade_events": {
+      "1976-1985": 21.75,
+      "1986-1995": 41.0,
+      "1996-2005": 39.6,
+      "2006-2015": 40.7,
+      "2016-2025": 40.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 30.48,
+      "Jun 16-30": 25.72,
+      "Jul 1-15": 25.27,
+      "Jul 16-31": 23.24
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Johnstone Strait",
+   "country": "CA",
+   "point": [
+    50.42,
+    -125.9
+   ],
+   "note": "",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 35.16,
+     "days_per_jj": 44.6,
+     "share_of_hours_pct": 30.43,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 10,
+      "p75": 15,
+      "p90": 35,
+      "max": 184
+     },
+     "longest_by_days": {
+      "<12 h": 520,
+      "12-24 h": 236,
+      "1-2 days": 85,
+      "2-3 days": 25,
+      "3+ days": 13
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 35.67,
+      "2006-2015": 34.3,
+      "2016-2025": 35.78
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 25.3,
+      "Jun 16-30": 25.93,
+      "Jul 1-15": 33.84,
+      "Jul 16-31": 36.25
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.24,
+     "days_per_jj": 0.8,
+     "share_of_hours_pct": 0.02,
+     "p_in_16_days": 0.05,
+     "years_with_any_pct": 16,
+     "dur_h": {
+      "p25": 10,
+      "median": 84,
+      "p75": 93,
+      "p90": 111,
+      "max": 111
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 1,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.33,
+      "2006-2015": 0.1,
+      "2016-2025": 0.33
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.03,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "FANNY ISLAND"
+    ],
+    "years": 25,
+    "first": 2000,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "2000-2025 (25 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 35.16,
+     "days_per_jj": 44.6,
+     "share_of_hours_pct": 30.43,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 10,
+      "p75": 15,
+      "p90": 35,
+      "max": 184
+     },
+     "longest_by_days": {
+      "<12 h": 520,
+      "12-24 h": 236,
+      "1-2 days": 85,
+      "2-3 days": 25,
+      "3+ days": 13
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 35.67,
+      "2006-2015": 34.3,
+      "2016-2025": 35.78
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 25.3,
+      "Jun 16-30": 25.93,
+      "Jul 1-15": 33.84,
+      "Jul 16-31": 36.25
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.24,
+     "days_per_jj": 0.8,
+     "share_of_hours_pct": 0.02,
+     "p_in_16_days": 0.05,
+     "years_with_any_pct": 16,
+     "dur_h": {
+      "p25": 10,
+      "median": 84,
+      "p75": 93,
+      "p90": 111,
+      "max": 111
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 1,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.33,
+      "2006-2015": 0.1,
+      "2016-2025": 0.33
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.03,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "FANNY ISLAND"
+    ],
+    "years": 25,
+    "first": 2000,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 23.96,
+     "days_per_jj": 59.1,
+     "share_of_hours_pct": 69.31,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 16,
+      "p75": 52,
+      "p90": 122,
+      "max": 562
+     },
+     "longest_by_days": {
+      "<12 h": 231,
+      "12-24 h": 112,
+      "1-2 days": 97,
+      "2-3 days": 50,
+      "3+ days": 109
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 24.0,
+      "2006-2015": 24.6,
+      "2016-2025": 23.22
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 62.41,
+      "Jun 16-30": 64.96,
+      "Jul 1-15": 72.17,
+      "Jul 16-31": 77.19
+     }
+    },
+    "k15": {
+     "events_per_jj": 27.28,
+     "days_per_jj": 52.6,
+     "share_of_hours_pct": 53.13,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 8,
+      "median": 14,
+      "p75": 37,
+      "p90": 83,
+      "max": 316
+     },
+     "longest_by_days": {
+      "<12 h": 267,
+      "12-24 h": 190,
+      "1-2 days": 98,
+      "2-3 days": 52,
+      "3+ days": 75
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 27.0,
+      "2006-2015": 25.8,
+      "2016-2025": 29.11
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 45.57,
+      "Jun 16-30": 48.4,
+      "Jul 1-15": 56.7,
+      "Jul 16-31": 61.3
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Queen Charlotte Strait",
+   "country": "CA",
+   "point": [
+    50.75,
+    -127.2
+   ],
+   "note": "",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.02,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.001,
+     "years_with_any_pct": 2,
+     "dur_h": {
+      "p25": 6,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.1,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.03,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.02,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.001,
+     "years_with_any_pct": 2,
+     "dur_h": {
+      "p25": 6,
+      "median": 6,
+      "p75": 6,
+      "p90": 6,
+      "max": 6
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.1,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.03,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 7.62,
+     "days_per_jj": 8.9,
+     "share_of_hours_pct": 4.19,
+     "p_in_16_days": 0.8,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 12,
+      "p90": 18,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 265,
+      "12-24 h": 85,
+      "1-2 days": 15,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 9.1,
+      "1986-1995": 9.4,
+      "1996-2005": 7.56,
+      "2006-2015": 6.3,
+      "2016-2025": 5.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 5.92,
+      "Jun 16-30": 3.55,
+      "Jul 1-15": 4.5,
+      "Jul 16-31": 2.89
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.48,
+     "days_per_jj": 0.8,
+     "share_of_hours_pct": 0.17,
+     "p_in_16_days": 0.099,
+     "years_with_any_pct": 38,
+     "dur_h": {
+      "p25": 13,
+      "median": 19,
+      "p75": 21,
+      "p90": 28,
+      "max": 33
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 17,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.2,
+      "1986-1995": 0.7,
+      "1996-2005": 0.22,
+      "2006-2015": 0.7,
+      "2016-2025": 0.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.48,
+      "Jun 16-30": 0.06,
+      "Jul 1-15": 0.08,
+      "Jul 16-31": 0.05
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ALERT BAY",
+     "HERBERT ISLAND (AUT)",
+     "PINE ISLAND"
+    ],
+    "years": 48,
+    "first": 1976,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1976-2025 (48 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 7.62,
+     "days_per_jj": 8.9,
+     "share_of_hours_pct": 4.19,
+     "p_in_16_days": 0.8,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 3,
+      "median": 6,
+      "p75": 12,
+      "p90": 18,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 265,
+      "12-24 h": 85,
+      "1-2 days": 15,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 9.1,
+      "1986-1995": 9.4,
+      "1996-2005": 7.56,
+      "2006-2015": 6.3,
+      "2016-2025": 5.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 5.92,
+      "Jun 16-30": 3.55,
+      "Jul 1-15": 4.5,
+      "Jul 16-31": 2.89
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.48,
+     "days_per_jj": 0.8,
+     "share_of_hours_pct": 0.17,
+     "p_in_16_days": 0.099,
+     "years_with_any_pct": 38,
+     "dur_h": {
+      "p25": 13,
+      "median": 19,
+      "p75": 21,
+      "p90": 28,
+      "max": 33
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 17,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.2,
+      "1986-1995": 0.7,
+      "1996-2005": 0.22,
+      "2006-2015": 0.7,
+      "2016-2025": 0.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.48,
+      "Jun 16-30": 0.06,
+      "Jul 1-15": 0.08,
+      "Jul 16-31": 0.05
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ALERT BAY",
+     "HERBERT ISLAND (AUT)",
+     "PINE ISLAND"
+    ],
+    "years": 48,
+    "first": 1976,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 39.54,
+     "days_per_jj": 49.4,
+     "share_of_hours_pct": 34.5,
+     "p_in_16_days": 1.0,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 9,
+      "p75": 16,
+      "p90": 35,
+      "max": 202
+     },
+     "longest_by_days": {
+      "<12 h": 1164,
+      "12-24 h": 448,
+      "1-2 days": 179,
+      "2-3 days": 69,
+      "3+ days": 38
+     },
+     "by_decade_events": {
+      "1976-1985": 39.4,
+      "1986-1995": 36.7,
+      "1996-2005": 41.44,
+      "2006-2015": 38.3,
+      "2016-2025": 42.33
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 36.67,
+      "Jun 16-30": 33.11,
+      "Jul 1-15": 34.67,
+      "Jul 16-31": 33.63
+     }
+    },
+    "k15": {
+     "events_per_jj": 20.29,
+     "days_per_jj": 24.0,
+     "share_of_hours_pct": 12.72,
+     "p_in_16_days": 0.99,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 13,
+      "p90": 23,
+      "max": 144
+     },
+     "longest_by_days": {
+      "<12 h": 684,
+      "12-24 h": 198,
+      "1-2 days": 79,
+      "2-3 days": 11,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 19.6,
+      "1986-1995": 19.6,
+      "1996-2005": 18.56,
+      "2006-2015": 22.7,
+      "2016-2025": 20.89
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 15.53,
+      "Jun 16-30": 11.24,
+      "Jul 1-15": 13.11,
+      "Jul 16-31": 11.12
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Queen Charlotte Sound - eastern half",
+   "country": "CA",
+   "point": [
+    51.25,
+    -127.95
+   ],
+   "note": "West Sea Otter buoy; Cape Caution crossing",
+   "years": 50,
+   "scale": 0.992,
+   "calibration": {
+    "buoy": "46204",
+    "years": "1990-2023",
+    "days_compared": 1695,
+    "scale": 0.992,
+    "buoy_p95_daily_max_kn": 25.1,
+    "era5_p95_daily_max_kn": 25.3,
+    "buoy_sc_days_pct": 16.3,
+    "era5_sc_days_pct": 19.6,
+    "era5_scaled_sc_days_pct": 18.7
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 1.8,
+     "days_per_jj": 2.2,
+     "share_of_hours_pct": 1.0,
+     "p_in_16_days": 0.341,
+     "years_with_any_pct": 92,
+     "dur_h": {
+      "p25": 4,
+      "median": 6,
+      "p75": 11,
+      "p90": 17,
+      "max": 37
+     },
+     "longest_by_days": {
+      "<12 h": 70,
+      "12-24 h": 16,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 1.8,
+      "1986-1995": 1.9,
+      "1996-2005": 1.9,
+      "2006-2015": 1.8,
+      "2016-2025": 1.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.35,
+      "Jun 16-30": 0.66,
+      "Jul 1-15": 0.53,
+      "Jul 16-31": 0.49
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 1.92,
+     "days_per_jj": 2.3,
+     "share_of_hours_pct": 1.08,
+     "p_in_16_days": 0.36,
+     "years_with_any_pct": 94,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 11,
+      "p90": 17,
+      "max": 39
+     },
+     "longest_by_days": {
+      "<12 h": 73,
+      "12-24 h": 19,
+      "1-2 days": 4,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 1.9,
+      "1986-1995": 2.0,
+      "1996-2005": 2.2,
+      "2006-2015": 1.8,
+      "2016-2025": 1.7
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 2.52,
+      "Jun 16-30": 0.73,
+      "Jul 1-15": 0.61,
+      "Jul 16-31": 0.52
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 6.9,
+     "days_per_jj": 9.1,
+     "share_of_hours_pct": 4.39,
+     "p_in_16_days": 0.743,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 24,
+      "max": 51
+     },
+     "longest_by_days": {
+      "<12 h": 128,
+      "12-24 h": 52,
+      "1-2 days": 19,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 4.75,
+      "1996-2005": 8.25,
+      "2006-2015": 7.67,
+      "2016-2025": 5.75
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.46,
+      "Jun 16-30": 2.63,
+      "Jul 1-15": 3.78,
+      "Jul 16-31": 3.71
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.14,
+     "days_per_jj": 0.2,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.037,
+     "years_with_any_pct": 14,
+     "dur_h": {
+      "p25": 15,
+      "median": 22,
+      "p75": 22,
+      "p90": 22,
+      "max": 22
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 4,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.12,
+      "2006-2015": 0.22,
+      "2016-2025": 0.12
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 12.38,
+     "days_per_jj": 12.0,
+     "share_of_hours_pct": 5.22,
+     "p_in_16_days": 0.932,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 4,
+      "p75": 7,
+      "p90": 13,
+      "max": 16
+     },
+     "longest_by_days": {
+      "<12 h": 84,
+      "12-24 h": 15,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 7.0,
+      "1996-2005": 14.17,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.33,
+      "Jun 16-30": 3.54,
+      "Jul 1-15": 5.62,
+      "Jul 16-31": 3.48
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.62,
+     "days_per_jj": 0.6,
+     "share_of_hours_pct": 0.16,
+     "p_in_16_days": 0.19,
+     "years_with_any_pct": 50,
+     "dur_h": {
+      "p25": 10,
+      "median": 13,
+      "p75": 16,
+      "p90": 16,
+      "max": 16
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 3,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.83,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.24,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.42,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "EGG ISLAND"
+    ],
+    "years": 8,
+    "first": 1994,
+    "last": 2001
+   },
+   "best_source": "buoy 46204",
+   "best_years": "1991-2023 (29 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 6.9,
+     "days_per_jj": 9.1,
+     "share_of_hours_pct": 4.39,
+     "p_in_16_days": 0.743,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 24,
+      "max": 51
+     },
+     "longest_by_days": {
+      "<12 h": 128,
+      "12-24 h": 52,
+      "1-2 days": 19,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 4.75,
+      "1996-2005": 8.25,
+      "2006-2015": 7.67,
+      "2016-2025": 5.75
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.46,
+      "Jun 16-30": 2.63,
+      "Jul 1-15": 3.78,
+      "Jul 16-31": 3.71
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.14,
+     "days_per_jj": 0.2,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.037,
+     "years_with_any_pct": 14,
+     "dur_h": {
+      "p25": 15,
+      "median": 22,
+      "p75": 22,
+      "p90": 22,
+      "max": 22
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 4,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.12,
+      "2006-2015": 0.22,
+      "2016-2025": 0.12
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.01
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "k10": {
+     "events_per_jj": 23.0,
+     "days_per_jj": 44.0,
+     "share_of_hours_pct": 39.58,
+     "p_in_16_days": 0.862,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 7,
+      "median": 18,
+      "p75": 39,
+      "p90": 67,
+      "max": 249
+     },
+     "longest_by_days": {
+      "<12 h": 243,
+      "12-24 h": 149,
+      "1-2 days": 146,
+      "2-3 days": 67,
+      "3+ days": 62
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 28.0,
+      "1996-2005": 24.0,
+      "2006-2015": 22.22,
+      "2016-2025": 20.38
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 43.01,
+      "Jun 16-30": 37.13,
+      "Jul 1-15": 37.31,
+      "Jul 16-31": 40.8
+     }
+    },
+    "k15": {
+     "events_per_jj": 15.41,
+     "days_per_jj": 23.9,
+     "share_of_hours_pct": 15.73,
+     "p_in_16_days": 0.862,
+     "years_with_any_pct": 86,
+     "dur_h": {
+      "p25": 6,
+      "median": 12,
+      "p75": 23,
+      "p90": 45,
+      "max": 183
+     },
+     "longest_by_days": {
+      "<12 h": 222,
+      "12-24 h": 114,
+      "1-2 days": 74,
+      "2-3 days": 25,
+      "3+ days": 12
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 15.0,
+      "1996-2005": 16.88,
+      "2006-2015": 16.44,
+      "2016-2025": 13.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 20.4,
+      "Jun 16-30": 12.56,
+      "Jul 1-15": 13.88,
+      "Jul 16-31": 16.07
+     }
+    }
+   },
+   "best_k_source": "buoy 46204"
+  },
+  {
+   "area": "Central Coast from McInnes Island to Pine Island",
+   "country": "CA",
+   "point": [
+    51.75,
+    -128.0
+   ],
+   "note": "Fitz Hugh Sound to Bella Bella",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 4.19,
+     "days_per_jj": 5.0,
+     "share_of_hours_pct": 2.26,
+     "p_in_16_days": 0.452,
+     "years_with_any_pct": 56,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 11,
+      "p90": 19,
+      "max": 71
+     },
+     "longest_by_days": {
+      "<12 h": 141,
+      "12-24 h": 26,
+      "1-2 days": 12,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 6.5,
+      "1986-1995": 8.9,
+      "1996-2005": 6.5,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.21,
+      "Jun 16-30": 2.6,
+      "Jul 1-15": 1.59,
+      "Jul 16-31": 1.69
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.16,
+     "days_per_jj": 0.3,
+     "share_of_hours_pct": 0.07,
+     "p_in_16_days": 0.04,
+     "years_with_any_pct": 12,
+     "dur_h": {
+      "p25": 18,
+      "median": 23,
+      "p75": 32,
+      "p90": 71,
+      "max": 71
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 4,
+      "1-2 days": 2,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.25,
+      "1986-1995": 0.5,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.16,
+      "Jun 16-30": 0.11,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ADDENBROKE ISLAND",
+     "BELLA BELLA",
+     "BELLA BELLA A",
+     "MCINNES ISLAND"
+    ],
+    "years": 43,
+    "first": 1976,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1976-2025 (43 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 4.19,
+     "days_per_jj": 5.0,
+     "share_of_hours_pct": 2.26,
+     "p_in_16_days": 0.452,
+     "years_with_any_pct": 56,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 11,
+      "p90": 19,
+      "max": 71
+     },
+     "longest_by_days": {
+      "<12 h": 141,
+      "12-24 h": 26,
+      "1-2 days": 12,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 6.5,
+      "1986-1995": 8.9,
+      "1996-2005": 6.5,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.21,
+      "Jun 16-30": 2.6,
+      "Jul 1-15": 1.59,
+      "Jul 16-31": 1.69
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.16,
+     "days_per_jj": 0.3,
+     "share_of_hours_pct": 0.07,
+     "p_in_16_days": 0.04,
+     "years_with_any_pct": 12,
+     "dur_h": {
+      "p25": 18,
+      "median": 23,
+      "p75": 32,
+      "p90": 71,
+      "max": 71
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 4,
+      "1-2 days": 2,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.25,
+      "1986-1995": 0.5,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.16,
+      "Jun 16-30": 0.11,
+      "Jul 1-15": 0.01,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "ADDENBROKE ISLAND",
+     "BELLA BELLA",
+     "BELLA BELLA A",
+     "MCINNES ISLAND"
+    ],
+    "years": 43,
+    "first": 1976,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 22.58,
+     "days_per_jj": 26.9,
+     "share_of_hours_pct": 17.34,
+     "p_in_16_days": 0.775,
+     "years_with_any_pct": 98,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 14,
+      "p90": 27,
+      "max": 154
+     },
+     "longest_by_days": {
+      "<12 h": 643,
+      "12-24 h": 224,
+      "1-2 days": 69,
+      "2-3 days": 17,
+      "3+ days": 18
+     },
+     "by_decade_events": {
+      "1976-1985": 31.5,
+      "1986-1995": 36.0,
+      "1996-2005": 50.0,
+      "2006-2015": 4.33,
+      "2016-2025": 2.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 18.88,
+      "Jun 16-30": 18.94,
+      "Jul 1-15": 15.88,
+      "Jul 16-31": 15.76
+     }
+    },
+    "k15": {
+     "events_per_jj": 10.88,
+     "days_per_jj": 12.9,
+     "share_of_hours_pct": 6.64,
+     "p_in_16_days": 0.557,
+     "years_with_any_pct": 58,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 12,
+      "p90": 20,
+      "max": 81
+     },
+     "longest_by_days": {
+      "<12 h": 345,
+      "12-24 h": 85,
+      "1-2 days": 31,
+      "2-3 days": 5,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 16.0,
+      "1986-1995": 20.4,
+      "1996-2005": 22.5,
+      "2006-2015": 0.11,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.8,
+      "Jun 16-30": 7.37,
+      "Jul 1-15": 5.83,
+      "Jul 16-31": 5.63
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Inside channels, Finlayson to Grenville (no forecast area)",
+   "country": "CA",
+   "point": [
+    53.0,
+    -129.05
+   ],
+   "note": "inside route only; not a forecast area",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 0.38,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.12,
+     "p_in_16_days": 0.092,
+     "years_with_any_pct": 38,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 7,
+      "p90": 7,
+      "max": 7
+     },
+     "longest_by_days": {
+      "<12 h": 3,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.5,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.38,
+      "Jun 16-30": 0.1,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "BOAT BLUFF"
+    ],
+    "years": 8,
+    "first": 1994,
+    "last": 2001
+   },
+   "best_source": "observed",
+   "best_years": "1994-2001 (8 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 0.38,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.12,
+     "p_in_16_days": 0.092,
+     "years_with_any_pct": 38,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 7,
+      "p90": 7,
+      "max": 7
+     },
+     "longest_by_days": {
+      "<12 h": 3,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.5,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.38,
+      "Jun 16-30": 0.1,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "BOAT BLUFF"
+    ],
+    "years": 8,
+    "first": 1994,
+    "last": 2001,
+    "k10": {
+     "events_per_jj": 16.62,
+     "days_per_jj": 16.1,
+     "share_of_hours_pct": 6.63,
+     "p_in_16_days": 0.932,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 4,
+      "p75": 7,
+      "p90": 12,
+      "max": 16
+     },
+     "longest_by_days": {
+      "<12 h": 119,
+      "12-24 h": 14,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 12.5,
+      "1996-2005": 18.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.85,
+      "Jun 16-30": 7.43,
+      "Jul 1-15": 6.08,
+      "Jul 16-31": 5.27
+     }
+    },
+    "k15": {
+     "events_per_jj": 3.75,
+     "days_per_jj": 3.8,
+     "share_of_hours_pct": 1.2,
+     "p_in_16_days": 0.554,
+     "years_with_any_pct": 88,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 6,
+      "p90": 10,
+      "max": 12
+     },
+     "longest_by_days": {
+      "<12 h": 29,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 2.5,
+      "1996-2005": 4.17,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 1.08,
+      "Jun 16-30": 0.83,
+      "Jul 1-15": 1.35,
+      "Jul 16-31": 1.5
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Hecate Strait - southern half",
+   "country": "CA",
+   "point": [
+    52.7,
+    -129.8
+   ],
+   "note": "South Hecate buoy; outside route only",
+   "years": 50,
+   "scale": 1.012,
+   "calibration": {
+    "buoy": "46185",
+    "years": "1992-2024",
+    "days_compared": 1782,
+    "scale": 1.012,
+    "buoy_p95_daily_max_kn": 26.0,
+    "era5_p95_daily_max_kn": 25.7,
+    "buoy_sc_days_pct": 20.6,
+    "era5_sc_days_pct": 19.6,
+    "era5_scaled_sc_days_pct": 20.1
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 6.54,
+     "days_per_jj": 10.2,
+     "share_of_hours_pct": 6.72,
+     "p_in_16_days": 0.807,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 10,
+      "p75": 17,
+      "p90": 40,
+      "max": 134
+     },
+     "longest_by_days": {
+      "<12 h": 178,
+      "12-24 h": 93,
+      "1-2 days": 36,
+      "2-3 days": 13,
+      "3+ days": 7
+     },
+     "by_decade_events": {
+      "1976-1985": 6.2,
+      "1986-1995": 6.9,
+      "1996-2005": 6.3,
+      "2006-2015": 6.7,
+      "2016-2025": 6.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 9.14,
+      "Jun 16-30": 5.71,
+      "Jul 1-15": 5.02,
+      "Jul 16-31": 6.99
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.04,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.02,
+     "p_in_16_days": 0.003,
+     "years_with_any_pct": 4,
+     "dur_h": {
+      "p25": 21,
+      "median": 23,
+      "p75": 23,
+      "p90": 23,
+      "max": 23
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.1,
+      "1996-2005": 0.0,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.03,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.04
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 6.18,
+     "days_per_jj": 9.7,
+     "share_of_hours_pct": 6.35,
+     "p_in_16_days": 0.792,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 10,
+      "p75": 18,
+      "p90": 39,
+      "max": 121
+     },
+     "longest_by_days": {
+      "<12 h": 171,
+      "12-24 h": 82,
+      "1-2 days": 39,
+      "2-3 days": 10,
+      "3+ days": 7
+     },
+     "by_decade_events": {
+      "1976-1985": 6.0,
+      "1986-1995": 6.5,
+      "1996-2005": 6.0,
+      "2006-2015": 6.2,
+      "2016-2025": 6.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.63,
+      "Jun 16-30": 5.35,
+      "Jul 1-15": 4.75,
+      "Jul 16-31": 6.64
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.04,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.003,
+     "years_with_any_pct": 4,
+     "dur_h": {
+      "p25": 21,
+      "median": 22,
+      "p75": 22,
+      "p90": 22,
+      "max": 22
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.1,
+      "1996-2005": 0.0,
+      "2006-2015": 0.1,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.04
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 8.0,
+     "days_per_jj": 12.0,
+     "share_of_hours_pct": 6.71,
+     "p_in_16_days": 0.733,
+     "years_with_any_pct": 84,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 18,
+      "p90": 36,
+      "max": 121
+     },
+     "longest_by_days": {
+      "<12 h": 146,
+      "12-24 h": 57,
+      "1-2 days": 34,
+      "2-3 days": 8,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 7.0,
+      "1996-2005": 8.3,
+      "2006-2015": 10.78,
+      "2016-2025": 5.22
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.92,
+      "Jun 16-30": 4.09,
+      "Jul 1-15": 5.62,
+      "Jul 16-31": 8.11
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.1,
+     "days_per_jj": 0.2,
+     "share_of_hours_pct": 0.02,
+     "p_in_16_days": 0.025,
+     "years_with_any_pct": 10,
+     "dur_h": {
+      "p25": 9,
+      "median": 16,
+      "p75": 20,
+      "p90": 20,
+      "max": 20
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.1,
+      "2006-2015": 0.22,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.02,
+      "Jul 16-31": 0.06
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "best_source": "buoy 46185",
+   "best_years": "1992-2024 (31 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 8.0,
+     "days_per_jj": 12.0,
+     "share_of_hours_pct": 6.71,
+     "p_in_16_days": 0.733,
+     "years_with_any_pct": 84,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 18,
+      "p90": 36,
+      "max": 121
+     },
+     "longest_by_days": {
+      "<12 h": 146,
+      "12-24 h": 57,
+      "1-2 days": 34,
+      "2-3 days": 8,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 7.0,
+      "1996-2005": 8.3,
+      "2006-2015": 10.78,
+      "2016-2025": 5.22
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 8.92,
+      "Jun 16-30": 4.09,
+      "Jul 1-15": 5.62,
+      "Jul 16-31": 8.11
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.1,
+     "days_per_jj": 0.2,
+     "share_of_hours_pct": 0.02,
+     "p_in_16_days": 0.025,
+     "years_with_any_pct": 10,
+     "dur_h": {
+      "p25": 9,
+      "median": 16,
+      "p75": 20,
+      "p90": 20,
+      "max": 20
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.1,
+      "2006-2015": 0.22,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.02,
+      "Jul 16-31": 0.06
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "k10": {
+     "events_per_jj": 22.13,
+     "days_per_jj": 43.1,
+     "share_of_hours_pct": 39.53,
+     "p_in_16_days": 0.854,
+     "years_with_any_pct": 87,
+     "dur_h": {
+      "p25": 8,
+      "median": 20,
+      "p75": 38,
+      "p90": 68,
+      "max": 300
+     },
+     "longest_by_days": {
+      "<12 h": 221,
+      "12-24 h": 162,
+      "1-2 days": 178,
+      "2-3 days": 63,
+      "3+ days": 62
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 29.0,
+      "1996-2005": 26.9,
+      "2006-2015": 23.89,
+      "2016-2025": 12.78
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 41.67,
+      "Jun 16-30": 38.08,
+      "Jul 1-15": 37.63,
+      "Jul 16-31": 40.65
+     }
+    },
+    "k15": {
+     "events_per_jj": 15.23,
+     "days_per_jj": 25.3,
+     "share_of_hours_pct": 18.48,
+     "p_in_16_days": 0.844,
+     "years_with_any_pct": 87,
+     "dur_h": {
+      "p25": 6,
+      "median": 13,
+      "p75": 28,
+      "p90": 48,
+      "max": 158
+     },
+     "longest_by_days": {
+      "<12 h": 208,
+      "12-24 h": 130,
+      "1-2 days": 86,
+      "2-3 days": 31,
+      "3+ days": 17
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 13.67,
+      "1996-2005": 16.9,
+      "2006-2015": 19.67,
+      "2016-2025": 9.44
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 21.08,
+      "Jun 16-30": 15.56,
+      "Jul 1-15": 15.49,
+      "Jul 16-31": 21.56
+     }
+    }
+   },
+   "best_k_source": "buoy 46185"
+  },
+  {
+   "area": "Hecate Strait - northern half",
+   "country": "CA",
+   "point": [
+    53.7,
+    -130.6
+   ],
+   "note": "North Hecate buoy; outside route only",
+   "years": 50,
+   "scale": 1.028,
+   "calibration": {
+    "buoy": "46183",
+    "years": "1991-2023",
+    "days_compared": 1637,
+    "scale": 1.028,
+    "buoy_p95_daily_max_kn": 26.0,
+    "era5_p95_daily_max_kn": 25.3,
+    "buoy_sc_days_pct": 26.0,
+    "era5_sc_days_pct": 21.9,
+    "era5_scaled_sc_days_pct": 25.0
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 5.62,
+     "days_per_jj": 7.7,
+     "share_of_hours_pct": 4.39,
+     "p_in_16_days": 0.698,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 16,
+      "p90": 27,
+      "max": 60
+     },
+     "longest_by_days": {
+      "<12 h": 172,
+      "12-24 h": 75,
+      "1-2 days": 32,
+      "2-3 days": 2,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 5.3,
+      "1986-1995": 5.4,
+      "1996-2005": 5.1,
+      "2006-2015": 6.4,
+      "2016-2025": 5.9
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 7.35,
+      "Jun 16-30": 4.34,
+      "Jul 1-15": 3.05,
+      "Jul 16-31": 2.9
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.02,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.007,
+     "years_with_any_pct": 2,
+     "dur_h": {
+      "p25": 16,
+      "median": 16,
+      "p75": 16,
+      "p90": 16,
+      "max": 16
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.1,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.01,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 4.84,
+     "days_per_jj": 6.4,
+     "share_of_hours_pct": 3.63,
+     "p_in_16_days": 0.622,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 16,
+      "p90": 25,
+      "max": 47
+     },
+     "longest_by_days": {
+      "<12 h": 152,
+      "12-24 h": 63,
+      "1-2 days": 27,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 4.7,
+      "1986-1995": 4.4,
+      "1996-2005": 4.8,
+      "2006-2015": 5.2,
+      "2016-2025": 5.1
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.23,
+      "Jun 16-30": 3.62,
+      "Jul 1-15": 2.46,
+      "Jul 16-31": 2.28
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 10.07,
+     "days_per_jj": 14.5,
+     "share_of_hours_pct": 7.8,
+     "p_in_16_days": 0.853,
+     "years_with_any_pct": 96,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 18,
+      "p90": 32,
+      "max": 85
+     },
+     "longest_by_days": {
+      "<12 h": 168,
+      "12-24 h": 66,
+      "1-2 days": 40,
+      "2-3 days": 6,
+      "3+ days": 2
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 7.25,
+      "1996-2005": 9.0,
+      "2006-2015": 13.44,
+      "2016-2025": 8.57
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 12.14,
+      "Jun 16-30": 5.58,
+      "Jul 1-15": 6.46,
+      "Jul 16-31": 7.07
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.14,
+     "days_per_jj": 0.3,
+     "share_of_hours_pct": 0.03,
+     "p_in_16_days": 0.04,
+     "years_with_any_pct": 14,
+     "dur_h": {
+      "p25": 21,
+      "median": 28,
+      "p75": 47,
+      "p90": 47,
+      "max": 47
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 2,
+      "1-2 days": 2,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.12,
+      "2006-2015": 0.33,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.03,
+      "Jul 16-31": 0.07
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 13.77,
+     "days_per_jj": 18.4,
+     "share_of_hours_pct": 10.08,
+     "p_in_16_days": 0.946,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 8,
+      "p75": 16,
+      "p90": 31,
+      "max": 84
+     },
+     "longest_by_days": {
+      "<12 h": 197,
+      "12-24 h": 57,
+      "1-2 days": 38,
+      "2-3 days": 10,
+      "3+ days": 1
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 13.5,
+      "2006-2015": 15.6,
+      "2016-2025": 12.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 16.07,
+      "Jun 16-30": 7.82,
+      "Jul 1-15": 10.28,
+      "Jul 16-31": 6.42
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.41,
+     "days_per_jj": 1.0,
+     "share_of_hours_pct": 0.09,
+     "p_in_16_days": 0.087,
+     "years_with_any_pct": 36,
+     "dur_h": {
+      "p25": 25,
+      "median": 37,
+      "p75": 52,
+      "p90": 61,
+      "max": 61
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 1,
+      "1-2 days": 4,
+      "2-3 days": 3,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.7,
+      "2016-2025": 0.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.2,
+      "Jun 16-30": 0.03,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.07
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "BONILLA ISLAND (AUT)"
+    ],
+    "years": 22,
+    "first": 2004,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "2004-2025 (22 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 13.77,
+     "days_per_jj": 18.4,
+     "share_of_hours_pct": 10.08,
+     "p_in_16_days": 0.946,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 8,
+      "p75": 16,
+      "p90": 31,
+      "max": 84
+     },
+     "longest_by_days": {
+      "<12 h": 197,
+      "12-24 h": 57,
+      "1-2 days": 38,
+      "2-3 days": 10,
+      "3+ days": 1
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 13.5,
+      "2006-2015": 15.6,
+      "2016-2025": 12.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 16.07,
+      "Jun 16-30": 7.82,
+      "Jul 1-15": 10.28,
+      "Jul 16-31": 6.42
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.41,
+     "days_per_jj": 1.0,
+     "share_of_hours_pct": 0.09,
+     "p_in_16_days": 0.087,
+     "years_with_any_pct": 36,
+     "dur_h": {
+      "p25": 25,
+      "median": 37,
+      "p75": 52,
+      "p90": 61,
+      "max": 61
+     },
+     "longest_by_days": {
+      "<12 h": 1,
+      "12-24 h": 1,
+      "1-2 days": 4,
+      "2-3 days": 3,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.7,
+      "2016-2025": 0.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.2,
+      "Jun 16-30": 0.03,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.07
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "BONILLA ISLAND (AUT)"
+    ],
+    "years": 22,
+    "first": 2004,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 26.55,
+     "days_per_jj": 53.9,
+     "share_of_hours_pct": 55.62,
+     "p_in_16_days": 0.984,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 9,
+      "median": 20,
+      "p75": 45,
+      "p90": 83,
+      "max": 240
+     },
+     "longest_by_days": {
+      "<12 h": 194,
+      "12-24 h": 130,
+      "1-2 days": 124,
+      "2-3 days": 66,
+      "3+ days": 70
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 29.5,
+      "2006-2015": 23.9,
+      "2016-2025": 28.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 58.52,
+      "Jun 16-30": 56.99,
+      "Jul 1-15": 53.74,
+      "Jul 16-31": 53.39
+     }
+    },
+    "k15": {
+     "events_per_jj": 23.86,
+     "days_per_jj": 39.1,
+     "share_of_hours_pct": 30.51,
+     "p_in_16_days": 0.982,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 7,
+      "median": 13,
+      "p75": 29,
+      "p90": 51,
+      "max": 205
+     },
+     "longest_by_days": {
+      "<12 h": 238,
+      "12-24 h": 121,
+      "1-2 days": 111,
+      "2-3 days": 34,
+      "3+ days": 21
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 23.0,
+      "2006-2015": 23.7,
+      "2016-2025": 24.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 36.62,
+      "Jun 16-30": 28.61,
+      "Jul 1-15": 31.07,
+      "Jul 16-31": 26.04
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Dixon Entrance east",
+   "country": "CA",
+   "point": [
+    54.55,
+    -130.9
+   ],
+   "note": "Central Dixon Entrance buoy",
+   "years": 50,
+   "scale": 1.205,
+   "calibration": {
+    "buoy": "46145",
+    "years": "1991-2024",
+    "days_compared": 1870,
+    "scale": 1.205,
+    "buoy_p95_daily_max_kn": 25.3,
+    "era5_p95_daily_max_kn": 21.0,
+    "buoy_sc_days_pct": 21.0,
+    "era5_sc_days_pct": 6.7,
+    "era5_scaled_sc_days_pct": 19.4
+   },
+   "thresholds_kn": {
+    "small_craft": 20,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 10.4,
+     "days_per_jj": 15.1,
+     "share_of_hours_pct": 10.19,
+     "p_in_16_days": 0.885,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 6,
+      "median": 11,
+      "p75": 19,
+      "p90": 33,
+      "max": 93
+     },
+     "longest_by_days": {
+      "<12 h": 277,
+      "12-24 h": 149,
+      "1-2 days": 72,
+      "2-3 days": 18,
+      "3+ days": 4
+     },
+     "by_decade_events": {
+      "1976-1985": 9.9,
+      "1986-1995": 9.1,
+      "1996-2005": 11.0,
+      "2006-2015": 12.2,
+      "2016-2025": 9.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 14.85,
+      "Jun 16-30": 10.69,
+      "Jul 1-15": 7.91,
+      "Jul 16-31": 7.5
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.44,
+     "days_per_jj": 1.0,
+     "share_of_hours_pct": 0.14,
+     "p_in_16_days": 0.099,
+     "years_with_any_pct": 38,
+     "dur_h": {
+      "p25": 21,
+      "median": 31,
+      "p75": 48,
+      "p90": 54,
+      "max": 65
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 7,
+      "1-2 days": 9,
+      "2-3 days": 6,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.2,
+      "1986-1995": 0.3,
+      "1996-2005": 0.4,
+      "2006-2015": 0.7,
+      "2016-2025": 0.6
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.26,
+      "Jun 16-30": 0.18,
+      "Jul 1-15": 0.13,
+      "Jul 16-31": 0.02
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 5.14,
+     "days_per_jj": 7.2,
+     "share_of_hours_pct": 4.34,
+     "p_in_16_days": 0.664,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 5,
+      "median": 10,
+      "p75": 17,
+      "p90": 29,
+      "max": 59
+     },
+     "longest_by_days": {
+      "<12 h": 152,
+      "12-24 h": 67,
+      "1-2 days": 34,
+      "2-3 days": 4,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 5.1,
+      "1986-1995": 4.5,
+      "1996-2005": 5.3,
+      "2006-2015": 5.6,
+      "2016-2025": 5.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.87,
+      "Jun 16-30": 4.54,
+      "Jul 1-15": 3.28,
+      "Jul 16-31": 2.77
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.02,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.007,
+     "years_with_any_pct": 2,
+     "dur_h": {
+      "p25": 19,
+      "median": 19,
+      "p75": 19,
+      "p90": 19,
+      "max": 19
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 1,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.1,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.02,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "buoy_observed": {
+    "sc": {
+     "events_per_jj": 7.69,
+     "days_per_jj": 10.9,
+     "share_of_hours_pct": 5.91,
+     "p_in_16_days": 0.761,
+     "years_with_any_pct": 94,
+     "dur_h": {
+      "p25": 5,
+      "median": 9,
+      "p75": 15,
+      "p90": 32,
+      "max": 129
+     },
+     "longest_by_days": {
+      "<12 h": 154,
+      "12-24 h": 58,
+      "1-2 days": 26,
+      "2-3 days": 5,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 4.8,
+      "1996-2005": 10.0,
+      "2006-2015": 7.5,
+      "2016-2025": 7.12
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 9.09,
+      "Jun 16-30": 4.43,
+      "Jul 1-15": 4.58,
+      "Jul 16-31": 5.57
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.16,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.04,
+     "p_in_16_days": 0.033,
+     "years_with_any_pct": 9,
+     "dur_h": {
+      "p25": 5,
+      "median": 11,
+      "p75": 52,
+      "p90": 129,
+      "max": 129
+     },
+     "longest_by_days": {
+      "<12 h": 3,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 1,
+      "3+ days": 1
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.33,
+      "2006-2015": 0.2,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.02,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.09
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.06,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.01,
+     "p_in_16_days": 0.012,
+     "years_with_any_pct": 3,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 5,
+      "p90": 5,
+      "max": 5
+     },
+     "longest_by_days": {
+      "<12 h": 2,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.2,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.06,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 8.38,
+     "days_per_jj": 9.9,
+     "share_of_hours_pct": 4.2,
+     "p_in_16_days": 0.783,
+     "years_with_any_pct": 97,
+     "dur_h": {
+      "p25": 4,
+      "median": 5,
+      "p75": 11,
+      "p90": 18,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 235,
+      "12-24 h": 63,
+      "1-2 days": 11,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 10.0,
+      "1996-2005": 8.8,
+      "2006-2015": 9.7,
+      "2016-2025": 5.5
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.87,
+      "Jun 16-30": 3.84,
+      "Jul 1-15": 3.47,
+      "Jul 16-31": 2.71
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.24,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.03,
+     "p_in_16_days": 0.056,
+     "years_with_any_pct": 19,
+     "dur_h": {
+      "p25": 13,
+      "median": 17,
+      "p75": 20,
+      "p90": 45,
+      "max": 45
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 7,
+      "1-2 days": 2,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.7,
+      "2016-2025": 0.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.02,
+      "Jul 1-15": 0.03,
+      "Jul 16-31": 0.05
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "GREEN ISLAND",
+     "GREY ISLET (AUT)",
+     "HOLLAND ROCK",
+     "LUCY ISLAND LIGHTSTATION",
+     "TRIPLE ISLAND"
+    ],
+    "years": 37,
+    "first": 1989,
+    "last": 2025
+   },
+   "best_source": "observed",
+   "best_years": "1989-2025 (37 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 8.38,
+     "days_per_jj": 9.9,
+     "share_of_hours_pct": 4.2,
+     "p_in_16_days": 0.783,
+     "years_with_any_pct": 97,
+     "dur_h": {
+      "p25": 4,
+      "median": 5,
+      "p75": 11,
+      "p90": 18,
+      "max": 56
+     },
+     "longest_by_days": {
+      "<12 h": 235,
+      "12-24 h": 63,
+      "1-2 days": 11,
+      "2-3 days": 1,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 10.0,
+      "1996-2005": 8.8,
+      "2006-2015": 9.7,
+      "2016-2025": 5.5
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 6.87,
+      "Jun 16-30": 3.84,
+      "Jul 1-15": 3.47,
+      "Jul 16-31": 2.71
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.24,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.03,
+     "p_in_16_days": 0.056,
+     "years_with_any_pct": 19,
+     "dur_h": {
+      "p25": 13,
+      "median": 17,
+      "p75": 20,
+      "p90": 45,
+      "max": 45
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 7,
+      "1-2 days": 2,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.7,
+      "2016-2025": 0.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.02,
+      "Jun 16-30": 0.02,
+      "Jul 1-15": 0.03,
+      "Jul 16-31": 0.05
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "GREEN ISLAND",
+     "GREY ISLET (AUT)",
+     "HOLLAND ROCK",
+     "LUCY ISLAND LIGHTSTATION",
+     "TRIPLE ISLAND"
+    ],
+    "years": 37,
+    "first": 1989,
+    "last": 2025,
+    "k10": {
+     "events_per_jj": 37.22,
+     "days_per_jj": 47.3,
+     "share_of_hours_pct": 32.17,
+     "p_in_16_days": 0.995,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 10,
+      "p75": 17,
+      "p90": 37,
+      "max": 169
+     },
+     "longest_by_days": {
+      "<12 h": 807,
+      "12-24 h": 344,
+      "1-2 days": 149,
+      "2-3 days": 44,
+      "3+ days": 33
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 36.43,
+      "1996-2005": 44.2,
+      "2006-2015": 35.8,
+      "2016-2025": 32.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 38.57,
+      "Jun 16-30": 31.98,
+      "Jul 1-15": 30.44,
+      "Jul 16-31": 27.96
+     }
+    },
+    "k15": {
+     "events_per_jj": 20.76,
+     "days_per_jj": 25.1,
+     "share_of_hours_pct": 12.91,
+     "p_in_16_days": 0.974,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 4,
+      "median": 7,
+      "p75": 14,
+      "p90": 22,
+      "max": 94
+     },
+     "longest_by_days": {
+      "<12 h": 514,
+      "12-24 h": 181,
+      "1-2 days": 56,
+      "2-3 days": 12,
+      "3+ days": 5
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 22.71,
+      "1996-2005": 23.8,
+      "2006-2015": 22.3,
+      "2016-2025": 14.8
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 18.18,
+      "Jun 16-30": 12.17,
+      "Jul 1-15": 11.58,
+      "Jul 16-31": 9.9
+     }
+    }
+   },
+   "best_k_source": "observed"
+  },
+  {
+   "area": "Clarence Strait (PKZ036)",
+   "country": "US",
+   "point": [
+    55.1,
+    -131.2
+   ],
+   "note": "Revillagigedo Channel to Ketchikan finish",
+   "years": 50,
+   "scale": 1.0,
+   "calibration": null,
+   "thresholds_kn": {
+    "small_craft": 23,
+    "gale": 34,
+    "storm": 48
+   },
+   "corrected": {
+    "sc": {
+     "events_per_jj": 0.32,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.12,
+     "p_in_16_days": 0.091,
+     "years_with_any_pct": 30,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 9,
+      "p90": 14,
+      "max": 15
+     },
+     "longest_by_days": {
+      "<12 h": 14,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.1,
+      "1986-1995": 0.2,
+      "1996-2005": 0.2,
+      "2006-2015": 0.4,
+      "2016-2025": 0.7
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.13,
+      "Jun 16-30": 0.1,
+      "Jul 1-15": 0.23,
+      "Jul 16-31": 0.05
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "era5_raw": {
+    "sc": {
+     "events_per_jj": 0.32,
+     "days_per_jj": 0.4,
+     "share_of_hours_pct": 0.12,
+     "p_in_16_days": 0.091,
+     "years_with_any_pct": 30,
+     "dur_h": {
+      "p25": 3,
+      "median": 4,
+      "p75": 9,
+      "p90": 14,
+      "max": 15
+     },
+     "longest_by_days": {
+      "<12 h": 14,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.1,
+      "1986-1995": 0.2,
+      "1996-2005": 0.2,
+      "2006-2015": 0.4,
+      "2016-2025": 0.7
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.13,
+      "Jun 16-30": 0.1,
+      "Jul 1-15": 0.23,
+      "Jul 16-31": 0.05
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "nws_issued_2005_on": {
+    "sc": {
+     "events_per_jj": 12.9,
+     "days_per_jj": 17.6,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.909,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 9,
+      "median": 13,
+      "p75": 25,
+      "p90": 36,
+      "max": 96
+     },
+     "longest_by_days": {
+      "<12 h": 86,
+      "12-24 h": 89,
+      "1-2 days": 81,
+      "2-3 days": 12,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 12.0,
+      "2006-2015": 17.7,
+      "2016-2025": 8.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 2.14,
+     "days_per_jj": 2.9,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.316,
+     "years_with_any_pct": 81,
+     "dur_h": {
+      "p25": 8,
+      "median": 12,
+      "p75": 19,
+      "p90": 27,
+      "max": 38
+     },
+     "longest_by_days": {
+      "<12 h": 21,
+      "12-24 h": 13,
+      "1-2 days": 11,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 1.0,
+      "2006-2015": 3.1,
+      "2016-2025": 1.3
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.1,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.028,
+     "years_with_any_pct": 10,
+     "dur_h": {
+      "p25": 12,
+      "median": 13,
+      "p75": 13,
+      "p90": 13,
+      "max": 13
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.2,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    }
+   },
+   "observed": {
+    "sc": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.0,
+     "days_per_jj": 0.0,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.0,
+     "years_with_any_pct": 0,
+     "dur_h": {
+      "p25": null,
+      "median": null,
+      "p75": null,
+      "p90": null,
+      "max": null
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.0,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "stations": [
+     "MRYA2"
+    ],
+    "years": 12,
+    "first": 2013,
+    "last": 2025
+   },
+   "best_source": "NWS warnings issued",
+   "best_years": "2005-2025 (21 years)",
+   "best": {
+    "sc": {
+     "events_per_jj": 12.9,
+     "days_per_jj": 17.6,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.909,
+     "years_with_any_pct": 100,
+     "dur_h": {
+      "p25": 9,
+      "median": 13,
+      "p75": 25,
+      "p90": 36,
+      "max": 96
+     },
+     "longest_by_days": {
+      "<12 h": 86,
+      "12-24 h": 89,
+      "1-2 days": 81,
+      "2-3 days": 12,
+      "3+ days": 3
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 12.0,
+      "2006-2015": 17.7,
+      "2016-2025": 8.2
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "gale": {
+     "events_per_jj": 2.14,
+     "days_per_jj": 2.9,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.316,
+     "years_with_any_pct": 81,
+     "dur_h": {
+      "p25": 8,
+      "median": 12,
+      "p75": 19,
+      "p90": 27,
+      "max": 38
+     },
+     "longest_by_days": {
+      "<12 h": 21,
+      "12-24 h": 13,
+      "1-2 days": 11,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 1.0,
+      "2006-2015": 3.1,
+      "2016-2025": 1.3
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "storm": {
+     "events_per_jj": 0.1,
+     "days_per_jj": 0.1,
+     "share_of_hours_pct": 0.0,
+     "p_in_16_days": 0.028,
+     "years_with_any_pct": 10,
+     "dur_h": {
+      "p25": 12,
+      "median": 13,
+      "p75": 13,
+      "p90": 13,
+      "max": 13
+     },
+     "longest_by_days": {
+      "<12 h": 0,
+      "12-24 h": 2,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.2,
+      "2016-2025": 0.0
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.0,
+      "Jul 1-15": 0.0,
+      "Jul 16-31": 0.0
+     }
+    },
+    "k10": {
+     "events_per_jj": 6.25,
+     "days_per_jj": 6.4,
+     "share_of_hours_pct": 2.19,
+     "p_in_16_days": 0.649,
+     "years_with_any_pct": 92,
+     "dur_h": {
+      "p25": 3,
+      "median": 5,
+      "p75": 8,
+      "p90": 10,
+      "max": 20
+     },
+     "longest_by_days": {
+      "<12 h": 69,
+      "12-24 h": 6,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 8.0,
+      "2016-2025": 5.67
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 3.4,
+      "Jun 16-30": 2.43,
+      "Jul 1-15": 1.6,
+      "Jul 16-31": 1.39
+     }
+    },
+    "k15": {
+     "events_per_jj": 0.58,
+     "days_per_jj": 0.6,
+     "share_of_hours_pct": 0.15,
+     "p_in_16_days": 0.125,
+     "years_with_any_pct": 42,
+     "dur_h": {
+      "p25": 2,
+      "median": 3,
+      "p75": 5,
+      "p90": 5,
+      "max": 5
+     },
+     "longest_by_days": {
+      "<12 h": 7,
+      "12-24 h": 0,
+      "1-2 days": 0,
+      "2-3 days": 0,
+      "3+ days": 0
+     },
+     "by_decade_events": {
+      "1976-1985": 0.0,
+      "1986-1995": 0.0,
+      "1996-2005": 0.0,
+      "2006-2015": 0.67,
+      "2016-2025": 0.56
+     },
+     "by_half_month_share_pct": {
+      "Jun 1-15": 0.0,
+      "Jun 16-30": 0.25,
+      "Jul 1-15": 0.19,
+      "Jul 16-31": 0.17
+     }
+    }
+   },
+   "best_k_source": "observed"
+  }
+ ]
+}

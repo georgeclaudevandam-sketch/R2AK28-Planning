@@ -1,0 +1,17 @@
+name: List weather stations near the route (for the storm history)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/station-list.yml"
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/storm_history.py --list

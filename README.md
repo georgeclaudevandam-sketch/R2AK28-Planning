@@ -1,3 +1,53 @@
 # R2AK 2028 Planning
 
-Planning tools for a Race to Alaska 2028 entry.
+Planning tools for a Race to Alaska 2028 entry: Port Townsend to Victoria (Stage 1), then Victoria to Ketchikan through the Seymour Narrows and Bella Bella waypoints (Stage 2).
+
+## Tide and current planner
+
+`index.html` is an interactive map:
+
+- Esri World Imagery base map with CHS (Canada) and NOAA (US) ENC chart overlays and an opacity slider.
+- Course tracks for Stage 1 and Stage 2, with inside (Grenville Channel) and outside (Hecate Strait) options north of Bella Bella.
+- 26 NOAA and CHS tide and current stations. Click one for its daily curve and table.
+- Any start date from 21 May to 30 June 2028, with quick picks for Sunday 4 June (first Sunday in June) and Sunday 11 June (the race's usual second-week pattern). Stage 2 defaults to noon the following Wednesday and can be changed.
+- Rowing plans for human-powered boats only (no sail):
+  - Pick 8 to 24 days from Victoria to Ketchikan and the rowing hours a day (default 14). By default the planner rides the fair tide at any time of day: it rows (up to your hours in each 24 hours) unless the head current is stronger than a cutoff you set (default 0.5 kn). It rows through head-current spells under an hour, and after a stop it sets off only when the fair stream and hours left carry you at least 10 nm (less for slow boats), so stops are not a few miles apart. "Same hours every day" rows a fixed window instead. Both solve for the rowing speed that hits your target, add the tidal stream to your speed along the way, wait at gates when the stream against you is over 1.5 kn, and flag speeds over 4.5 kn as fast for a loaded rowing boat.
+  - Stops of 2 hours or more (overnight camps and waits for a foul tide) go to a past campsite: the planner picks the one that costs the least extra rowing, preferring one just ahead on the route (rowing there is progress anyway) over one behind, within 10 nm of the route and never past the next gate. The trip in and out is rowed at your speed and counts against your rowing hours. The trip in leaves the route a little before the campsite and the trip out rejoins it a little after, along smoothed water paths that keep off the shore (data/camp_paths.json, built by scripts/build_camp_paths.py from the 220 m water grid); campsites without a usable path fall back to a straight line. Camps are only ever at past campsites: when the next stop would fall on a stretch with no past campsite near the route, the planner stops at the last campsite you passed instead (the cost is the miles you would have rowed beyond it), and it never rows back to a campsite it has just left. Only short snack/rest stops, and a slow boat's stop at the start or within a few miles of Ketchikan, are on the water. Stops are listed in a Stops table in two types: tent icon for camp (6 hours or more by default; set it with the camp slider) and cup icon for snack/rest (shorter, from 1 hour), with matching icons on the map.
+  - The stream along the track comes from the CHS and NOAA current stations on the route (13 of them, including Porlier Pass, Seymour Narrows, Johnstone Strait, Blackney and Weynton passages, Hiekish Narrows and Grenville Channel), fading out within a few miles of each (more in Johnstone Strait and Grenville Channel) and blended between neighbouring stations. Each station's predicted speed is resolved onto the route's heading at the boat using the flood and ebb set from the tables (NOAA's published mean set; for CHS stations, the CHS predicted direction at each flood and ebb maximum), so "with you" comes from the data rather than a guess. Grenville Channel, where the floods meet, keeps a hand-set split. Speed over the bottom is your speed through the water plus that stream. CHS only publishes current predictions at about 30 stations in BC, mostly passes and narrows, so open water with no station nearby, such as the Strait of Georgia, Fitz Hugh Sound and Hecate Strait, gets no stream.
+  - Hull length (20 to 60 ft, monohull) caps the speed through the water at theoretical hull speed, 1.34 × √(waterline length in ft) kn. When the target needs more than that, the planner rows at hull speed and shows the finish you would actually make.
+- Most hours between camps (default 20): from leaving one camp (a stop of 6 hours or more) to reaching the next, snack/rest stops included. The planner camps at a campsite it passes when the next one can't be reached in time, and a campsite stop made more than halfway to that limit becomes a full camp. Night stops ashore are full camps.
+- Night: by default there is no rowing from 0.5 h after sunset to 0.5 h before sunrise (sun position at the boat); the slider under Rowing plan sets the margin from 0 to 2 h, and the checkbox turns it off. Night stops go ashore at a past campsite like any other stop; where none is in reach the stop says to find a beach.
+- Map: NOAA and CHS charts only by default (CHS over Canadian waters on top; NOAA only over US waters, because its service paints coarse charts over Canada that hid the CHS detail), drawn at double resolution with every feature shown whatever its minimum display scale (all aids to navigation, soundings and contours), and chart text drawn larger so depths stay readable when zoomed out; tick Satellite (bottom left) to put Esri imagery under the charts, which then turn translucent with an opacity slider.
+- Follow the boat: the big map zooms in on your planned boat and frames the stop behind it and the next two, moving on as you pass each stop. Dragging or zooming the map by hand stops it following; tick Follow in the play bar to resume. An overview inset (top right) shows the whole route, your stops, the boat and the area the big map shows; click it to look somewhere else.
+- Live play: the play bar at the bottom left of the map runs the clock and shows the time, race day, distance, speed through the water, the modelled tidal current at the boat (+ with you, − against) and speed over the bottom of your planned boat; it runs (1 to 12 hours a second) with your planned boat moving along the route, and the map follows it. The map imagery and charts darken from sunset through twilight to night using the sun's position at the boat, and the boat shows red, green and white nav lights from one hour before sunset to one hour after sunrise.
+- A gate planner with arrival time, the stream at that moment, any wait, and the next slack; a day-by-day table of distance and where you end each day; numbered night stops on the map.
+- Past stops and campsites: green dots where past human-powered teams stayed within 0.3 nm for 2 hours or more (camps, anchorages, waiting on weather or tide), grouped within a mile. Hover for who stopped and when.
+- Past races, human-powered boats only: kayaks, canoes, paddleboards and rowboats. Sail, sail-assisted, pedal and kite boats are left out. One layer per year (layers control or the year buttons in the sidebar), coloured by boat type, solid if the team finished and dashed if not, labelled with team, boat and time from the Victoria start. The sidebar lists every team's time; click one to zoom to its track.
+- Checks against the 36-hour Stage 1 limit, the Grim Sweeper (75 nm/day, leaving Port Townsend 12 days after the Stage 2 start) and the race end (22 days after the Stage 2 start). The last two are inferred from the 2026 schedule.
+
+Open it from GitHub with `https://raw.githack.com/georgeclaudevandam-sketch/R2AK28-Planning/<branch>/index.html`, or serve the folder locally (`python3 -m http.server`) and open `http://localhost:8000`. It needs to be served over HTTP because it loads `data/*.json`.
+
+### What the dates mean (the map works this out for any date)
+
+| | Stage 2 start | Moon | Seymour Narrows peak in first 4 days |
+|---|---|---|---|
+| 4 June | Wed 7 June noon | Full moon 6 June 23:08 PDT (springs) | ~14.7 kn flood, ~12 kn ebb |
+| 11 June | Wed 14 June noon | Apogee 14 June, last quarter 15 June (neaps) | ~8.4 kn |
+
+## Data
+
+`data/predictions.json` is generated by `scripts/fetch_predictions.py`, which the **Fetch tide and current predictions** workflow runs on GitHub Actions whenever the script or `data/stations.json` changes (or on demand from the Actions tab).
+
+- **NOAA CO-OPS** tide (high/low, MLLW, metres) and current (max/slack, knots) predictions, including NOAA's subordinate current stations in northern BC.
+- **CHS IWLS** tide high/low predictions (chart datum, metres).
+- **CHS currents for 2028 are not published yet** (CHS currently publishes through 2027). For those stations the script fits harmonic constituents (UTide) to CHS's own published 2027 prediction series, checks the fit against CHS's Oct to Dec 2027 events (held out), and predicts June 2028. These are marked **derived** in the map with their validation numbers. Seymour Narrows reproduces CHS slack times within 1 minute (90th percentile). Juan de Fuca - East is the weakest fit (median 28 min). When CHS publishes 2028 tables, re-run the workflow and the script switches to the official events automatically.
+
+`data/tracks/` holds past tracks of human-powered teams:
+
+- **2015:** SPOT tracker logs archived at [searunners.net/data](http://searunners.net/data/), fetched by `scripts/fetch_spot.py` (the **Fetch 2015 SPOT tracks** workflow). Most 2015 boats were sailboats that also carried oars or pedals, so only three teams qualify: Soggy Beavers (OC6 canoe), Mike's Kayak and Team John (kayak). The list and boat types are in `data/tracks/spot2015-teams.json`; finish times are the official results.
+- **YB Tracking years (2024, 2026):** `scripts/fetch_tracks.py` (the **Fetch past human-powered tracks** workflow) reads each race's setup and packed positions from yb.tl and keeps teams tagged Kayak, Rowboat, SUP or Canoe that are not also tagged sail, kite, wing, foil or pedal.
+- **Not available:** 2016 to 2019 (the Swiftsure tracker replays no longer respond) and 2022 (MAProgress blocks automated access to archived maps). GPX or KML files for those years can be added by hand.
+
+`data/route.json` holds the course. The Stage 2 legs from Victoria to Bella Bella and inside to Ketchikan follow the common line of past human-powered tracks (`scripts/build_consensus_route.py`): the cheapest water path on a 220 m grid where water that more past teams crossed costs less. That keeps the line on the water where teams split between channels, which a plain average of positions would not. It passes inside Calvert Island (Fitz Hugh Sound) and through Lama Passage past Bella Bella. Stage 1 and the outside (Hecate Strait) option are shortest-water tracks from `scripts/build_route.py`. All are for distances and ETAs, not navigation.
+
+Not for navigation. Use official CHS and NOAA tables and current charts aboard.

@@ -1,0 +1,51 @@
+name: Build tidal stream field (WebTide + SalishSeaCast)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/build_stream_field.py"
+      - ".github/workflows/stream-field.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stream-field-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "8" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy scipy utide pillow
+      - name: Install DFO WebTide and its Northeast Pacific data
+        run: |
+          W=https://www.bio.gc.ca/science/research-recherche/ocean/webtide/Application/Install/InstData
+          mkdir -p /tmp/wt && cd /tmp/wt
+          curl -sSfL -m 600 "$W/Linux/WebTide_unix_0_7_1.sh" -o app.sh
+          curl -sSfL -m 600 "$W/Data/Unix/WebTide_ne_pac_data_0_7.sh" -o data.sh
+          sh app.sh -q -dir /tmp/wt/inst
+          sh data.sh -q -dir /tmp/wt/inst
+          ls /tmp/wt/inst/data/ne_pac4
+      - uses: actions/cache@v4
+        with:
+          path: dl/ssc
+          key: ssc-${{ hashFiles('data/route.json') }}-${{ github.run_id }}
+          restore-keys: ssc-
+      - run: python scripts/build_stream_field.py /tmp/wt/inst/data/ne_pac4
+      - name: Commit the stream field
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/stream_field.json data/stream_grid.json
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update tidal stream field"
+          git pull --rebase
+          git push
