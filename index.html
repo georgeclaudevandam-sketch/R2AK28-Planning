@@ -261,6 +261,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
           <label for="headAuto" class="check" title="Tries cutoffs from 0.25 to 2.5 kn and keeps the one that needs the least rowing for the days you set"><input id="headAuto" type="checkbox"> Pick the cutoff for least effort</label>
           <label for="shellX" title="Power each rower needs at a given speed, as a multiple of a racing shell at the same speed; sets the calorie counts">Watts vs a racing shell (×)<input id="shellX" type="number" min="1" max="6" step="0.1" value="2.5"></label>
         </div>
+        <p class="hint" id="head-auto-note" hidden style="margin:0 0 6px;padding:6px 8px;border-left:3px solid #6d28d9;background:rgba(109,40,217,.08)"></p>
         <div class="row" style="align-items:flex-end">
           <label for="hullFt-r" style="flex:1">Hull length (waterline, monohull)<input id="hullFt-r" type="range" min="20" max="60" step="1" value="24"></label>
           <label for="hullFt">ft<input id="hullFt" type="number" min="20" max="60" step="0.5" value="24" style="width:70px"></label>
@@ -317,7 +318,6 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
     <section aria-labelledby="h-days">
       <h2 id="h-days">Day by day</h2>
       <div class="tbl-wrap"><table id="days-tbl"></table></div>
-      <p class="hint" id="head-auto-note" hidden></p>
       <p class="hint" id="kcal-note"></p>
     </section>
 
@@ -1623,7 +1623,9 @@ function renderPlanner() {
   { const A = P.auto, el = $("head-auto-note"); el.hidden = !A;
     if (A) { $("headKn").value = A.head;
       const ok = A.tried.filter((x) => x.inTime), near = ok.filter((x) => x.rowK <= A.rowK * 1.03).map((x) => x.head), worst = ok.reduce((a, b) => (b.rowK > a.rowK ? b : a)), late = A.tried.filter((x) => !x.inTime).map((x) => `${x.head}`);
+      const mine = A.tried.find((x) => x.head === state.headManual && x.inTime);
       el.innerHTML = `Head-current cutoff picked: <b>${A.head} kn</b>, ${kcal(A.rowK)} rowing kcal for the crew. ` +
+        (mine && mine.head !== A.head ? `Your ${mine.head} kn setting took ${Math.max(0, Math.round((mine.rowK / A.rowK - 1) * 100))}% more${mine.rowK < A.rowK * 1.03 ? ", so the plan barely changes" : ""}. ` : mine ? `That's the ${mine.head} kn you had already, so the plan doesn't change. ` : "") +
         (near.length > 1 ? `Anything from ${Math.min(...near)} to ${Math.max(...near)} kn is within 3% of that, which is inside the model's error. ` : "") +
         (worst.head !== A.head ? `The costliest cutoff tried, ${worst.head} kn, takes ${Math.round((worst.rowK / A.rowK - 1) * 100)}% more. ` : "") +
         (late.length ? `${late.join(", ")} kn ${late.length > 1 ? "don't" : "doesn't"} finish in the days set, so ${late.length > 1 ? "they weren't" : "it wasn't"} counted.` : ""); } }
@@ -2881,7 +2883,7 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("shellX").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 1 && v <= 6) { state.shellX = v; changed(); } });
-  $("headAuto").addEventListener("change", (e) => { state.headAuto = e.target.checked; syncInputs(); changed(); });
+  $("headAuto").addEventListener("change", (e) => { state.headAuto = e.target.checked; if (state.headAuto) state.headManual = state.headKn; else if (state.headManual != null) state.headKn = state.headManual; syncInputs(); changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
   ["hullFt", "hullFt-r"].forEach((id) => $(id).addEventListener("input", (e) => {
     const v = parseFloat(e.target.value); if (!(v >= 20 && v <= 60)) return;
