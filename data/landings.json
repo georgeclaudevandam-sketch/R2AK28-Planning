@@ -2,7 +2,7 @@
 "source": "OpenStreetMap contributors (ODbL); imagery Esri World Imagery",
 "near_nm": 3.0,
 "far_from_campsites_nm": 3.0,
-"generated": "2026-10-11T13:37Z",
+"generated": "2026-10-16T18:16Z",
 "landings": [
 {
 "lat": 48.40389,
@@ -10,7 +10,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/138259840",
-"route_nm": 0.13,
+"route_nm": 0.28,
 "n": 1
 },
 {
@@ -19,7 +19,7 @@
 "kind": "beach",
 "name": "Mile Zero Beach",
 "osm": "way/439966915",
-"route_nm": 0.23,
+"route_nm": 0.14,
 "n": 2
 },
 {
@@ -46,7 +46,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "node/2643173947",
-"route_nm": 0.45,
+"route_nm": 0.36,
 "n": 5
 },
 {
@@ -73,7 +73,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/259003974",
-"route_nm": 0.73,
+"route_nm": 0.63,
 "n": 8
 },
 {
@@ -91,7 +91,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/259284432",
-"route_nm": 1.81,
+"route_nm": 1.85,
 "n": 10
 },
 {
@@ -100,7 +100,7 @@
 "kind": "beach",
 "name": "",
 "osm": "way/620405634",
-"route_nm": 0.61,
+"route_nm": 0.63,
 "n": 11
 },
 {
@@ -127,7 +127,7 @@
 "kind": "beach",
 "name": "Willows Beach",
 "osm": "relation/7884293",
-"route_nm": 0.88,
+"route_nm": 0.84,
 "n": 14
 },
 {
@@ -145,7 +145,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "node/1311433437",
-"route_nm": 0.7,
+"route_nm": 0.72,
 "n": 16
 },
 {
@@ -172,7 +172,7 @@
 "kind": "beach",
 "name": "",
 "osm": "way/259794307",
-"route_nm": 0.44,
+"route_nm": 0.42,
 "n": 19
 },
 {
@@ -181,7 +181,7 @@
 "kind": "small craft",
 "name": "",
 "osm": "way/104662152",
-"route_nm": 1.19,
+"route_nm": 1.15,
 "n": 20
 },
 {
@@ -190,7 +190,7 @@
 "kind": "beach",
 "name": "",
 "osm": "way/688188182",
-"route_nm": 0.3,
+"route_nm": 0.32,
 "n": 21
 },
 {
@@ -199,7 +199,7 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/259008074",
-"route_nm": 1.34,
+"route_nm": 1.24,
 "n": 22
 },
 {
@@ -208,7 +208,7 @@
 "kind": "shingle",
 "name": "",
 "osm": "relation/9647268",
-"route_nm": 2.34,
+"route_nm": 2.39,
 "n": 23
 },
 {
@@ -217,7 +217,7 @@
 "kind": "beach",
 "name": "",
 "osm": "way/875848918",
-"route_nm": 1.3,
+"route_nm": 1.15,
 "n": 24
 },
 {
@@ -226,7 +226,7 @@
 "kind": "beach",
 "name": "",
 "osm": "way/1190720207",
-"route_nm": 1.28,
+"route_nm": 1.1,
 "n": 25
 },
 {
@@ -235,8 +235,17 @@
 "kind": "beach",
 "name": "",
 "osm": "way/156974466",
-"route_nm": 2.35,
+"route_nm": 2.14,
 "n": 26
+},
+{
+"lat": 48.53164,
+"lon": -123.3659,
+"kind": "beach",
+"name": "Sayward Beach",
+"osm": "node/1676048483",
+"route_nm": 2.93,
+"n": 27
 },
 {
 "lat": 48.56763,
@@ -244,8 +253,8 @@
 "kind": "campsite",
 "name": "D'Arcy Island Campground / BC Marine Trail",
 "osm": "node/8934715499",
-"route_nm": 1.09,
-"n": 27
+"route_nm": 1.17,
+"n": 28
 },
 {
 "lat": 48.57531,
@@ -253,8 +262,8 @@
 "kind": "campsite",
 "name": "Island View Beach Regional Park Campground",
 "osm": "way/139815716",
-"route_nm": 2.26,
-"n": 28
+"route_nm": 2.23,
+"n": 29
 },
 {
 "lat": 48.60338,
@@ -262,8 +271,8 @@
 "kind": "beach",
 "name": "",
 "osm": "relation/1501136",
-"route_nm": 1.13,
-"n": 29
+"route_nm": 1.11,
+"n": 30
 },
 {
 "lat": 48.61548,
@@ -271,8 +280,8 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/299946273",
-"route_nm": 1.32,
-"n": 30
+"route_nm": 1.31,
+"n": 31
 },
 {
 "lat": 48.63592,
@@ -281,7 +290,7 @@
 "name": "",
 "osm": "way/184735236",
 "route_nm": 0.66,
-"n": 31
+"n": 32
 },
 {
 "lat": 48.64297,
@@ -290,7 +299,7 @@
 "name": "",
 "osm": "node/1013075930",
 "route_nm": 1.91,
-"n": 32
+"n": 33
 },
 {
 "lat": 48.64822,
@@ -299,7 +308,7 @@
 "name": "",
 "osm": "way/551488682",
 "route_nm": 1.71,
-"n": 33
+"n": 34
 },
 {
 "lat": 48.66223,
@@ -307,8 +316,8 @@
 "kind": "campsite",
 "name": "Rum Island",
 "osm": "node/3638119188",
-"route_nm": 2.8,
-"n": 34
+"route_nm": 2.88,
+"n": 35
 },
 {
 "lat": 48.6651,
@@ -316,8 +325,8 @@
 "kind": "slipway",
 "name": "",
 "osm": "way/1427855424",
-"route_nm": 2.03,
-"n": 35
+"route_nm": 2.1,
+"n": 36
 },
 {
 "lat": 48.6697,
@@ -325,8 +334,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/1214692168",
-"route_nm": 0.96,
-"n": 36
+"route_nm": 0.83,
+"n": 37
 },
 {
 "lat": 48.67056,
@@ -334,8 +343,17 @@
 "kind": "small craft",
 "name": "",
 "osm": "way/534677322",
-"route_nm": 2.32,
-"n": 37
+"route_nm": 2.18,
+"n": 38
+},
+{
+"lat": 48.67396,
+"lon": -123.42638,
+"kind": "campsite",
+"name": "Smone\u0107ten (McDonald) Campground",
+"osm": "way/156900831",
+"route_nm": 2.94,
+"n": 39
 },
 {
 "lat": 48.77849,
@@ -343,8 +361,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/1314026083",
-"route_nm": 2.29,
-"n": 38
+"route_nm": 2.35,
+"n": 40
 },
 {
 "lat": 48.78424,
@@ -352,8 +370,8 @@
 "kind": "campsite",
 "name": "Shingle Bay Campground (BCMT)",
 "osm": "node/9733456580",
-"route_nm": 2.23,
-"n": 39
+"route_nm": 2.3,
+"n": 41
 },
 {
 "lat": 48.7941,
@@ -362,7 +380,7 @@
 "name": "",
 "osm": "way/300412281",
 "route_nm": 2.47,
-"n": 40
+"n": 42
 },
 {
 "lat": 48.79983,
@@ -371,7 +389,7 @@
 "name": "",
 "osm": "node/4187601365",
 "route_nm": 2.53,
-"n": 41
+"n": 43
 },
 {
 "lat": 48.8204,
@@ -379,8 +397,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/270765249",
-"route_nm": 2.62,
-"n": 42
+"route_nm": 2.63,
+"n": 44
 },
 {
 "lat": 48.89192,
@@ -388,8 +406,8 @@
 "kind": "small craft",
 "name": "Montague Harbour Marina",
 "osm": "node/8174711994",
-"route_nm": 2.71,
-"n": 43
+"route_nm": 2.72,
+"n": 45
 },
 {
 "lat": 48.89772,
@@ -397,17 +415,17 @@
 "kind": "campsite",
 "name": "Montague Harbour Campground - Walk-in",
 "osm": "way/291402695",
-"route_nm": 2.65,
-"n": 44
+"route_nm": 2.62,
+"n": 46
 },
 {
-"lat": 49.00725,
-"lon": -123.56791,
+"lat": 49.00631,
+"lon": -123.56689,
 "kind": "campsite",
 "name": "Sandstone Campground",
 "osm": "way/315404576",
-"route_nm": 2.78,
-"n": 45
+"route_nm": 2.75,
+"n": 47
 },
 {
 "lat": 49.01231,
@@ -416,7 +434,7 @@
 "name": "",
 "osm": "way/288735760",
 "route_nm": 2.85,
-"n": 46
+"n": 48
 },
 {
 "lat": 49.26314,
@@ -424,8 +442,8 @@
 "kind": "campsite",
 "name": "Nanoose Creek Campground",
 "osm": "way/1338773089",
-"route_nm": 2.98,
-"n": 47
+"route_nm": 2.97,
+"n": 49
 },
 {
 "lat": 49.3382,
@@ -433,8 +451,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/235372588",
-"route_nm": 1.95,
-"n": 48
+"route_nm": 2.03,
+"n": 50
 },
 {
 "lat": 49.36202,
@@ -442,17 +460,8 @@
 "kind": "campsite",
 "name": "Cedar Grove RV Park & Campground",
 "osm": "node/445987048",
-"route_nm": 1.83,
-"n": 49
-},
-{
-"lat": 49.53466,
-"lon": -124.82237,
-"kind": "beach",
-"name": "",
-"osm": "way/1033660596",
-"route_nm": 2.99,
-"n": 50
+"route_nm": 2.08,
+"n": 51
 },
 {
 "lat": 49.54226,
@@ -460,8 +469,17 @@
 "kind": "campsite",
 "name": "Fillongley Provincial Campground",
 "osm": "way/592147060",
-"route_nm": 0.68,
-"n": 51
+"route_nm": 0.66,
+"n": 52
+},
+{
+"lat": 49.55876,
+"lon": -124.84209,
+"kind": "beach",
+"name": "",
+"osm": "way/1033660594",
+"route_nm": 3.0,
+"n": 53
 },
 {
 "lat": 49.56277,
@@ -469,8 +487,8 @@
 "kind": "beach",
 "name": "Nude Beach",
 "osm": "node/13253081492",
-"route_nm": 2.04,
-"n": 52
+"route_nm": 1.96,
+"n": 54
 },
 {
 "lat": 49.58474,
@@ -478,8 +496,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/1033660593",
-"route_nm": 2.67,
-"n": 53
+"route_nm": 2.17,
+"n": 55
 },
 {
 "lat": 49.59962,
@@ -487,8 +505,8 @@
 "kind": "beach",
 "name": "Morning beach",
 "osm": "way/1033660592",
-"route_nm": 1.71,
-"n": 54
+"route_nm": 1.24,
+"n": 56
 },
 {
 "lat": 49.62107,
@@ -496,8 +514,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/378404978",
-"route_nm": 1.31,
-"n": 55
+"route_nm": 1.25,
+"n": 57
 },
 {
 "lat": 49.62561,
@@ -505,8 +523,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/152565662",
-"route_nm": 1.12,
-"n": 56
+"route_nm": 1.26,
+"n": 58
 },
 {
 "lat": 49.96504,
@@ -514,8 +532,8 @@
 "kind": "slipway",
 "name": "",
 "osm": "node/5438717623",
-"route_nm": 0.48,
-"n": 57
+"route_nm": 0.8,
+"n": 59
 },
 {
 "lat": 50.42089,
@@ -524,25 +542,25 @@
 "name": "",
 "osm": "relation/17472122",
 "route_nm": 1.8,
-"n": 58
+"n": 60
 },
 {
-"lat": 50.43892,
-"lon": -126.24876,
+"lat": 50.43877,
+"lon": -126.24779,
 "kind": "campsite",
 "name": "",
 "osm": "node/3396293380",
-"route_nm": 2.25,
-"n": 59
+"route_nm": 2.24,
+"n": 61
 },
 {
-"lat": 50.46392,
-"lon": -126.28434,
+"lat": 50.46398,
+"lon": -126.28421,
 "kind": "campsite",
 "name": "",
 "osm": "node/13207599561",
-"route_nm": 1.85,
-"n": 60
+"route_nm": 1.53,
+"n": 62
 },
 {
 "lat": 50.46837,
@@ -550,8 +568,8 @@
 "kind": "slipway",
 "name": "",
 "osm": "node/11009373938",
-"route_nm": 1.59,
-"n": 61
+"route_nm": 1.4,
+"n": 63
 },
 {
 "lat": 50.51344,
@@ -560,7 +578,7 @@
 "name": "Broken Islands Havannah Channel (BCMT)",
 "osm": "node/11009382203",
 "route_nm": 1.12,
-"n": 62
+"n": 64
 },
 {
 "lat": 50.62005,
@@ -568,8 +586,8 @@
 "kind": "campsite",
 "name": "Crease Island South (BCMT)",
 "osm": "node/10960911408",
-"route_nm": 2.58,
-"n": 63
+"route_nm": 2.76,
+"n": 65
 },
 {
 "lat": 50.62654,
@@ -577,8 +595,8 @@
 "kind": "campsite",
 "name": "Crease Island north (BCMT)",
 "osm": "node/9871498532",
-"route_nm": 2.67,
-"n": 64
+"route_nm": 2.74,
+"n": 66
 },
 {
 "lat": 50.81873,
@@ -586,8 +604,8 @@
 "kind": "campsite",
 "name": "Boyles Point (BCMT)",
 "osm": "node/9871498522",
-"route_nm": 0.39,
-"n": 65
+"route_nm": 0.49,
+"n": 67
 },
 {
 "lat": 50.84021,
@@ -595,8 +613,8 @@
 "kind": "campsite",
 "name": "Howcraft Bay (BCMT)",
 "osm": "node/9871498521",
-"route_nm": 0.56,
-"n": 66
+"route_nm": 0.69,
+"n": 68
 },
 {
 "lat": 51.48558,
@@ -604,8 +622,8 @@
 "kind": "campsite",
 "name": "",
 "osm": "node/12057454880",
-"route_nm": 1.89,
-"n": 67
+"route_nm": 2.21,
+"n": 69
 },
 {
 "lat": 52.22063,
@@ -613,8 +631,8 @@
 "kind": "campsite",
 "name": "Yaaklele Entrance (BCMT)",
 "osm": "node/9871481483",
-"route_nm": 2.25,
-"n": 68
+"route_nm": 1.88,
+"n": 70
 },
 {
 "lat": 52.23197,
@@ -622,8 +640,8 @@
 "kind": "campsite",
 "name": "Denniston Point east (BCMT)",
 "osm": "node/9871481488",
-"route_nm": 0.98,
-"n": 69
+"route_nm": 1.0,
+"n": 71
 },
 {
 "lat": 52.23364,
@@ -631,8 +649,8 @@
 "kind": "campsite",
 "name": "Denniston Point west (BCMT)",
 "osm": "node/9871481487",
-"route_nm": 0.86,
-"n": 70
+"route_nm": 0.98,
+"n": 72
 },
 {
 "lat": 52.23436,
@@ -640,8 +658,8 @@
 "kind": "campsite",
 "name": "Cape Swain east (BCMT)",
 "osm": "node/9871481484",
-"route_nm": 1.42,
-"n": 71
+"route_nm": 1.03,
+"n": 73
 },
 {
 "lat": 52.23732,
@@ -649,8 +667,8 @@
 "kind": "campsite",
 "name": "Seaforth Channel west (BCMT)",
 "osm": "node/9871481485",
-"route_nm": 0.82,
-"n": 72
+"route_nm": 0.76,
+"n": 74
 },
 {
 "lat": 52.28171,
@@ -658,8 +676,8 @@
 "kind": "campsite",
 "name": "Watch Island north (BCMT)",
 "osm": "node/9871481489",
-"route_nm": 0.14,
-"n": 73
+"route_nm": 0.15,
+"n": 75
 },
 {
 "lat": 52.28635,
@@ -667,8 +685,8 @@
 "kind": "campsite",
 "name": "Roar Islets",
 "osm": "node/9871481490",
-"route_nm": 0.48,
-"n": 74
+"route_nm": 0.57,
+"n": 76
 },
 {
 "lat": 52.36769,
@@ -677,7 +695,7 @@
 "name": "Dallas Island (BCMT)",
 "osm": "node/9871481492",
 "route_nm": 0.19,
-"n": 75
+"n": 77
 },
 {
 "lat": 52.48623,
@@ -686,7 +704,7 @@
 "name": "Rays Island west",
 "osm": "node/9871497929",
 "route_nm": 2.37,
-"n": 76
+"n": 78
 },
 {
 "lat": 52.58443,
@@ -695,7 +713,7 @@
 "name": "Normansell Islands (BCMT)",
 "osm": "node/9871497930",
 "route_nm": 2.65,
-"n": 77
+"n": 79
 },
 {
 "lat": 52.99749,
@@ -704,7 +722,7 @@
 "name": "",
 "osm": "way/189776604",
 "route_nm": 2.83,
-"n": 78
+"n": 80
 },
 {
 "lat": 53.0545,
@@ -713,7 +731,7 @@
 "name": "Cameron Cove (BCMT)",
 "osm": "node/9871497932",
 "route_nm": 0.16,
-"n": 79
+"n": 81
 },
 {
 "lat": 53.55897,
@@ -721,8 +739,8 @@
 "kind": "campsite",
 "name": "Solander Point north (BCMT)",
 "osm": "node/9871497937",
-"route_nm": 2.11,
-"n": 80
+"route_nm": 2.09,
+"n": 82
 },
 {
 "lat": 54.11997,
@@ -731,7 +749,7 @@
 "name": "",
 "osm": "way/580878653",
 "route_nm": 1.44,
-"n": 81
+"n": 83
 },
 {
 "lat": 54.12661,
@@ -740,7 +758,7 @@
 "name": "",
 "osm": "way/580878654",
 "route_nm": 1.29,
-"n": 82
+"n": 84
 },
 {
 "lat": 54.17851,
@@ -749,7 +767,7 @@
 "name": "",
 "osm": "way/1317701580",
 "route_nm": 1.4,
-"n": 83
+"n": 85
 },
 {
 "lat": 54.20143,
@@ -757,8 +775,8 @@
 "kind": "campsite",
 "name": "Rachel Islands BCMT site & shelter",
 "osm": "node/9871332996",
-"route_nm": 2.79,
-"n": 84
+"route_nm": 2.44,
+"n": 86
 },
 {
 "lat": 54.23471,
@@ -767,7 +785,7 @@
 "name": "",
 "osm": "way/1486442500",
 "route_nm": 2.59,
-"n": 85
+"n": 87
 },
 {
 "lat": 54.26753,
@@ -776,7 +794,7 @@
 "name": "",
 "osm": "way/1341143189",
 "route_nm": 0.73,
-"n": 86
+"n": 88
 },
 {
 "lat": 54.56945,
@@ -784,8 +802,8 @@
 "kind": "beach",
 "name": "",
 "osm": "way/1254724833",
-"route_nm": 1.65,
-"n": 87
+"route_nm": 1.59,
+"n": 89
 },
 {
 "lat": 55.04913,
@@ -794,7 +812,7 @@
 "name": "Mary SW (reported)",
 "osm": "node/11009521472",
 "route_nm": 2.12,
-"n": 88
+"n": 90
 },
 {
 "lat": 55.28382,
@@ -803,7 +821,7 @@
 "name": "",
 "osm": "node/12054358698",
 "route_nm": 1.74,
-"n": 89
+"n": 91
 },
 {
 "lat": 55.30848,
@@ -812,7 +830,7 @@
 "name": "",
 "osm": "way/1288991578",
 "route_nm": 0.21,
-"n": 90
+"n": 92
 },
 {
 "lat": 55.3514,
@@ -821,7 +839,7 @@
 "name": "Bar Harbor",
 "osm": "way/893653099",
 "route_nm": 1.79,
-"n": 91
+"n": 93
 },
 {
 "lat": 55.35365,
@@ -830,7 +848,7 @@
 "name": "Ramp (Inactive)",
 "osm": "way/893646636",
 "route_nm": 2.09,
-"n": 92
+"n": 94
 },
 {
 "lat": 55.35718,
@@ -839,7 +857,7 @@
 "name": "Seaplane Ramp",
 "osm": "way/893546760",
 "route_nm": 2.45,
-"n": 93
+"n": 95
 },
 {
 "lat": 55.35778,
@@ -848,7 +866,7 @@
 "name": "",
 "osm": "way/866204378",
 "route_nm": 2.84,
-"n": 94
+"n": 96
 }
 ]
 }
