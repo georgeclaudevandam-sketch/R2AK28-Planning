@@ -258,6 +258,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
           <label for="wstart">Row from<input id="wstart" type="time" value="05:00"></label>
           <label for="whours">Rowing hours a day<input id="whours" type="number" min="4" max="24" step="0.5" value="14"></label>
           <label for="headKn">Keep rowing into a head current up to (kn)<input id="headKn" type="number" min="0" max="3" step="0.1" value="0.5"></label>
+          <label for="headAuto" class="check" title="Tries cutoffs from 0.25 to 2.5 kn and keeps the one that needs the least rowing for the days you set"><input id="headAuto" type="checkbox"> Pick the cutoff for least effort</label>
           <label for="shellX" title="Power each rower needs at a given speed, as a multiple of a racing shell at the same speed; sets the calorie counts">Watts vs a racing shell (×)<input id="shellX" type="number" min="1" max="6" step="0.1" value="2.5"></label>
         </div>
         <div class="row" style="align-items:flex-end">
@@ -316,6 +317,7 @@ progress { width: 100%; height: 8px; accent-color: var(--accent); }
     <section aria-labelledby="h-days">
       <h2 id="h-days">Day by day</h2>
       <div class="tbl-wrap"><table id="days-tbl"></table></div>
+      <p class="hint" id="head-auto-note" hidden></p>
       <p class="hint" id="kcal-note"></p>
     </section>
 
@@ -419,8 +421,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let ROUTE, STATIONS, PRED, map, stationLayer, routeLayers = {}, markers = {};
-const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "shellX", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH", "docksOn"];
-const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, shellX: 2.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, docksOn: true, t: null, selected: null, day: null };
+const KEEP = ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north", "waits", "sched", "campH", "headKn", "headAuto", "shellX", "nightOn", "nightH", "campGapH", "hullFt", "breakAfterH", "breakH", "docksOn"];
+const state = { s1d: "2028-06-04", s1t: "05:00", s2d: "2028-06-07", s2t: "12:00", days: 16, wstart: "05:00", whours: 14, north: "inside", waits: true, sched: "tides", campH: 6, headKn: 0.5, headAuto: false, shellX: 2.5, nightOn: true, nightH: 0.5, campGapH: 20, hullFt: 24, breakAfterH: 4, breakH: 1, docksOn: true, t: null, selected: null, day: null };
 try { const s = JSON.parse(localStorage.getItem("r2ak28v4") || "{}"); KEEP.forEach((k) => { if (k in s) state[k] = s[k]; }); } catch (e) {}
 function save() { try { localStorage.setItem("r2ak28v4", JSON.stringify(Object.fromEntries(KEEP.map((k) => [k, state[k]])))); } catch (e) {} }
 // local (PDT, UTC-7) date + time to epoch ms
@@ -1241,13 +1243,19 @@ function crewKcal(P, a, b) {
   return { row, rest: CREW.n * REST_KCAL_DAY * Math.max(0, b - a) / (24 * H) };
 }
 const kcal = (k) => Math.round(k).toLocaleString("en-US");
+// cutoffs the optimizer tries (kn); above 1.5 kn the gates already wait for the turn
+const HEAD_AUTO_TRY = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
+let HEAD_AUTO_CACHE = null;
 function plan() {
   const ch = chains(), { s1, s2 } = starts();
   const human = true;
   const [hh, mm] = state.wstart.split(":").map(Number);
   const win = human && state.sched === "fixed" && state.whours < 24 ? { start: hh * 60 + mm, hours: state.whours } : null;
-  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, state.headKn, state.nightOn ? state.nightH : null);
   const g1 = gatesOn(ch.stage1, 1), g2 = gatesOn(ch.stage2, 2);
+  const target = s2 + state.days * 24 * H, tol = (win ? 6 : 12) * H;
+  // solve the Stage 2 speed that lands on the target days, rowing into head currents up to `head` knots
+  const solve = (head) => {
+  const sim = (c, g, st, v) => simulateRow(c, g, st, v, state.whours, win, state.waits, head, state.nightOn ? state.nightH : null);
   let v2, v1, solved = true, gap = null, hullCap = null;
   {
     const target = s2 + state.days * 24 * H;
@@ -1271,6 +1279,25 @@ function plan() {
     if (gap && Math.abs(gap.slow.d * 24 * H + s2 - target) < Math.abs(gap.fast.d * 24 * H + s2 - target)) { v2 = v1 = lo * 0.995; gap.useSlow = true; }
   }
   const r1 = sim(ch.stage1, g1, s1, v1), r2 = sim(ch.stage2, g2, s2, v2);
+  // rowing calories for the race: power goes with speed cubed, times the hours spent rowing
+  const rowK = rowedH(r1.track, -Infinity, Infinity) * rowKcalH(v1) + rowedH(r2.track, -Infinity, Infinity) * rowKcalH(v2);
+  return { head, v1, v2, solved, gap, hullCap, r1, r2, rowK };
+  };
+  let S, auto = null;
+  if (state.headAuto && state.sched === "tides") {
+    // Head-current optimizer: try each cutoff and keep the one that needs the least rowing for the days asked for.
+    // A plan that finishes later than asked doesn't count (rowing slower always costs less); if none finishes in time, take the earliest finish.
+    const key = JSON.stringify(KEEP.filter((k) => k !== "headKn").map((k) => state[k]));
+    if (HEAD_AUTO_CACHE && HEAD_AUTO_CACHE.key === key) S = solve(HEAD_AUTO_CACHE.head), auto = HEAD_AUTO_CACHE.auto;
+    else {
+      const tried = HEAD_AUTO_TRY.map(solve), inTime = tried.filter((x) => x.r2.finish <= target + tol);
+      S = inTime.length ? inTime.reduce((a, b) => (b.rowK < a.rowK - 1 ? b : a)) : tried.reduce((a, b) => (b.r2.finish < a.r2.finish ? b : a));
+      auto = { tried: tried.map((x) => ({ head: x.head, rowK: x.rowK, d: (x.r2.finish - s2) / (24 * H), inTime: x.r2.finish <= target + tol })), head: S.head, rowK: S.rowK };
+      HEAD_AUTO_CACHE = { key, head: S.head, auto };
+    }
+    state.headKn = S.head;
+  } else S = solve(state.headKn);
+  const { v1, v2, solved, gap, hullCap, r1, r2 } = S;
   // Grim Sweeper: leaves Port Townsend SWEEPER_DAYS after the Stage 2 start, at noon, at SWEEPER_NM_DAY
   const swDep = pdt(addDays(state.s2d, SWEEPER_DAYS), "12:00"), raceEnd = pdt(addDays(state.s2d, RACE_END_DAYS), "12:00");
   let swept = null;
@@ -1278,7 +1305,7 @@ function plan() {
     const sw = ((t - swDep) / H) * (SWEEPER_NM_DAY / 24), boat = ch.stage1.total + posAt(r2.track, t);
     if (sw >= boat) { swept = { t, pos: boat - ch.stage1.total }; break; }
   }
-  return { ch, s1, s2, v1, v2, solved, gap, hullCap, win, r1, r2, swDep, raceEnd, swept, human };
+  return { ch, s1, s2, v1, v2, solved, gap, hullCap, win, r1, r2, swDep, raceEnd, swept, human, auto };
 }
 
 // ---------- sun, night shading and the planned boat
@@ -1593,6 +1620,13 @@ function renderPlanner() {
   const nDays = (r2.finish - P.s1) / (24 * H);
   $("days-tbl").innerHTML = `<thead><tr><th>Day</th><th class="num">nm</th><th class="num">km</th><th class="num" title="Calories burned rowing, whole crew, above resting">Rowing kcal</th><th class="num" title="Resting burn plus coxing, camp and light work, whole crew">Non-active kcal</th><th class="num" title="Both, per person (the crew rotates seats)">kcal each</th><th>End of day</th></tr></thead><tbody>${out.join("")}</tbody>
     <tfoot><tr><th>Race</th><th class="num">${(ch.stage1.total + ch.stage2.total).toFixed(0)}</th><th class="num">${((ch.stage1.total + ch.stage2.total) * 1.852).toFixed(0)}</th><th class="num">${kcal(eRow)}</th><th class="num">${kcal(eRest)}</th><th class="num">${kcal((eRow + eRest) / CREW.n)}</th><th>${kcal((eRow + eRest) / CREW.n / nDays)} kcal a day each</th></tr></tfoot>`;
+  { const A = P.auto, el = $("head-auto-note"); el.hidden = !A;
+    if (A) { $("headKn").value = A.head;
+      const ok = A.tried.filter((x) => x.inTime), near = ok.filter((x) => x.rowK <= A.rowK * 1.03).map((x) => x.head), worst = ok.reduce((a, b) => (b.rowK > a.rowK ? b : a)), late = A.tried.filter((x) => !x.inTime).map((x) => `${x.head}`);
+      el.innerHTML = `Head-current cutoff picked: <b>${A.head} kn</b>, ${kcal(A.rowK)} rowing kcal for the crew. ` +
+        (near.length > 1 ? `Anything from ${Math.min(...near)} to ${Math.max(...near)} kn is within 3% of that, which is inside the model's error. ` : "") +
+        (worst.head !== A.head ? `The costliest cutoff tried, ${worst.head} kn, takes ${Math.round((worst.rowK / A.rowK - 1) * 100)}% more. ` : "") +
+        (late.length ? `${late.join(", ")} kn ${late.length > 1 ? "don't" : "doesn't"} finish in the days set, so ${late.length > 1 ? "they weren't" : "it wasn't"} counted.` : ""); } }
   $("kcal-note").innerHTML = `Calories: ${CREW.n} aboard (${CREW.rowers} rowing, 1 coxing, rotating), each ${CREW.kg} kg. At ${P.v2.toFixed(2)} kn through the water each rower puts about ${Math.round(rowerW(P.v2))} W into the oar handle (${state.shellX} times a racing shell at that speed, set above), which at 22% muscle efficiency is ${kcal(rowKcalH(P.v2) / CREW.rowers)} kcal an hour above resting; rotating seats, each person rows ${CREW.rowers} hours in ${CREW.n}. Non-active is resting burn times 1.3 for coxing, camp and light work, ${kcal(REST_KCAL_DAY)} kcal a day each. Estimates, not measured; cold and rough water add more.`;
 
   // night stops on the map
@@ -2579,7 +2613,7 @@ function renderPast() {
   }).join("") || (PAST.races.length ? '<p class="hint">Pick a year to show its tracks and finish times.</p>' : "");
   document.querySelectorAll(".past-row").forEach((d) => d.onclick = () => selectPast(d.dataset.k, d.dataset.id, true));
 }
-function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("shellX").value = state.shellX; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("docksOn").checked = state.docksOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = state.sched === "fixed"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
+function syncInputs() { ["s1d", "s1t", "s2d", "s2t", "days", "wstart", "whours", "north"].forEach((k) => { $(k).value = state[k]; }); $("campH").value = $("campH-r").value = state.campH; $("waits").checked = state.waits; $("sched").value = state.sched; $("wstart").closest("label").hidden = state.sched !== "fixed"; $("headKn").value = state.headKn; $("shellX").value = state.shellX; $("campGapH").value = state.campGapH; $("hullFt").value = $("hullFt-r").value = state.hullFt; $("hull-v").textContent = `${hullSpeed(state.hullFt).toFixed(2)} kn`; $("nightOn").checked = state.nightOn; $("docksOn").checked = state.docksOn; $("nightH").value = state.nightH; $("nightH-out").textContent = `${state.nightH} h`; $("nightH-l").hidden = !state.nightOn; $("headKn").closest("label").hidden = $("headAuto").closest("label").hidden = state.sched === "fixed"; $("headAuto").checked = state.headAuto; $("headKn").disabled = state.headAuto && state.sched === "tides"; ["breakAfterH", "breakH"].forEach((k) => { $(k).value = state[k]; $(k + "-out").textContent = `${state[k]} h`; }); }
 let rt;
 function changed(moveClock) { save(); clearTimeout(rt); rt = setTimeout(() => { renderPlanner(); renderSun(); if (moveClock) setTime(starts().s1); }, 60); }
 
@@ -2847,6 +2881,7 @@ async function main() {
   $("s2t").addEventListener("change", (e) => { if (e.target.value) { state.s2t = e.target.value; changed(); } });
   $("north").addEventListener("change", (e) => { state.north = e.target.value; changed(); });
   $("shellX").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 1 && v <= 6) { state.shellX = v; changed(); } });
+  $("headAuto").addEventListener("change", (e) => { state.headAuto = e.target.checked; syncInputs(); changed(); });
   $("headKn").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 3) { state.headKn = v; changed(); } });
   ["hullFt", "hullFt-r"].forEach((id) => $(id).addEventListener("input", (e) => {
     const v = parseFloat(e.target.value); if (!(v >= 20 && v <= 60)) return;
