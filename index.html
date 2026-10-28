@@ -2513,7 +2513,8 @@ function pastLabel(r, t) {
 async function loadPast() {
   const get = (p) => fetch(p, { cache: "no-cache" }).then((r) => r.ok ? r.json() : null).catch(() => null);
   const idx = await get("data/tracks/index.json");
-  const keys = ["r2ak2015-spot", ...((idx && idx.races) || []).map((r) => r.key)];
+  // 2015 SPOT logs, the 2015-2019 Swiftsure tracker archive (import_swiftsure.py) and the YB years (fetch_tracks.py)
+  const keys = ["r2ak2015-spot", ...[2015, 2016, 2017, 2018, 2019].map((y) => `r2ak${y}-swiftsure`), ...((idx && idx.races) || []).map((r) => r.key)];
   const races = (await Promise.all([...new Set(keys)].map((k) => get(`data/tracks/${k}.json`)))).filter((r) => r && r.teams && r.teams.length);
   races.sort((a, b) => a.start - b.start);
   PAST.races = races;
@@ -2527,7 +2528,7 @@ async function loadPast() {
     });
     g.on("add", () => { PAST.shown.add(r.key); renderPast(); }).on("remove", () => { PAST.shown.delete(r.key); renderPast(); });
     PAST.groups[r.key] = g;
-    layersCtl.addOverlay(g, `${yearOf(r)} human-powered tracks (${r.teams.length})`);
+    layersCtl.addOverlay(g, `${yearOf(r)} human-powered tracks${races.filter((x) => yearOf(x) === yearOf(r)).length > 1 ? (r.key.endsWith("-swiftsure") ? ", Swiftsure archive" : ", SPOT") : ""} (${r.teams.length})`);
     g.addTo(map);   // all past years shown when the map opens
   });
   buildStops(races);
@@ -2538,8 +2539,7 @@ async function loadPast() {
     const g = L.layerGroup(), yr = new Date((r.stage2_start || 0) * 1000).getUTCFullYear();
     r.teams.forEach((t) => L.polyline(t.track.map((p) => [p[1], p[2]]), t.human ? { color: classColor(t.class), weight: 2.5, opacity: 0.9 } : { color: "#cbd5e1", weight: 1.2, opacity: 0.55 })
       .bindTooltip(`<b>${esc(t.name || "")}</b> (${yr} Stage 1)<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}`, { sticky: true }).addTo(g));
-    layersCtl.addOverlay(g, `${yr} Stage 1 tracks, all boats (${r.teams.length}; ${r.teams.filter((t) => t.human).length} human-powered)`);
-    g.addTo(map);
+    layersCtl.addOverlay(g, `${yr} Stage 1 tracks, all boats (${r.teams.length}; ${r.teams.filter((t) => t.human).length} human-powered)`);   // off until picked in the layers list: a few hundred boats
   });
   // pace boats (data/tracks/pace.json, from fetch_tracks.py): a past boat replayed with its Stage 2 start moved to ours
   const pace = await get("data/tracks/pace.json").catch(() => null);
@@ -2554,7 +2554,7 @@ async function loadPast() {
   $("past-hint").innerHTML = races.length
     ? `Rowboats, kayaks, canoes and paddleboards only (no sail, pedal or kite), timed from the Victoria start. Green dots are places past teams stopped for 2 h or more (${PAST.stops.sites} sites); hover for who and when. Solid lines finished, dashed did not. <span class="legend" style="display:inline-flex;margin-top:4px"><span><i style="background:#38bdf8"></i>Rowboat</span><span><i style="background:#e879f9"></i>Kayak</span><span><i style="background:#fb923c"></i>Canoe</span><span><i style="background:#4ade80"></i>SUP</span></span>`
     : "No past tracks loaded yet.";
-  $("past-years").innerHTML = races.map((r) => `<button type="button" data-k="${esc(r.key)}" aria-pressed="false">${yearOf(r)}</button>`).join("");
+  $("past-years").innerHTML = races.map((r) => `<button type="button" data-k="${esc(r.key)}" aria-pressed="false">${yearOf(r)}${races.filter((x) => yearOf(x) === yearOf(r)).length > 1 && r.key.endsWith("-swiftsure") ? "b" : ""}</button>`).join("");
   document.querySelectorAll("#past-years button").forEach((b) => b.onclick = () => { const g = PAST.groups[b.dataset.k]; map.hasLayer(g) ? map.removeLayer(g) : g.addTo(map); });
   renderPast();
 }
@@ -2578,7 +2578,7 @@ function buildStops(races) {
   stops.forEach((s) => { const site = sites.find((x) => nmBetween(x.ll, s.ll) < 1); if (site) site.stops.push(s); else sites.push({ ll: s.ll, stops: [s] }); });
   CAMPSITES = sites.map((x) => ({ ll: x.ll, teams: new Set(x.stops.map((s) => s.team + s.year)).size, place: nearPlace(x.ll).replace(/^at /, ""), stops: x.stops }))
     // not around Victoria, where the boat spends the layover in port
-    .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 1) && nmBetween([l.lat, l.lon], [48.4225, -123.372]) > 6)
+    .concat(LANDINGS.filter((l) => !sites.some((x) => nmBetween(x.ll, [l.lat, l.lon]) < 0.3) && nmBetween([l.lat, l.lon], [48.4225, -123.372]) > 6)
       .map((l) => ({ ll: [l.lat, l.lon], teams: 0, place: nearPlace([l.lat, l.lon]).replace(/^at /, ""), landing: l })));
   // docks and floats, unless a past campsite or landing is right there
   const taken = CAMPSITES.map((c) => c.ll);
