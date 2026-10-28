@@ -27,10 +27,26 @@ jobs:
       - run: pip install numpy scipy utide pillow
       - name: Install DFO WebTide and its Northeast Pacific data
         run: |
-          W=https://www.bio.gc.ca/science/research-recherche/ocean/webtide/Application/Install/InstData
           mkdir -p /tmp/wt && cd /tmp/wt
-          curl -sSfL -m 600 "$W/Linux/WebTide_unix_0_7_1.sh" -o app.sh
-          curl -sSfL -m 600 "$W/Data/Unix/WebTide_ne_pac_data_0_7.sh" -o data.sh
+          # DFO moved the Bedford Institute site from bio.gc.ca to bio-iob.gc.ca: try both, and failing that, the links on the
+          # download pages
+          P=science/research-recherche/ocean/webtide
+          get() {   # get <file name> <path under InstData> <out>
+            for h in www.bio-iob.gc.ca www.bio.gc.ca; do
+              curl -sSfL -m 600 "https://$h/$P/Application/Install/InstData/$2" -o "$3" && return 0
+            done
+            for pg in download-telecharger-en.php nepacific-nepacifique-en.php; do
+              for h in www.bio-iob.gc.ca www.bio.gc.ca; do
+                u=$(curl -sSfL -m 60 "https://$h/$P/$pg" | grep -o "href=\"[^\"]*$1\"" | head -1 | cut -d'"' -f2) || true
+                [ -n "$u" ] || continue
+                case "$u" in http*) ;; /*) u="https://$h$u" ;; *) u="https://$h/$P/$u" ;; esac
+                echo "trying $u"; curl -sSfL -m 600 "$u" -o "$3" && return 0
+              done
+            done
+            echo "could not download $1"; return 1
+          }
+          get WebTide_unix_0_7_1.sh Linux/WebTide_unix_0_7_1.sh app.sh
+          get WebTide_ne_pac_data_0_7.sh Data/Unix/WebTide_ne_pac_data_0_7.sh data.sh
           sh app.sh -q -dir /tmp/wt/inst
           sh data.sh -q -dir /tmp/wt/inst
           ls /tmp/wt/inst/data/ne_pac4
