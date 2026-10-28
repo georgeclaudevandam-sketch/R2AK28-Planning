@@ -31,13 +31,14 @@ def epoch(s): return int(datetime.fromisoformat(s).timestamp()) if s else None
 
 def boat_class(boat):
     b = boat.lower()
-    if re.search(r"\bsup\b|paddleboard", b): return "SUP"
-    if re.search(r"kayak|trak|passat", b): return "Kayak"
+    if re.search(r"\bsup\b|paddleboard|airboard", b): return "SUP"
+    if re.search(r"kayak|trak|passat|pygmy", b): return "Kayak"
     if "canoe" in b: return "Canoe"
+    if "unlimited" in b: return "Human-powered"   # boat type not given
     return "Rowboat"
 
 
-def human(row): return row["category"].startswith("Human") and "sail" not in row["boat"].lower()
+def human(row): return row["category"].startswith("Human") and not re.search("sail|pedal", row["boat"].lower())
 
 
 def norm(n): return re.sub(r"[^a-z]", "", re.sub(r"^team\s+", "", n.lower()))
@@ -73,7 +74,7 @@ for year in sorted({r["year"] for r in rows}):
             if len(pts) < 2: continue
             name = re.sub(r"^Team\s+", "", r["team"])
             if stage == "1":
-                teams.append({"id": r["tracker_id"], "name": name, "boat": r["boat"] or None, "class": boat_class(r["boat"]) if human(r) else r["category"], "human": human(r), "track": pts})
+                teams.append({"id": r["tracker_id"], "name": name, "boat": r["boat"] or None, "class": boat_class(r["boat"]) if human(r) else r["category"], "human": human(r), "status": r["status"], "elapsed_h": round((fin - epoch(r["start_utc"])) / 3600, 2) if fin else None, "track": pts})
             else:
                 teams.append({"id": r["tracker_id"], "name": name, "boat": r["boat"] or None, "captain": r["skipper"] or None, "class": boat_class(r["boat"]),
                               "status": r["status"], "start": epoch(r["start_utc"]), "finished": fin, "elapsed_h": round((fin - epoch(r["start_utc"])) / 3600, 2) if fin else None, "track": pts})

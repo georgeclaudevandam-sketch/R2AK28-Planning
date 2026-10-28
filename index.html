@@ -2537,6 +2537,18 @@ async function loadPast() {
   const s1 = (await Promise.all(races.map((r) => get(`data/tracks/stage1/${r.key}.json`)))).filter((r) => r && r.teams && r.teams.length);
   s1.forEach((r) => {
     const g = L.layerGroup(), yr = new Date((r.stage2_start || 0) * 1000).getUTCFullYear();
+    // the human-powered boats on their own, shown when the map opens
+    const hp = r.teams.filter((t) => t.human && t.track.length > 1);
+    if (hp.length) {
+      const gh = L.layerGroup();
+      hp.forEach((t) => {
+        const hrs = t.elapsed_h, done = hrs != null;
+        L.polyline(t.track.map((p) => [p[1], p[2]]), { color: classColor(t.class), weight: 2.5, opacity: 0.9, dashArray: done ? null : "4 5" })
+          .bindTooltip(`<b>${esc(t.name || "")}</b> (${yr} Stage 1)<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}<br>${done ? `Victoria in ${Math.floor(hrs)} h ${String(Math.round((hrs % 1) * 60)).padStart(2, "0")} min` : "did not finish Stage 1"}`, { sticky: true }).addTo(gh);
+      });
+      layersCtl.addOverlay(gh, `${yr} Stage 1 human-powered tracks (${hp.length})`);
+      gh.addTo(map);
+    }
     r.teams.forEach((t) => L.polyline(t.track.map((p) => [p[1], p[2]]), t.human ? { color: classColor(t.class), weight: 2.5, opacity: 0.9 } : { color: "#cbd5e1", weight: 1.2, opacity: 0.55 })
       .bindTooltip(`<b>${esc(t.name || "")}</b> (${yr} Stage 1)<br>${esc([t.boat, t.class].filter(Boolean).join(", "))}`, { sticky: true }).addTo(g));
     layersCtl.addOverlay(g, `${yr} Stage 1 tracks, all boats (${r.teams.length}; ${r.teams.filter((t) => t.human).length} human-powered)`);   // off until picked in the layers list: a few hundred boats
